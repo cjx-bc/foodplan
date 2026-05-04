@@ -1,11 +1,19 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 
-import { generateDailyMealPlan, deriveShoppingItems } from "./planner.js";
+import {
+  adjustWeeklyPlanDay,
+  createDailyMealPlanFromMeals,
+  deriveShoppingItems,
+  generateDailyMealPlan,
+  generateWeeklyPlan,
+  regenerateMealInPlan,
+} from "./planner.js";
 import { sendError, sendJson, sendNoContent } from "./responses.js";
 import {
   createConversation,
   createConversationMessages,
   createMealPlan,
+  createWeeklyPlan,
   listConversationMessages,
   listConversations,
   listInventoryItems,
@@ -14,21 +22,36 @@ import {
   readProfile,
   readShoppingList,
   readShoppingListBySource,
+  readWeeklyPlan,
+  readWorkspaceState,
   replaceInventoryItems,
   updateConversation,
+  updateMealPlan,
   updateProfile,
+  updateWeeklyPlan,
+  updateWorkspaceState,
   upsertShoppingList,
 } from "./store.js";
-import type { ConversationMessageRecord, ShoppingListRecord } from "./types.js";
+import type {
+  ConversationMessageRecord,
+  MealPlanRecord,
+  MealType,
+  ShoppingListRecord,
+  WeeklyPlanRecord,
+} from "./types.js";
 import {
   validateConversationCreate,
   validateConversationMessageCreate,
   validateInventoryCreate,
   validateInventoryPatch,
   validateMealPlanCreate,
+  validateMealRegenerate,
   validateProfilePatch,
   validateShoppingListGenerate,
   validateShoppingListItemPatch,
+  validateWeeklyDayPatch,
+  validateWeeklyPlanAdopt,
+  validateWeeklyPlanCreate,
 } from "./validators.js";
 import { createId, createRequestId, nowIso } from "./utils.js";
 
@@ -58,12 +81,70 @@ function getUrl(request: IncomingMessage): URL {
   return new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
 }
 
+function weekdayFromDate(date: string) {
+  const currentDate = new Date(`${date}T00:00:00.000Z`);
+  return ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][currentDate.getUTCDay()] ?? "周一";
+}
+
+function mapConversationMessage(message: ConversationMessageRecord) {
+  return {
+    id: message.id,
+    role: message.role,
+    content: message.content,
+    createdAt: message.createdAt,
+    structuredResult: message.mealPlanId || message.shoppingListId || message.weeklyPlanId
+      ? {
+          mealPlanId: message.mealPlanId,
+          shoppingListId: message.shoppingListId,
+          weeklyPlanId: message.weeklyPlanId,
+        }
+      : null,
+  };
+}
+
+async function buildShoppingListFromSource(
+  sourceType: "meal_plan" | "weekly_plan",
+  sourceId: string,
+  preserveCheckedState: boolean,
+): Promise<ShoppingListRecord | null> {
+  const inventory = await listInventoryItems();
+  const currentList = await readShoppingListBySource(sourceType, sourceId);
+  let items = currentList?.items ?? [];
+
+  if (sourceType === "meal_plan") {
+    const mealPlan = await readMealPlan(sourceId);
+    if (!mealPlan) return null;
+    items = deriveShoppingItems(mealPlan.meals, inventory, preserveCheckedState ? currentList?.items : []);
+  } else {
+    const weeklyPlan = await readWeeklyPlan(sourceId);
+    if (!weeklyPlan) return null;
+    items = deriveShoppingItems(
+      weeklyPlan.days.flatMap((day) => day.meals),
+      inventory,
+      preserveCheckedState ? currentList?.items : [],
+    );
+  }
+
+  const updatedAt = nowIso();
+  const shoppingList: ShoppingListRecord = {
+    id: currentList?.id ?? createId("shop"),
+    sourceType,
+    sourceId,
+    items,
+    createdAt: currentList?.createdAt ?? updatedAt,
+    updatedAt,
+  };
+
+  await upsertShoppingList(shoppingList);
+  return shoppingList;
+}
+
 async function handleHealth(response: ServerResponse): Promise<void> {
   sendJson(response, 200, {
     data: {
       status: "ok",
       service: "smartmeal-api",
-      version: "0.1.0",
+      version: "0.2.0",
       timestamp: nowIso(),
     },
   });
@@ -166,10 +247,9 @@ async function handlePatchInventory(
     return;
   }
 
-  const nextItem = result.value;
-  const updatedItems = currentItems.map((item) => (item.id === inventoryItemId ? nextItem : item));
+  const updatedItems = currentItems.map((item) => (item.id === inventoryItemId ? result.value! : item));
   await replaceInventoryItems(updatedItems);
-  sendJson(response, 200, { data: nextItem });
+  sendJson(response, 200, { data: result.value });
 }
 
 async function handleDeleteInventory(response: ServerResponse, requestId: string, inventoryItemId: string): Promise<void> {
@@ -205,6 +285,16 @@ async function handleCreateMealPlan(request: IncomingMessage, response: ServerRe
   const inventory = await listInventoryItems();
   const mealPlan = generateDailyMealPlan(result.value.message, profile, inventory, [], result.value.conversationId);
   await createMealPlan(mealPlan);
+  const shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true);
+  const workspaceState = await readWorkspaceState();
+  await updateWorkspaceState({
+    ...workspaceState,
+    currentMealPlanId: mealPlan.id,
+    currentShoppingListId: shoppingList?.id,
+    currentConversationId: result.value.conversationId ?? workspaceState.currentConversationId,
+    planningMode: "daily",
+    updatedAt: nowIso(),
+  });
   sendJson(response, 201, { data: mealPlan });
 }
 
@@ -217,6 +307,45 @@ async function handleGetMealPlan(response: ServerResponse, requestId: string, me
   sendJson(response, 200, { data: mealPlan });
 }
 
+async function handleRegenerateMeal(
+  request: IncomingMessage,
+  response: ServerResponse,
+  requestId: string,
+  mealPlanId: string,
+  mealType: MealType,
+): Promise<void> {
+  const mealPlan = await readMealPlan(mealPlanId);
+  if (!mealPlan) {
+    sendError(response, 404, requestId, "not_found", "Meal plan not found");
+    return;
+  }
+
+  const result = validateMealRegenerate(await readJsonBody(request));
+  if (!result.value) {
+    sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
+    return;
+  }
+
+  const inventory = await listInventoryItems();
+  const profile = await readProfile();
+  const currentList = await readShoppingListBySource("meal_plan", mealPlan.id);
+  const updatedPlan = regenerateMealInPlan(mealPlan, mealType, result.value.reason, profile, inventory, currentList?.items ?? []);
+  await updateMealPlan(updatedPlan);
+  const shoppingList = await buildShoppingListFromSource("meal_plan", updatedPlan.id, true);
+
+  sendJson(response, 200, {
+    data: {
+      meal: updatedPlan.meals.find((item) => item.mealType === mealType) ?? updatedPlan.meals[0],
+      nutritionSummary: updatedPlan.nutritionSummary,
+      shoppingList: shoppingList?.items ?? updatedPlan.shoppingList,
+      inventoryUsage: updatedPlan.inventoryUsage,
+      suggestions: updatedPlan.suggestions,
+      mealPlan: updatedPlan,
+      shoppingListResource: shoppingList,
+    },
+  });
+}
+
 async function handleGenerateShoppingList(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
   const body = await readJsonBody(request);
   const result = validateShoppingListGenerate(body);
@@ -225,31 +354,27 @@ async function handleGenerateShoppingList(request: IncomingMessage, response: Se
     return;
   }
 
-  if (result.value.sourceType !== "meal_plan") {
-    sendError(response, 422, requestId, "validation_error", "Only meal_plan source is supported for now");
+  const shoppingList = await buildShoppingListFromSource(
+    result.value.sourceType,
+    result.value.sourceId,
+    result.value.preserveCheckedState,
+  );
+
+  if (!shoppingList) {
+    sendError(response, 404, requestId, "not_found", result.value.sourceType === "meal_plan" ? "Meal plan not found" : "Weekly plan not found");
     return;
   }
 
-  const mealPlan = await readMealPlan(result.value.sourceId);
-  if (!mealPlan) {
-    sendError(response, 404, requestId, "not_found", "Meal plan not found");
-    return;
-  }
+  const workspaceState = await readWorkspaceState();
+  await updateWorkspaceState({
+    ...workspaceState,
+    currentShoppingListId: shoppingList.id,
+    currentMealPlanId: result.value.sourceType === "meal_plan" ? result.value.sourceId : workspaceState.currentMealPlanId,
+    currentWeeklyPlanId: result.value.sourceType === "weekly_plan" ? result.value.sourceId : workspaceState.currentWeeklyPlanId,
+    planningMode: result.value.sourceType === "weekly_plan" ? "weekly" : workspaceState.planningMode,
+    updatedAt: nowIso(),
+  });
 
-  const inventory = await listInventoryItems();
-  const currentList = await readShoppingListBySource("meal_plan", mealPlan.id);
-  const items = deriveShoppingItems(mealPlan.meals, inventory, result.value.preserveCheckedState ? currentList?.items : []);
-  const updatedAt = nowIso();
-  const shoppingList: ShoppingListRecord = {
-    id: currentList?.id ?? createId("shop"),
-    sourceType: "meal_plan",
-    sourceId: mealPlan.id,
-    items,
-    createdAt: currentList?.createdAt ?? updatedAt,
-    updatedAt,
-  };
-
-  await upsertShoppingList(shoppingList);
   sendJson(response, 200, { data: shoppingList });
 }
 
@@ -293,7 +418,14 @@ async function handlePatchShoppingListItem(
   const result = validateShoppingListItemPatch(body, currentList, itemId);
   if (!result.value) {
     const notFound = result.errors.some((item) => item.field === "itemId");
-    sendError(response, notFound ? 404 : 422, requestId, notFound ? "not_found" : "validation_error", notFound ? "Shopping list item not found" : "Request validation failed", notFound ? undefined : result.errors);
+    sendError(
+      response,
+      notFound ? 404 : 422,
+      requestId,
+      notFound ? "not_found" : "validation_error",
+      notFound ? "Shopping list item not found" : "Request validation failed",
+      notFound ? undefined : result.errors,
+    );
     return;
   }
 
@@ -305,6 +437,157 @@ async function handlePatchShoppingListItem(
   sendJson(response, 200, { data: updated });
 }
 
+async function handleCreateWeeklyPlan(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
+  const result = validateWeeklyPlanCreate(await readJsonBody(request));
+  if (!result.value) {
+    sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
+    return;
+  }
+
+  if (result.value.conversationId) {
+    const conversation = await readConversation(result.value.conversationId);
+    if (!conversation) {
+      sendError(response, 404, requestId, "not_found", "Conversation not found");
+      return;
+    }
+  }
+
+  const inventory = await listInventoryItems();
+  const weeklyPlan = generateWeeklyPlan(
+    result.value.message,
+    result.value.preferenceTags,
+    result.value.startDate,
+    result.value.days,
+    inventory,
+    result.value.conversationId,
+  );
+  await createWeeklyPlan(weeklyPlan);
+  const workspaceState = await readWorkspaceState();
+  await updateWorkspaceState({
+    ...workspaceState,
+    currentWeeklyPlanId: weeklyPlan.id,
+    selectedWeekday: weeklyPlan.days[0]?.day,
+    updatedAt: nowIso(),
+  });
+  sendJson(response, 201, { data: weeklyPlan });
+}
+
+async function handleGetWeeklyPlan(response: ServerResponse, requestId: string, weeklyPlanId: string): Promise<void> {
+  const weeklyPlan = await readWeeklyPlan(weeklyPlanId);
+  if (!weeklyPlan) {
+    sendError(response, 404, requestId, "not_found", "Weekly plan not found");
+    return;
+  }
+  sendJson(response, 200, { data: weeklyPlan });
+}
+
+async function handlePatchWeeklyPlanDay(
+  request: IncomingMessage,
+  response: ServerResponse,
+  requestId: string,
+  weeklyPlanId: string,
+  date: string,
+): Promise<void> {
+  const weeklyPlan = await readWeeklyPlan(weeklyPlanId);
+  if (!weeklyPlan) {
+    sendError(response, 404, requestId, "not_found", "Weekly plan not found");
+    return;
+  }
+  const day = weeklyPlan.days.find((item) => item.date === date);
+  if (!day) {
+    sendError(response, 404, requestId, "not_found", "Weekly plan day not found");
+    return;
+  }
+
+  const result = validateWeeklyDayPatch(await readJsonBody(request));
+  if (!result.value) {
+    sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
+    return;
+  }
+
+  const inventory = await listInventoryItems();
+  const updatedWeeklyPlan = adjustWeeklyPlanDay(weeklyPlan, date, result.value.replaceMeals, inventory);
+  await updateWeeklyPlan(updatedWeeklyPlan);
+
+  const workspaceState = await readWorkspaceState();
+  if (workspaceState.currentWeeklyPlanId === updatedWeeklyPlan.id && workspaceState.planningMode === "weekly") {
+    await buildShoppingListFromSource("weekly_plan", updatedWeeklyPlan.id, true);
+  }
+
+  sendJson(response, 200, { data: updatedWeeklyPlan });
+}
+
+async function handleAdoptWeeklyPlan(
+  request: IncomingMessage,
+  response: ServerResponse,
+  requestId: string,
+  weeklyPlanId: string,
+): Promise<void> {
+  const weeklyPlan = await readWeeklyPlan(weeklyPlanId);
+  if (!weeklyPlan) {
+    sendError(response, 404, requestId, "not_found", "Weekly plan not found");
+    return;
+  }
+
+  const result = validateWeeklyPlanAdopt(await readJsonBody(request));
+  if (!result.value) {
+    sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
+    return;
+  }
+
+  const adoptValue = result.value;
+  const selectedDay = weeklyPlan.days.find((item) => item.date === adoptValue.selectedDate)
+    ?? weeklyPlan.days.find((item) => item.day === weekdayFromDate(adoptValue.selectedDate ?? weeklyPlan.days[0]?.date ?? "2026-05-04"))
+    ?? weeklyPlan.days[0];
+
+  const profile = await readProfile();
+  const inventory = await listInventoryItems();
+  const syncedMealPlan = createDailyMealPlanFromMeals(
+    (selectedDay?.meals ?? []).map((meal) => ({
+      ...meal,
+      nutrition: { ...meal.nutrition },
+      ingredients: meal.ingredients.map((item) => ({ ...item })),
+      steps: [...meal.steps],
+    })),
+    profile,
+    inventory,
+    [],
+    weeklyPlan.conversationId,
+    `Adopt weekly plan ${weeklyPlan.id}`,
+    `已采用本周计划，并把 ${selectedDay?.day ?? "今天"} 的三餐同步到今日执行。`,
+    weeklyPlan.insights,
+  );
+  await createMealPlan(syncedMealPlan);
+
+  const updatedWeeklyPlan: WeeklyPlanRecord = {
+    ...weeklyPlan,
+    adopted: true,
+    updatedAt: nowIso(),
+  };
+  await updateWeeklyPlan(updatedWeeklyPlan);
+
+  const shoppingList = await buildShoppingListFromSource("weekly_plan", updatedWeeklyPlan.id, true);
+  const workspaceState = await readWorkspaceState();
+  await updateWorkspaceState({
+    ...workspaceState,
+    currentWeeklyPlanId: updatedWeeklyPlan.id,
+    currentMealPlanId: syncedMealPlan.id,
+    currentShoppingListId: shoppingList?.id,
+    planningMode: "weekly",
+    selectedWeekday: selectedDay?.day ?? updatedWeeklyPlan.days[0]?.day,
+    updatedAt: nowIso(),
+  });
+
+  sendJson(response, 200, {
+    data: {
+      weeklyPlanId: updatedWeeklyPlan.id,
+      adopted: true,
+      syncedMealPlanId: syncedMealPlan.id,
+      shoppingListId: shoppingList?.id ?? null,
+    },
+  });
+}
+
 async function handleCreateConversation(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
   const result = validateConversationCreate(await readJsonBody(request), nowIso(), createId("conv"));
   if (!result.value) {
@@ -312,6 +595,12 @@ async function handleCreateConversation(request: IncomingMessage, response: Serv
     return;
   }
   await createConversation(result.value);
+  const workspaceState = await readWorkspaceState();
+  await updateWorkspaceState({
+    ...workspaceState,
+    currentConversationId: result.value.id,
+    updatedAt: nowIso(),
+  });
   sendJson(response, 201, { data: result.value });
 }
 
@@ -327,14 +616,7 @@ async function handleListConversationMessages(response: ServerResponse, requestI
     return;
   }
   const messages = await listConversationMessages(conversationId);
-  const payload = messages.map((message) => ({
-    id: message.id,
-    role: message.role,
-    content: message.content,
-    createdAt: message.createdAt,
-    structuredResult: message.mealPlanId ? { mealPlanId: message.mealPlanId } : null,
-  }));
-  sendJson(response, 200, { data: payload, meta: { total: payload.length } });
+  sendJson(response, 200, { data: messages.map(mapConversationMessage), meta: { total: messages.length } });
 }
 
 async function handleCreateConversationMessage(
@@ -355,13 +637,13 @@ async function handleCreateConversationMessage(
     return;
   }
 
-  const createdAt = nowIso();
+  const userCreatedAt = nowIso();
   const userMessage: ConversationMessageRecord = {
     id: createId("msg"),
     conversationId,
     role: "user",
     content: result.value.content,
-    createdAt,
+    createdAt: userCreatedAt,
   };
 
   const inventory = await listInventoryItems();
@@ -370,53 +652,46 @@ async function handleCreateConversationMessage(
     ? generateDailyMealPlan(result.value.content, profile, inventory, [], conversationId)
     : undefined;
 
+  let shoppingList: ShoppingListRecord | null = null;
   if (mealPlan) {
     await createMealPlan(mealPlan);
+    shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true);
   }
 
+  const assistantCreatedAt = nowIso();
   const assistantMessage: ConversationMessageRecord = {
     id: createId("msg"),
     conversationId,
     role: "assistant",
     content: mealPlan?.reply ?? "我已经记录这条偏好，稍后可以继续生成餐单。",
     mealPlanId: mealPlan?.id,
-    createdAt: nowIso(),
+    shoppingListId: shoppingList?.id,
+    createdAt: assistantCreatedAt,
   };
 
   await createConversationMessages([userMessage, assistantMessage]);
   await updateConversation({
     ...conversation,
-    lastMessageAt: assistantMessage.createdAt,
-    updatedAt: assistantMessage.createdAt,
+    lastMessageAt: assistantCreatedAt,
+    updatedAt: assistantCreatedAt,
   });
 
-  if (mealPlan) {
-    await upsertShoppingList({
-      id: createId("shop"),
-      sourceType: "meal_plan",
-      sourceId: mealPlan.id,
-      items: mealPlan.shoppingList,
-      createdAt: assistantMessage.createdAt,
-      updatedAt: assistantMessage.createdAt,
-    });
-  }
+  const workspaceState = await readWorkspaceState();
+  await updateWorkspaceState({
+    ...workspaceState,
+    currentConversationId: conversationId,
+    currentMealPlanId: mealPlan?.id ?? workspaceState.currentMealPlanId,
+    currentShoppingListId: shoppingList?.id ?? workspaceState.currentShoppingListId,
+    planningMode: "daily",
+    updatedAt: nowIso(),
+  });
 
   sendJson(response, 201, {
     data: {
-      userMessage: {
-        id: userMessage.id,
-        role: userMessage.role,
-        content: userMessage.content,
-        createdAt: userMessage.createdAt,
-      },
-      assistantMessage: {
-        id: assistantMessage.id,
-        role: assistantMessage.role,
-        content: assistantMessage.content,
-        createdAt: assistantMessage.createdAt,
-        structuredResult: mealPlan ? { mealPlanId: mealPlan.id } : null,
-      },
+      userMessage: mapConversationMessage(userMessage),
+      assistantMessage: mapConversationMessage(assistantMessage),
       mealPlan: mealPlan ?? null,
+      shoppingList,
     },
   });
 }
@@ -481,16 +756,43 @@ const server = createServer(async (request, response) => {
       }
     }
 
-    if (pathname === "/api/v1/meal-plans") {
-      if (request.method === "POST") {
-        await handleCreateMealPlan(request, response, requestId);
-        return;
-      }
+    if (pathname === "/api/v1/meal-plans" && request.method === "POST") {
+      await handleCreateMealPlan(request, response, requestId);
+      return;
+    }
+
+    const regenerateMealMatch = pathname.match(/^\/api\/v1\/meal-plans\/([^/]+)\/meals\/(breakfast|lunch|dinner)\/regenerate$/);
+    if (regenerateMealMatch && request.method === "POST") {
+      await handleRegenerateMeal(request, response, requestId, regenerateMealMatch[1], regenerateMealMatch[2] as MealType);
+      return;
     }
 
     const mealPlanMatch = pathname.match(/^\/api\/v1\/meal-plans\/([^/]+)$/);
     if (mealPlanMatch && request.method === "GET") {
       await handleGetMealPlan(response, requestId, mealPlanMatch[1]);
+      return;
+    }
+
+    if (pathname === "/api/v1/weekly-plans" && request.method === "POST") {
+      await handleCreateWeeklyPlan(request, response, requestId);
+      return;
+    }
+
+    const weeklyDayMatch = pathname.match(/^\/api\/v1\/weekly-plans\/([^/]+)\/days\/(\d{4}-\d{2}-\d{2})$/);
+    if (weeklyDayMatch && request.method === "PATCH") {
+      await handlePatchWeeklyPlanDay(request, response, requestId, weeklyDayMatch[1], weeklyDayMatch[2]);
+      return;
+    }
+
+    const weeklyAdoptMatch = pathname.match(/^\/api\/v1\/weekly-plans\/([^/]+)\/adopt$/);
+    if (weeklyAdoptMatch && request.method === "POST") {
+      await handleAdoptWeeklyPlan(request, response, requestId, weeklyAdoptMatch[1]);
+      return;
+    }
+
+    const weeklyPlanMatch = pathname.match(/^\/api\/v1\/weekly-plans\/([^/]+)$/);
+    if (weeklyPlanMatch && request.method === "GET") {
+      await handleGetWeeklyPlan(response, requestId, weeklyPlanMatch[1]);
       return;
     }
 

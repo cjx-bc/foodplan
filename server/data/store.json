@@ -81,8 +81,5066 @@
       "updatedAt": "2026-05-04T00:00:00.000Z"
     }
   ],
-  "mealPlans": [],
-  "shoppingLists": [],
-  "conversations": [],
-  "conversationMessages": []
+  "mealPlans": [
+    {
+      "id": "plan_4415f7befdb1",
+      "conversationId": "conv_00ebe6470867",
+      "mode": "daily",
+      "sourceMessage": "Adopt weekly plan week_045fac86e54e",
+      "reply": "已采用本周计划，并把 周一 的三餐同步到今日执行。",
+      "meals": [
+        {
+          "id": "meal_breakfast_1",
+          "mealType": "breakfast",
+          "title": "燕麦水果杯 + 水煮蛋",
+          "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+          "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 10,
+          "nutrition": {
+            "calories": 352,
+            "protein": 22,
+            "carbs": 48,
+            "fat": 9,
+            "fiber": 7
+          },
+          "ingredients": [
+            {
+              "name": "燕麦",
+              "amount": "45 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "牛奶",
+              "amount": "200 ml",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡蛋",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "燕麦加入牛奶浸泡 5 分钟。",
+            "鸡蛋冷水下锅煮熟。",
+            "加入水果后装杯。"
+          ],
+          "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+        },
+        {
+          "id": "meal_lunch_2",
+          "mealType": "lunch",
+          "title": "西兰花虾仁荞麦面",
+          "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+          "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 20,
+          "nutrition": {
+            "calories": 525,
+            "protein": 39,
+            "carbs": 61,
+            "fat": 12,
+            "fiber": 8
+          },
+          "ingredients": [
+            {
+              "name": "番茄",
+              "amount": "2 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡胸肉",
+              "amount": "180 g",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "糙米饭",
+              "amount": "1 碗",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "西兰花",
+              "amount": "半颗",
+              "fromInventory": true,
+              "optional": true
+            }
+          ],
+          "steps": [
+            "鸡胸肉切片后少油煎熟。",
+            "番茄炒出汁后加入鸡肉。",
+            "搭配糙米饭和焯水西兰花。"
+          ],
+          "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+        },
+        {
+          "id": "meal_dinner_1",
+          "mealType": "dinner",
+          "title": "番茄豆腐汤 + 清炒时蔬",
+          "description": "晚餐控制热量，用热汤增加饱腹感。",
+          "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 18,
+          "nutrition": {
+            "calories": 430,
+            "protein": 20,
+            "carbs": 36,
+            "fat": 15,
+            "fiber": 5
+          },
+          "ingredients": [
+            {
+              "name": "番茄",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "豆腐",
+              "amount": "200 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "青菜",
+              "amount": "250 g",
+              "fromInventory": false,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "番茄切块煮出汤底。",
+            "加入豆腐小火煮 8 分钟。",
+            "青菜少油快炒后搭配食用。"
+          ],
+          "aiTip": "晚餐热量较低，适合今天的控油目标。"
+        }
+      ],
+      "nutritionSummary": {
+        "actual": {
+          "calories": 1307,
+          "protein": 81,
+          "carbs": 145,
+          "fat": 36,
+          "fiber": 20
+        },
+        "target": {
+          "calories": 1900,
+          "protein": 95,
+          "carbs": 250,
+          "fat": 65,
+          "fiber": 25
+        },
+        "deltas": {
+          "calories": -593,
+          "protein": -14,
+          "carbs": -105,
+          "fat": -29,
+          "fiber": -5
+        },
+        "score": 77
+      },
+      "shoppingList": [
+        {
+          "id": "shop_item_a0533dca51c0",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": false,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_701e5afa4f02",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「西兰花虾仁荞麦面」需要"
+        },
+        {
+          "id": "shop_item_bb72b4893cca",
+          "stableKey": "豆腐|200 g",
+          "name": "豆腐",
+          "category": "meat_egg",
+          "amount": "200 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        },
+        {
+          "id": "shop_item_69ade5a5d35f",
+          "stableKey": "青菜|250 g",
+          "name": "青菜",
+          "category": "vegetable",
+          "amount": "250 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        }
+      ],
+      "inventoryUsage": [
+        "牛奶",
+        "鸡蛋",
+        "番茄",
+        "鸡胸肉",
+        "西兰花"
+      ],
+      "suggestions": [
+        "平均每日热量约 1313 kcal。",
+        "本周热量波动较平稳。",
+        "库存优先食材包括 牛奶、鸡蛋、番茄、鸡胸肉。"
+      ],
+      "createdAt": "2026-05-04T11:57:38.020Z",
+      "updatedAt": "2026-05-04T11:57:38.020Z"
+    },
+    {
+      "id": "plan_a53ae48f737b",
+      "conversationId": "conv_00ebe6470867",
+      "mode": "daily",
+      "sourceMessage": "今天清淡，多用鸡蛋和番茄。",
+      "reply": "午餐已按“提升蛋白质”换成更合适的方案。",
+      "meals": [
+        {
+          "id": "meal_breakfast_1",
+          "mealType": "breakfast",
+          "title": "燕麦水果杯 + 水煮蛋",
+          "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+          "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 10,
+          "nutrition": {
+            "calories": 352,
+            "protein": 22,
+            "carbs": 48,
+            "fat": 9,
+            "fiber": 7
+          },
+          "ingredients": [
+            {
+              "name": "燕麦",
+              "amount": "45 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "牛奶",
+              "amount": "200 ml",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡蛋",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "燕麦加入牛奶浸泡 5 分钟。",
+            "鸡蛋冷水下锅煮熟。",
+            "加入水果后装杯。"
+          ],
+          "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+        },
+        {
+          "id": "meal_lunch_3",
+          "mealType": "lunch",
+          "title": "鸡肉沙拉饭",
+          "description": "鸡肉保留蛋白质，蔬菜让午餐更清爽。",
+          "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 25,
+          "nutrition": {
+            "calories": 540,
+            "protein": 35,
+            "carbs": 55,
+            "fat": 14,
+            "fiber": 7
+          },
+          "ingredients": [
+            {
+              "name": "鸡胸肉",
+              "amount": "150 g",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "生菜",
+              "amount": "150 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "糙米饭",
+              "amount": "1 碗",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "番茄",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": true
+            }
+          ],
+          "steps": [
+            "鸡胸肉切片后少油煎熟。",
+            "番茄炒出汁后加入鸡肉。",
+            "搭配糙米饭和焯水西兰花。"
+          ],
+          "aiTip": "适合中周保持清爽，蛋白也不低。"
+        },
+        {
+          "id": "meal_dinner_2",
+          "mealType": "dinner",
+          "title": "鸡蛋番茄燕麦粥",
+          "description": "把库存番茄和鸡蛋用于晚餐，温和且低负担。",
+          "imageUrl": "https://images.unsplash.com/photo-1604909052743-94e838986d24?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 16,
+          "nutrition": {
+            "calories": 410,
+            "protein": 24,
+            "carbs": 44,
+            "fat": 10,
+            "fiber": 6
+          },
+          "ingredients": [
+            {
+              "name": "番茄",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡蛋",
+              "amount": "2 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "燕麦",
+              "amount": "35 g",
+              "fromInventory": false,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "番茄切块煮出汤底。",
+            "加入豆腐小火煮 8 分钟。",
+            "青菜少油快炒后搭配食用。"
+          ],
+          "aiTip": "晚餐继续使用库存番茄和鸡蛋，脂肪控制更好。"
+        }
+      ],
+      "nutritionSummary": {
+        "actual": {
+          "calories": 1302,
+          "protein": 81,
+          "carbs": 147,
+          "fat": 33,
+          "fiber": 20
+        },
+        "target": {
+          "calories": 1900,
+          "protein": 95,
+          "carbs": 250,
+          "fat": 65,
+          "fiber": 25
+        },
+        "deltas": {
+          "calories": -598,
+          "protein": -14,
+          "carbs": -103,
+          "fat": -32,
+          "fiber": -5
+        },
+        "score": 77
+      },
+      "shoppingList": [
+        {
+          "id": "shop_item_30f315bdf31d",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": false,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_329b7660cbae",
+          "stableKey": "生菜|150 g",
+          "name": "生菜",
+          "category": "vegetable",
+          "amount": "150 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_56dc96ba78bb",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_7d6a09190a83",
+          "stableKey": "燕麦|35 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "35 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡蛋番茄燕麦粥」需要"
+        }
+      ],
+      "inventoryUsage": [
+        "牛奶",
+        "鸡蛋",
+        "鸡胸肉",
+        "番茄"
+      ],
+      "suggestions": [
+        "蛋白质略低，建议加 1 个鸡蛋或增加 80g 豆腐。",
+        "总热量偏低，如晚间易饿可补无糖酸奶或水果。",
+        "膳食纤维不足，建议补一份绿叶菜或西兰花。"
+      ],
+      "createdAt": "2026-05-04T11:57:37.881Z",
+      "updatedAt": "2026-05-04T11:57:37.948Z"
+    },
+    {
+      "id": "plan_dbb0dc587fb2",
+      "conversationId": "conv_ad6b101d1651",
+      "mode": "daily",
+      "sourceMessage": "Adopt weekly plan week_3d020955e019",
+      "reply": "已采用本周计划，并把 周一 的三餐同步到今日执行。",
+      "meals": [
+        {
+          "id": "meal_breakfast_1",
+          "mealType": "breakfast",
+          "title": "燕麦水果杯 + 水煮蛋",
+          "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+          "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 10,
+          "nutrition": {
+            "calories": 352,
+            "protein": 22,
+            "carbs": 48,
+            "fat": 9,
+            "fiber": 7
+          },
+          "ingredients": [
+            {
+              "name": "燕麦",
+              "amount": "45 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "牛奶",
+              "amount": "200 ml",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡蛋",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "燕麦加入牛奶浸泡 5 分钟。",
+            "鸡蛋冷水下锅煮熟。",
+            "加入水果后装杯。"
+          ],
+          "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+        },
+        {
+          "id": "meal_lunch_2",
+          "mealType": "lunch",
+          "title": "西兰花虾仁荞麦面",
+          "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+          "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 20,
+          "nutrition": {
+            "calories": 525,
+            "protein": 39,
+            "carbs": 61,
+            "fat": 12,
+            "fiber": 8
+          },
+          "ingredients": [
+            {
+              "name": "番茄",
+              "amount": "2 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡胸肉",
+              "amount": "180 g",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "糙米饭",
+              "amount": "1 碗",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "西兰花",
+              "amount": "半颗",
+              "fromInventory": true,
+              "optional": true
+            }
+          ],
+          "steps": [
+            "鸡胸肉切片后少油煎熟。",
+            "番茄炒出汁后加入鸡肉。",
+            "搭配糙米饭和焯水西兰花。"
+          ],
+          "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+        },
+        {
+          "id": "meal_dinner_1",
+          "mealType": "dinner",
+          "title": "番茄豆腐汤 + 清炒时蔬",
+          "description": "晚餐控制热量，用热汤增加饱腹感。",
+          "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 18,
+          "nutrition": {
+            "calories": 430,
+            "protein": 20,
+            "carbs": 36,
+            "fat": 15,
+            "fiber": 5
+          },
+          "ingredients": [
+            {
+              "name": "番茄",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "豆腐",
+              "amount": "200 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "青菜",
+              "amount": "250 g",
+              "fromInventory": false,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "番茄切块煮出汤底。",
+            "加入豆腐小火煮 8 分钟。",
+            "青菜少油快炒后搭配食用。"
+          ],
+          "aiTip": "晚餐热量较低，适合今天的控油目标。"
+        }
+      ],
+      "nutritionSummary": {
+        "actual": {
+          "calories": 1307,
+          "protein": 81,
+          "carbs": 145,
+          "fat": 36,
+          "fiber": 20
+        },
+        "target": {
+          "calories": 1900,
+          "protein": 95,
+          "carbs": 250,
+          "fat": 65,
+          "fiber": 25
+        },
+        "deltas": {
+          "calories": -593,
+          "protein": -14,
+          "carbs": -105,
+          "fat": -29,
+          "fiber": -5
+        },
+        "score": 77
+      },
+      "shoppingList": [
+        {
+          "id": "shop_item_b93dc8e8870a",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": false,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_4ecea9dae7fa",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「西兰花虾仁荞麦面」需要"
+        },
+        {
+          "id": "shop_item_8d376e8ab12a",
+          "stableKey": "豆腐|200 g",
+          "name": "豆腐",
+          "category": "meat_egg",
+          "amount": "200 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        },
+        {
+          "id": "shop_item_48c72573357a",
+          "stableKey": "青菜|250 g",
+          "name": "青菜",
+          "category": "vegetable",
+          "amount": "250 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        }
+      ],
+      "inventoryUsage": [
+        "牛奶",
+        "鸡蛋",
+        "番茄",
+        "鸡胸肉",
+        "西兰花"
+      ],
+      "suggestions": [
+        "平均每日热量约 1313 kcal。",
+        "本周热量波动较平稳。",
+        "库存优先食材包括 牛奶、鸡蛋、番茄、鸡胸肉。"
+      ],
+      "createdAt": "2026-05-04T11:55:51.882Z",
+      "updatedAt": "2026-05-04T11:55:51.882Z"
+    },
+    {
+      "id": "plan_227c9d26512f",
+      "conversationId": "conv_ad6b101d1651",
+      "mode": "daily",
+      "sourceMessage": "今天清淡，多用鸡蛋和番茄。",
+      "reply": "午餐已按“提升蛋白质”换成更合适的方案。",
+      "meals": [
+        {
+          "id": "meal_breakfast_1",
+          "mealType": "breakfast",
+          "title": "燕麦水果杯 + 水煮蛋",
+          "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+          "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 10,
+          "nutrition": {
+            "calories": 352,
+            "protein": 22,
+            "carbs": 48,
+            "fat": 9,
+            "fiber": 7
+          },
+          "ingredients": [
+            {
+              "name": "燕麦",
+              "amount": "45 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "牛奶",
+              "amount": "200 ml",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡蛋",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "燕麦加入牛奶浸泡 5 分钟。",
+            "鸡蛋冷水下锅煮熟。",
+            "加入水果后装杯。"
+          ],
+          "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+        },
+        {
+          "id": "meal_lunch_3",
+          "mealType": "lunch",
+          "title": "鸡肉沙拉饭",
+          "description": "鸡肉保留蛋白质，蔬菜让午餐更清爽。",
+          "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 25,
+          "nutrition": {
+            "calories": 540,
+            "protein": 35,
+            "carbs": 55,
+            "fat": 14,
+            "fiber": 7
+          },
+          "ingredients": [
+            {
+              "name": "鸡胸肉",
+              "amount": "150 g",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "生菜",
+              "amount": "150 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "糙米饭",
+              "amount": "1 碗",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "番茄",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": true
+            }
+          ],
+          "steps": [
+            "鸡胸肉切片后少油煎熟。",
+            "番茄炒出汁后加入鸡肉。",
+            "搭配糙米饭和焯水西兰花。"
+          ],
+          "aiTip": "适合中周保持清爽，蛋白也不低。"
+        },
+        {
+          "id": "meal_dinner_2",
+          "mealType": "dinner",
+          "title": "鸡蛋番茄燕麦粥",
+          "description": "把库存番茄和鸡蛋用于晚餐，温和且低负担。",
+          "imageUrl": "https://images.unsplash.com/photo-1604909052743-94e838986d24?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 16,
+          "nutrition": {
+            "calories": 410,
+            "protein": 24,
+            "carbs": 44,
+            "fat": 10,
+            "fiber": 6
+          },
+          "ingredients": [
+            {
+              "name": "番茄",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡蛋",
+              "amount": "2 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "燕麦",
+              "amount": "35 g",
+              "fromInventory": false,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "番茄切块煮出汤底。",
+            "加入豆腐小火煮 8 分钟。",
+            "青菜少油快炒后搭配食用。"
+          ],
+          "aiTip": "晚餐继续使用库存番茄和鸡蛋，脂肪控制更好。"
+        }
+      ],
+      "nutritionSummary": {
+        "actual": {
+          "calories": 1302,
+          "protein": 81,
+          "carbs": 147,
+          "fat": 33,
+          "fiber": 20
+        },
+        "target": {
+          "calories": 1900,
+          "protein": 95,
+          "carbs": 250,
+          "fat": 65,
+          "fiber": 25
+        },
+        "deltas": {
+          "calories": -598,
+          "protein": -14,
+          "carbs": -103,
+          "fat": -32,
+          "fiber": -5
+        },
+        "score": 77
+      },
+      "shoppingList": [
+        {
+          "id": "shop_item_2a76f4c00da2",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": false,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_a64cd20b62cd",
+          "stableKey": "生菜|150 g",
+          "name": "生菜",
+          "category": "vegetable",
+          "amount": "150 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_5c0f3ff68188",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_02f0b2aada42",
+          "stableKey": "燕麦|35 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "35 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡蛋番茄燕麦粥」需要"
+        }
+      ],
+      "inventoryUsage": [
+        "牛奶",
+        "鸡蛋",
+        "鸡胸肉",
+        "番茄"
+      ],
+      "suggestions": [
+        "蛋白质略低，建议加 1 个鸡蛋或增加 80g 豆腐。",
+        "总热量偏低，如晚间易饿可补无糖酸奶或水果。",
+        "膳食纤维不足，建议补一份绿叶菜或西兰花。"
+      ],
+      "createdAt": "2026-05-04T11:55:51.837Z",
+      "updatedAt": "2026-05-04T11:55:51.853Z"
+    },
+    {
+      "id": "plan_55260a5a3c22",
+      "conversationId": "conv_8f5ece365ff5",
+      "mode": "daily",
+      "sourceMessage": "Adopt weekly plan week_8fa227c1c7e6",
+      "reply": "已采用本周计划，并把 周一 的三餐同步到今日执行。",
+      "meals": [
+        {
+          "id": "meal_breakfast_1",
+          "mealType": "breakfast",
+          "title": "燕麦水果杯 + 水煮蛋",
+          "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+          "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 10,
+          "nutrition": {
+            "calories": 352,
+            "protein": 22,
+            "carbs": 48,
+            "fat": 9,
+            "fiber": 7
+          },
+          "ingredients": [
+            {
+              "name": "燕麦",
+              "amount": "45 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "牛奶",
+              "amount": "200 ml",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡蛋",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "燕麦加入牛奶浸泡 5 分钟。",
+            "鸡蛋冷水下锅煮熟。",
+            "加入水果后装杯。"
+          ],
+          "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+        },
+        {
+          "id": "meal_lunch_2",
+          "mealType": "lunch",
+          "title": "西兰花虾仁荞麦面",
+          "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+          "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 20,
+          "nutrition": {
+            "calories": 525,
+            "protein": 39,
+            "carbs": 61,
+            "fat": 12,
+            "fiber": 8
+          },
+          "ingredients": [
+            {
+              "name": "番茄",
+              "amount": "2 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡胸肉",
+              "amount": "180 g",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "糙米饭",
+              "amount": "1 碗",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "西兰花",
+              "amount": "半颗",
+              "fromInventory": true,
+              "optional": true
+            }
+          ],
+          "steps": [
+            "鸡胸肉切片后少油煎熟。",
+            "番茄炒出汁后加入鸡肉。",
+            "搭配糙米饭和焯水西兰花。"
+          ],
+          "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+        },
+        {
+          "id": "meal_dinner_1",
+          "mealType": "dinner",
+          "title": "番茄豆腐汤 + 清炒时蔬",
+          "description": "晚餐控制热量，用热汤增加饱腹感。",
+          "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 18,
+          "nutrition": {
+            "calories": 430,
+            "protein": 20,
+            "carbs": 36,
+            "fat": 15,
+            "fiber": 5
+          },
+          "ingredients": [
+            {
+              "name": "番茄",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "豆腐",
+              "amount": "200 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "青菜",
+              "amount": "250 g",
+              "fromInventory": false,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "番茄切块煮出汤底。",
+            "加入豆腐小火煮 8 分钟。",
+            "青菜少油快炒后搭配食用。"
+          ],
+          "aiTip": "晚餐热量较低，适合今天的控油目标。"
+        }
+      ],
+      "nutritionSummary": {
+        "actual": {
+          "calories": 1307,
+          "protein": 81,
+          "carbs": 145,
+          "fat": 36,
+          "fiber": 20
+        },
+        "target": {
+          "calories": 1900,
+          "protein": 95,
+          "carbs": 250,
+          "fat": 65,
+          "fiber": 25
+        },
+        "deltas": {
+          "calories": -593,
+          "protein": -14,
+          "carbs": -105,
+          "fat": -29,
+          "fiber": -5
+        },
+        "score": 77
+      },
+      "shoppingList": [
+        {
+          "id": "shop_item_986dd547ed8f",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": false,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_39e997713fac",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「西兰花虾仁荞麦面」需要"
+        },
+        {
+          "id": "shop_item_a2821e9c0f21",
+          "stableKey": "豆腐|200 g",
+          "name": "豆腐",
+          "category": "meat_egg",
+          "amount": "200 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        },
+        {
+          "id": "shop_item_a6187c866dc2",
+          "stableKey": "青菜|250 g",
+          "name": "青菜",
+          "category": "vegetable",
+          "amount": "250 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        }
+      ],
+      "inventoryUsage": [
+        "牛奶",
+        "鸡蛋",
+        "番茄",
+        "鸡胸肉",
+        "西兰花"
+      ],
+      "suggestions": [
+        "平均每日热量约 1313 kcal。",
+        "本周热量波动较平稳。",
+        "库存优先食材包括 牛奶、鸡蛋、番茄、鸡胸肉。"
+      ],
+      "createdAt": "2026-05-04T11:53:44.268Z",
+      "updatedAt": "2026-05-04T11:53:44.268Z"
+    },
+    {
+      "id": "plan_9d0be1f4f705",
+      "conversationId": "conv_8f5ece365ff5",
+      "mode": "daily",
+      "sourceMessage": "今天清淡，多用鸡蛋和番茄。",
+      "reply": "午餐已按“提升蛋白质”换成更合适的方案。",
+      "meals": [
+        {
+          "id": "meal_breakfast_1",
+          "mealType": "breakfast",
+          "title": "燕麦水果杯 + 水煮蛋",
+          "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+          "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 10,
+          "nutrition": {
+            "calories": 352,
+            "protein": 22,
+            "carbs": 48,
+            "fat": 9,
+            "fiber": 7
+          },
+          "ingredients": [
+            {
+              "name": "燕麦",
+              "amount": "45 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "牛奶",
+              "amount": "200 ml",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡蛋",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "燕麦加入牛奶浸泡 5 分钟。",
+            "鸡蛋冷水下锅煮熟。",
+            "加入水果后装杯。"
+          ],
+          "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+        },
+        {
+          "id": "meal_lunch_3",
+          "mealType": "lunch",
+          "title": "鸡肉沙拉饭",
+          "description": "鸡肉保留蛋白质，蔬菜让午餐更清爽。",
+          "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 25,
+          "nutrition": {
+            "calories": 540,
+            "protein": 35,
+            "carbs": 55,
+            "fat": 14,
+            "fiber": 7
+          },
+          "ingredients": [
+            {
+              "name": "鸡胸肉",
+              "amount": "150 g",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "生菜",
+              "amount": "150 g",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "糙米饭",
+              "amount": "1 碗",
+              "fromInventory": false,
+              "optional": false
+            },
+            {
+              "name": "番茄",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": true
+            }
+          ],
+          "steps": [
+            "鸡胸肉切片后少油煎熟。",
+            "番茄炒出汁后加入鸡肉。",
+            "搭配糙米饭和焯水西兰花。"
+          ],
+          "aiTip": "适合中周保持清爽，蛋白也不低。"
+        },
+        {
+          "id": "meal_dinner_2",
+          "mealType": "dinner",
+          "title": "鸡蛋番茄燕麦粥",
+          "description": "把库存番茄和鸡蛋用于晚餐，温和且低负担。",
+          "imageUrl": "https://images.unsplash.com/photo-1604909052743-94e838986d24?auto=format&fit=crop&w=720&q=80",
+          "cookTimeMinutes": 16,
+          "nutrition": {
+            "calories": 410,
+            "protein": 24,
+            "carbs": 44,
+            "fat": 10,
+            "fiber": 6
+          },
+          "ingredients": [
+            {
+              "name": "番茄",
+              "amount": "1 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "鸡蛋",
+              "amount": "2 个",
+              "fromInventory": true,
+              "optional": false
+            },
+            {
+              "name": "燕麦",
+              "amount": "35 g",
+              "fromInventory": false,
+              "optional": false
+            }
+          ],
+          "steps": [
+            "番茄切块煮出汤底。",
+            "加入豆腐小火煮 8 分钟。",
+            "青菜少油快炒后搭配食用。"
+          ],
+          "aiTip": "晚餐继续使用库存番茄和鸡蛋，脂肪控制更好。"
+        }
+      ],
+      "nutritionSummary": {
+        "actual": {
+          "calories": 1302,
+          "protein": 81,
+          "carbs": 147,
+          "fat": 33,
+          "fiber": 20
+        },
+        "target": {
+          "calories": 1900,
+          "protein": 95,
+          "carbs": 250,
+          "fat": 65,
+          "fiber": 25
+        },
+        "deltas": {
+          "calories": -598,
+          "protein": -14,
+          "carbs": -103,
+          "fat": -32,
+          "fiber": -5
+        },
+        "score": 77
+      },
+      "shoppingList": [
+        {
+          "id": "shop_item_ade15e495b86",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": false,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_1d5ba5b8c931",
+          "stableKey": "生菜|150 g",
+          "name": "生菜",
+          "category": "vegetable",
+          "amount": "150 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_267c950028b1",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_840d5647feee",
+          "stableKey": "燕麦|35 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "35 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡蛋番茄燕麦粥」需要"
+        }
+      ],
+      "inventoryUsage": [
+        "牛奶",
+        "鸡蛋",
+        "鸡胸肉",
+        "番茄"
+      ],
+      "suggestions": [
+        "蛋白质略低，建议加 1 个鸡蛋或增加 80g 豆腐。",
+        "总热量偏低，如晚间易饿可补无糖酸奶或水果。",
+        "膳食纤维不足，建议补一份绿叶菜或西兰花。"
+      ],
+      "createdAt": "2026-05-04T11:53:44.225Z",
+      "updatedAt": "2026-05-04T11:53:44.239Z"
+    }
+  ],
+  "weeklyPlans": [
+    {
+      "id": "week_045fac86e54e",
+      "conversationId": "conv_00ebe6470867",
+      "title": "高蛋白平衡周计划",
+      "description": "整体偏清淡，帮助把热量和油脂拉回稳定区间。",
+      "tags": [
+        "light",
+        "high_protein"
+      ],
+      "days": [
+        {
+          "date": "2026-05-04",
+          "day": "周一",
+          "meals": [
+            {
+              "id": "meal_breakfast_1",
+              "mealType": "breakfast",
+              "title": "燕麦水果杯 + 水煮蛋",
+              "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 352,
+                "protein": 22,
+                "carbs": 48,
+                "fat": 9,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+            },
+            {
+              "id": "meal_lunch_2",
+              "mealType": "lunch",
+              "title": "西兰花虾仁荞麦面",
+              "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 20,
+              "nutrition": {
+                "calories": 525,
+                "protein": 39,
+                "carbs": 61,
+                "fat": 12,
+                "fiber": 8
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+            },
+            {
+              "id": "meal_dinner_1",
+              "mealType": "dinner",
+              "title": "番茄豆腐汤 + 清炒时蔬",
+              "description": "晚餐控制热量，用热汤增加饱腹感。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 430,
+                "protein": 20,
+                "carbs": 36,
+                "fat": 15,
+                "fiber": 5
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "豆腐",
+                  "amount": "200 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "青菜",
+                  "amount": "250 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐热量较低，适合今天的控油目标。"
+            }
+          ],
+          "breakfast": "燕麦水果杯 + 水煮蛋",
+          "lunch": "西兰花虾仁荞麦面",
+          "dinner": "番茄豆腐汤 + 清炒时蔬",
+          "calories": 1307,
+          "status": "light",
+          "note": "周一 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "番茄",
+            "鸡胸肉",
+            "西兰花"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "糙米饭",
+            "豆腐",
+            "青菜"
+          ]
+        },
+        {
+          "date": "2026-05-05",
+          "day": "周二",
+          "meals": [
+            {
+              "id": "meal_breakfast_2",
+              "mealType": "breakfast",
+              "title": "鸡蛋蔬菜卷 + 无糖豆浆",
+              "description": "更高蛋白的早餐替代，适合早晨训练日。",
+              "imageUrl": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 12,
+              "nutrition": {
+                "calories": 390,
+                "protein": 28,
+                "carbs": 35,
+                "fat": 13,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "蛋白质更高，但脂肪略升，适合需要更强饱腹感时使用。"
+            },
+            {
+              "id": "meal_lunch_3",
+              "mealType": "lunch",
+              "title": "鸡肉沙拉饭",
+              "description": "鸡肉保留蛋白质，蔬菜让午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 540,
+                "protein": 35,
+                "carbs": 55,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "鸡胸肉",
+                  "amount": "150 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "生菜",
+                  "amount": "150 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "适合中周保持清爽，蛋白也不低。"
+            },
+            {
+              "id": "meal_dinner_1",
+              "mealType": "dinner",
+              "title": "番茄豆腐汤 + 清炒时蔬",
+              "description": "晚餐控制热量，用热汤增加饱腹感。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 430,
+                "protein": 20,
+                "carbs": 36,
+                "fat": 15,
+                "fiber": 5
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "豆腐",
+                  "amount": "200 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "青菜",
+                  "amount": "250 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐热量较低，适合今天的控油目标。"
+            }
+          ],
+          "breakfast": "鸡蛋蔬菜卷 + 无糖豆浆",
+          "lunch": "鸡肉沙拉饭",
+          "dinner": "番茄豆腐汤 + 清炒时蔬",
+          "calories": 1360,
+          "status": "light",
+          "note": "周二 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "鸡胸肉",
+            "番茄"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "生菜",
+            "糙米饭",
+            "豆腐",
+            "青菜"
+          ]
+        },
+        {
+          "date": "2026-05-06",
+          "day": "周三",
+          "meals": [
+            {
+              "id": "meal_breakfast_3",
+              "mealType": "breakfast",
+              "title": "牛奶香蕉燕麦杯",
+              "description": "用牛奶和香蕉做快手早餐，适合工作日清淡开场。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 338,
+                "protein": 18,
+                "carbs": 50,
+                "fat": 8,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "250 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "香蕉",
+                  "amount": "1 根",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "优先消耗牛奶，早餐热量保持轻盈。"
+            },
+            {
+              "id": "meal_lunch_1",
+              "mealType": "lunch",
+              "title": "番茄鸡胸肉糙米饭",
+              "description": "番茄提鲜，鸡胸肉提供优质蛋白，适合工作日午餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 560,
+                "protein": 42,
+                "carbs": 58,
+                "fat": 16,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "相较外卖方案，蛋白质约 +18g，热量约 -120kcal。"
+            },
+            {
+              "id": "meal_dinner_2",
+              "mealType": "dinner",
+              "title": "鸡蛋番茄燕麦粥",
+              "description": "把库存番茄和鸡蛋用于晚餐，温和且低负担。",
+              "imageUrl": "https://images.unsplash.com/photo-1604909052743-94e838986d24?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 16,
+              "nutrition": {
+                "calories": 410,
+                "protein": 24,
+                "carbs": 44,
+                "fat": 10,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "燕麦",
+                  "amount": "35 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐继续使用库存番茄和鸡蛋，脂肪控制更好。"
+            }
+          ],
+          "breakfast": "牛奶香蕉燕麦杯",
+          "lunch": "番茄鸡胸肉糙米饭",
+          "dinner": "鸡蛋番茄燕麦粥",
+          "calories": 1308,
+          "status": "light",
+          "note": "周三 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "番茄",
+            "鸡胸肉",
+            "西兰花",
+            "鸡蛋"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "香蕉",
+            "糙米饭"
+          ]
+        },
+        {
+          "date": "2026-05-07",
+          "day": "周四",
+          "meals": [
+            {
+              "id": "meal_breakfast_1",
+              "mealType": "breakfast",
+              "title": "燕麦水果杯 + 水煮蛋",
+              "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 352,
+                "protein": 22,
+                "carbs": 48,
+                "fat": 9,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+            },
+            {
+              "id": "meal_lunch_2",
+              "mealType": "lunch",
+              "title": "西兰花虾仁荞麦面",
+              "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 20,
+              "nutrition": {
+                "calories": 525,
+                "protein": 39,
+                "carbs": 61,
+                "fat": 12,
+                "fiber": 8
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+            },
+            {
+              "id": "meal_dinner_3",
+              "mealType": "dinner",
+              "title": "清炒时蔬豆腐",
+              "description": "蔬菜和豆腐为主，脂肪较低的周中晚餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 398,
+                "protein": 21,
+                "carbs": 28,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "豆腐",
+                  "amount": "220 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "时蔬",
+                  "amount": "300 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "用豆腐顶住蛋白质，晚餐仍保持轻。"
+            }
+          ],
+          "breakfast": "燕麦水果杯 + 水煮蛋",
+          "lunch": "西兰花虾仁荞麦面",
+          "dinner": "清炒时蔬豆腐",
+          "calories": 1275,
+          "status": "light",
+          "note": "周四 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "番茄",
+            "鸡胸肉",
+            "西兰花"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "糙米饭",
+            "豆腐",
+            "时蔬"
+          ]
+        },
+        {
+          "date": "2026-05-08",
+          "day": "周五",
+          "meals": [
+            {
+              "id": "meal_breakfast_2",
+              "mealType": "breakfast",
+              "title": "鸡蛋蔬菜卷 + 无糖豆浆",
+              "description": "更高蛋白的早餐替代，适合早晨训练日。",
+              "imageUrl": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 12,
+              "nutrition": {
+                "calories": 390,
+                "protein": 28,
+                "carbs": 35,
+                "fat": 13,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "蛋白质更高，但脂肪略升，适合需要更强饱腹感时使用。"
+            },
+            {
+              "id": "meal_lunch_3",
+              "mealType": "lunch",
+              "title": "鸡肉沙拉饭",
+              "description": "鸡肉保留蛋白质，蔬菜让午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 540,
+                "protein": 35,
+                "carbs": 55,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "鸡胸肉",
+                  "amount": "150 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "生菜",
+                  "amount": "150 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "适合中周保持清爽，蛋白也不低。"
+            },
+            {
+              "id": "meal_dinner_1",
+              "mealType": "dinner",
+              "title": "番茄豆腐汤 + 清炒时蔬",
+              "description": "晚餐控制热量，用热汤增加饱腹感。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 430,
+                "protein": 20,
+                "carbs": 36,
+                "fat": 15,
+                "fiber": 5
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "豆腐",
+                  "amount": "200 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "青菜",
+                  "amount": "250 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐热量较低，适合今天的控油目标。"
+            }
+          ],
+          "breakfast": "鸡蛋蔬菜卷 + 无糖豆浆",
+          "lunch": "鸡肉沙拉饭",
+          "dinner": "番茄豆腐汤 + 清炒时蔬",
+          "calories": 1360,
+          "status": "light",
+          "note": "周五 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "鸡胸肉",
+            "番茄"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "生菜",
+            "糙米饭",
+            "豆腐",
+            "青菜"
+          ]
+        },
+        {
+          "date": "2026-05-09",
+          "day": "周六",
+          "meals": [
+            {
+              "id": "meal_breakfast_3",
+              "mealType": "breakfast",
+              "title": "牛奶香蕉燕麦杯",
+              "description": "用牛奶和香蕉做快手早餐，适合工作日清淡开场。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 338,
+                "protein": 18,
+                "carbs": 50,
+                "fat": 8,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "250 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "香蕉",
+                  "amount": "1 根",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "优先消耗牛奶，早餐热量保持轻盈。"
+            },
+            {
+              "id": "meal_lunch_1",
+              "mealType": "lunch",
+              "title": "番茄鸡胸肉糙米饭",
+              "description": "番茄提鲜，鸡胸肉提供优质蛋白，适合工作日午餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 560,
+                "protein": 42,
+                "carbs": 58,
+                "fat": 16,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "相较外卖方案，蛋白质约 +18g，热量约 -120kcal。"
+            },
+            {
+              "id": "meal_dinner_2",
+              "mealType": "dinner",
+              "title": "鸡蛋番茄燕麦粥",
+              "description": "把库存番茄和鸡蛋用于晚餐，温和且低负担。",
+              "imageUrl": "https://images.unsplash.com/photo-1604909052743-94e838986d24?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 16,
+              "nutrition": {
+                "calories": 410,
+                "protein": 24,
+                "carbs": 44,
+                "fat": 10,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "燕麦",
+                  "amount": "35 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐继续使用库存番茄和鸡蛋，脂肪控制更好。"
+            }
+          ],
+          "breakfast": "牛奶香蕉燕麦杯",
+          "lunch": "番茄鸡胸肉糙米饭",
+          "dinner": "鸡蛋番茄燕麦粥",
+          "calories": 1308,
+          "status": "light",
+          "note": "周六 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "番茄",
+            "鸡胸肉",
+            "西兰花",
+            "鸡蛋"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "香蕉",
+            "糙米饭"
+          ]
+        },
+        {
+          "date": "2026-05-10",
+          "day": "周日",
+          "meals": [
+            {
+              "id": "meal_breakfast_1",
+              "mealType": "breakfast",
+              "title": "燕麦水果杯 + 水煮蛋",
+              "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 352,
+                "protein": 22,
+                "carbs": 48,
+                "fat": 9,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+            },
+            {
+              "id": "meal_lunch_2",
+              "mealType": "lunch",
+              "title": "西兰花虾仁荞麦面",
+              "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 20,
+              "nutrition": {
+                "calories": 525,
+                "protein": 39,
+                "carbs": 61,
+                "fat": 12,
+                "fiber": 8
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+            },
+            {
+              "id": "meal_dinner_3",
+              "mealType": "dinner",
+              "title": "清炒时蔬豆腐",
+              "description": "蔬菜和豆腐为主，脂肪较低的周中晚餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 398,
+                "protein": 21,
+                "carbs": 28,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "豆腐",
+                  "amount": "220 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "时蔬",
+                  "amount": "300 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "用豆腐顶住蛋白质，晚餐仍保持轻。"
+            }
+          ],
+          "breakfast": "燕麦水果杯 + 水煮蛋",
+          "lunch": "西兰花虾仁荞麦面",
+          "dinner": "清炒时蔬豆腐",
+          "calories": 1275,
+          "status": "light",
+          "note": "周日 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "番茄",
+            "鸡胸肉",
+            "西兰花"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "糙米饭",
+            "豆腐",
+            "时蔬"
+          ]
+        }
+      ],
+      "insights": [
+        "平均每日热量约 1313 kcal。",
+        "本周热量波动较平稳。",
+        "库存优先食材包括 牛奶、鸡蛋、番茄、鸡胸肉。"
+      ],
+      "adopted": true,
+      "createdAt": "2026-05-04T11:57:37.986Z",
+      "updatedAt": "2026-05-04T11:57:38.025Z"
+    },
+    {
+      "id": "week_3d020955e019",
+      "conversationId": "conv_ad6b101d1651",
+      "title": "高蛋白平衡周计划",
+      "description": "整体偏清淡，帮助把热量和油脂拉回稳定区间。",
+      "tags": [
+        "light",
+        "high_protein"
+      ],
+      "days": [
+        {
+          "date": "2026-05-04",
+          "day": "周一",
+          "meals": [
+            {
+              "id": "meal_breakfast_1",
+              "mealType": "breakfast",
+              "title": "燕麦水果杯 + 水煮蛋",
+              "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 352,
+                "protein": 22,
+                "carbs": 48,
+                "fat": 9,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+            },
+            {
+              "id": "meal_lunch_2",
+              "mealType": "lunch",
+              "title": "西兰花虾仁荞麦面",
+              "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 20,
+              "nutrition": {
+                "calories": 525,
+                "protein": 39,
+                "carbs": 61,
+                "fat": 12,
+                "fiber": 8
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+            },
+            {
+              "id": "meal_dinner_1",
+              "mealType": "dinner",
+              "title": "番茄豆腐汤 + 清炒时蔬",
+              "description": "晚餐控制热量，用热汤增加饱腹感。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 430,
+                "protein": 20,
+                "carbs": 36,
+                "fat": 15,
+                "fiber": 5
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "豆腐",
+                  "amount": "200 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "青菜",
+                  "amount": "250 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐热量较低，适合今天的控油目标。"
+            }
+          ],
+          "breakfast": "燕麦水果杯 + 水煮蛋",
+          "lunch": "西兰花虾仁荞麦面",
+          "dinner": "番茄豆腐汤 + 清炒时蔬",
+          "calories": 1307,
+          "status": "light",
+          "note": "周一 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "番茄",
+            "鸡胸肉",
+            "西兰花"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "糙米饭",
+            "豆腐",
+            "青菜"
+          ]
+        },
+        {
+          "date": "2026-05-05",
+          "day": "周二",
+          "meals": [
+            {
+              "id": "meal_breakfast_2",
+              "mealType": "breakfast",
+              "title": "鸡蛋蔬菜卷 + 无糖豆浆",
+              "description": "更高蛋白的早餐替代，适合早晨训练日。",
+              "imageUrl": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 12,
+              "nutrition": {
+                "calories": 390,
+                "protein": 28,
+                "carbs": 35,
+                "fat": 13,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "蛋白质更高，但脂肪略升，适合需要更强饱腹感时使用。"
+            },
+            {
+              "id": "meal_lunch_3",
+              "mealType": "lunch",
+              "title": "鸡肉沙拉饭",
+              "description": "鸡肉保留蛋白质，蔬菜让午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 540,
+                "protein": 35,
+                "carbs": 55,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "鸡胸肉",
+                  "amount": "150 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "生菜",
+                  "amount": "150 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "适合中周保持清爽，蛋白也不低。"
+            },
+            {
+              "id": "meal_dinner_1",
+              "mealType": "dinner",
+              "title": "番茄豆腐汤 + 清炒时蔬",
+              "description": "晚餐控制热量，用热汤增加饱腹感。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 430,
+                "protein": 20,
+                "carbs": 36,
+                "fat": 15,
+                "fiber": 5
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "豆腐",
+                  "amount": "200 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "青菜",
+                  "amount": "250 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐热量较低，适合今天的控油目标。"
+            }
+          ],
+          "breakfast": "鸡蛋蔬菜卷 + 无糖豆浆",
+          "lunch": "鸡肉沙拉饭",
+          "dinner": "番茄豆腐汤 + 清炒时蔬",
+          "calories": 1360,
+          "status": "light",
+          "note": "周二 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "鸡胸肉",
+            "番茄"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "生菜",
+            "糙米饭",
+            "豆腐",
+            "青菜"
+          ]
+        },
+        {
+          "date": "2026-05-06",
+          "day": "周三",
+          "meals": [
+            {
+              "id": "meal_breakfast_3",
+              "mealType": "breakfast",
+              "title": "牛奶香蕉燕麦杯",
+              "description": "用牛奶和香蕉做快手早餐，适合工作日清淡开场。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 338,
+                "protein": 18,
+                "carbs": 50,
+                "fat": 8,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "250 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "香蕉",
+                  "amount": "1 根",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "优先消耗牛奶，早餐热量保持轻盈。"
+            },
+            {
+              "id": "meal_lunch_1",
+              "mealType": "lunch",
+              "title": "番茄鸡胸肉糙米饭",
+              "description": "番茄提鲜，鸡胸肉提供优质蛋白，适合工作日午餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 560,
+                "protein": 42,
+                "carbs": 58,
+                "fat": 16,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "相较外卖方案，蛋白质约 +18g，热量约 -120kcal。"
+            },
+            {
+              "id": "meal_dinner_2",
+              "mealType": "dinner",
+              "title": "鸡蛋番茄燕麦粥",
+              "description": "把库存番茄和鸡蛋用于晚餐，温和且低负担。",
+              "imageUrl": "https://images.unsplash.com/photo-1604909052743-94e838986d24?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 16,
+              "nutrition": {
+                "calories": 410,
+                "protein": 24,
+                "carbs": 44,
+                "fat": 10,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "燕麦",
+                  "amount": "35 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐继续使用库存番茄和鸡蛋，脂肪控制更好。"
+            }
+          ],
+          "breakfast": "牛奶香蕉燕麦杯",
+          "lunch": "番茄鸡胸肉糙米饭",
+          "dinner": "鸡蛋番茄燕麦粥",
+          "calories": 1308,
+          "status": "light",
+          "note": "周三 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "番茄",
+            "鸡胸肉",
+            "西兰花",
+            "鸡蛋"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "香蕉",
+            "糙米饭"
+          ]
+        },
+        {
+          "date": "2026-05-07",
+          "day": "周四",
+          "meals": [
+            {
+              "id": "meal_breakfast_1",
+              "mealType": "breakfast",
+              "title": "燕麦水果杯 + 水煮蛋",
+              "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 352,
+                "protein": 22,
+                "carbs": 48,
+                "fat": 9,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+            },
+            {
+              "id": "meal_lunch_2",
+              "mealType": "lunch",
+              "title": "西兰花虾仁荞麦面",
+              "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 20,
+              "nutrition": {
+                "calories": 525,
+                "protein": 39,
+                "carbs": 61,
+                "fat": 12,
+                "fiber": 8
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+            },
+            {
+              "id": "meal_dinner_3",
+              "mealType": "dinner",
+              "title": "清炒时蔬豆腐",
+              "description": "蔬菜和豆腐为主，脂肪较低的周中晚餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 398,
+                "protein": 21,
+                "carbs": 28,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "豆腐",
+                  "amount": "220 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "时蔬",
+                  "amount": "300 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "用豆腐顶住蛋白质，晚餐仍保持轻。"
+            }
+          ],
+          "breakfast": "燕麦水果杯 + 水煮蛋",
+          "lunch": "西兰花虾仁荞麦面",
+          "dinner": "清炒时蔬豆腐",
+          "calories": 1275,
+          "status": "light",
+          "note": "周四 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "番茄",
+            "鸡胸肉",
+            "西兰花"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "糙米饭",
+            "豆腐",
+            "时蔬"
+          ]
+        },
+        {
+          "date": "2026-05-08",
+          "day": "周五",
+          "meals": [
+            {
+              "id": "meal_breakfast_2",
+              "mealType": "breakfast",
+              "title": "鸡蛋蔬菜卷 + 无糖豆浆",
+              "description": "更高蛋白的早餐替代，适合早晨训练日。",
+              "imageUrl": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 12,
+              "nutrition": {
+                "calories": 390,
+                "protein": 28,
+                "carbs": 35,
+                "fat": 13,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "蛋白质更高，但脂肪略升，适合需要更强饱腹感时使用。"
+            },
+            {
+              "id": "meal_lunch_3",
+              "mealType": "lunch",
+              "title": "鸡肉沙拉饭",
+              "description": "鸡肉保留蛋白质，蔬菜让午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 540,
+                "protein": 35,
+                "carbs": 55,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "鸡胸肉",
+                  "amount": "150 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "生菜",
+                  "amount": "150 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "适合中周保持清爽，蛋白也不低。"
+            },
+            {
+              "id": "meal_dinner_1",
+              "mealType": "dinner",
+              "title": "番茄豆腐汤 + 清炒时蔬",
+              "description": "晚餐控制热量，用热汤增加饱腹感。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 430,
+                "protein": 20,
+                "carbs": 36,
+                "fat": 15,
+                "fiber": 5
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "豆腐",
+                  "amount": "200 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "青菜",
+                  "amount": "250 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐热量较低，适合今天的控油目标。"
+            }
+          ],
+          "breakfast": "鸡蛋蔬菜卷 + 无糖豆浆",
+          "lunch": "鸡肉沙拉饭",
+          "dinner": "番茄豆腐汤 + 清炒时蔬",
+          "calories": 1360,
+          "status": "light",
+          "note": "周五 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "鸡胸肉",
+            "番茄"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "生菜",
+            "糙米饭",
+            "豆腐",
+            "青菜"
+          ]
+        },
+        {
+          "date": "2026-05-09",
+          "day": "周六",
+          "meals": [
+            {
+              "id": "meal_breakfast_3",
+              "mealType": "breakfast",
+              "title": "牛奶香蕉燕麦杯",
+              "description": "用牛奶和香蕉做快手早餐，适合工作日清淡开场。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 338,
+                "protein": 18,
+                "carbs": 50,
+                "fat": 8,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "250 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "香蕉",
+                  "amount": "1 根",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "优先消耗牛奶，早餐热量保持轻盈。"
+            },
+            {
+              "id": "meal_lunch_1",
+              "mealType": "lunch",
+              "title": "番茄鸡胸肉糙米饭",
+              "description": "番茄提鲜，鸡胸肉提供优质蛋白，适合工作日午餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 560,
+                "protein": 42,
+                "carbs": 58,
+                "fat": 16,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "相较外卖方案，蛋白质约 +18g，热量约 -120kcal。"
+            },
+            {
+              "id": "meal_dinner_2",
+              "mealType": "dinner",
+              "title": "鸡蛋番茄燕麦粥",
+              "description": "把库存番茄和鸡蛋用于晚餐，温和且低负担。",
+              "imageUrl": "https://images.unsplash.com/photo-1604909052743-94e838986d24?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 16,
+              "nutrition": {
+                "calories": 410,
+                "protein": 24,
+                "carbs": 44,
+                "fat": 10,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "燕麦",
+                  "amount": "35 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐继续使用库存番茄和鸡蛋，脂肪控制更好。"
+            }
+          ],
+          "breakfast": "牛奶香蕉燕麦杯",
+          "lunch": "番茄鸡胸肉糙米饭",
+          "dinner": "鸡蛋番茄燕麦粥",
+          "calories": 1308,
+          "status": "light",
+          "note": "周六 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "番茄",
+            "鸡胸肉",
+            "西兰花",
+            "鸡蛋"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "香蕉",
+            "糙米饭"
+          ]
+        },
+        {
+          "date": "2026-05-10",
+          "day": "周日",
+          "meals": [
+            {
+              "id": "meal_breakfast_1",
+              "mealType": "breakfast",
+              "title": "燕麦水果杯 + 水煮蛋",
+              "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 352,
+                "protein": 22,
+                "carbs": 48,
+                "fat": 9,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+            },
+            {
+              "id": "meal_lunch_2",
+              "mealType": "lunch",
+              "title": "西兰花虾仁荞麦面",
+              "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 20,
+              "nutrition": {
+                "calories": 525,
+                "protein": 39,
+                "carbs": 61,
+                "fat": 12,
+                "fiber": 8
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+            },
+            {
+              "id": "meal_dinner_3",
+              "mealType": "dinner",
+              "title": "清炒时蔬豆腐",
+              "description": "蔬菜和豆腐为主，脂肪较低的周中晚餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 398,
+                "protein": 21,
+                "carbs": 28,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "豆腐",
+                  "amount": "220 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "时蔬",
+                  "amount": "300 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "用豆腐顶住蛋白质，晚餐仍保持轻。"
+            }
+          ],
+          "breakfast": "燕麦水果杯 + 水煮蛋",
+          "lunch": "西兰花虾仁荞麦面",
+          "dinner": "清炒时蔬豆腐",
+          "calories": 1275,
+          "status": "light",
+          "note": "周日 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "番茄",
+            "鸡胸肉",
+            "西兰花"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "糙米饭",
+            "豆腐",
+            "时蔬"
+          ]
+        }
+      ],
+      "insights": [
+        "平均每日热量约 1313 kcal。",
+        "本周热量波动较平稳。",
+        "库存优先食材包括 牛奶、鸡蛋、番茄、鸡胸肉。"
+      ],
+      "adopted": true,
+      "createdAt": "2026-05-04T11:55:51.867Z",
+      "updatedAt": "2026-05-04T11:55:51.884Z"
+    },
+    {
+      "id": "week_8fa227c1c7e6",
+      "conversationId": "conv_8f5ece365ff5",
+      "title": "高蛋白平衡周计划",
+      "description": "整体偏清淡，帮助把热量和油脂拉回稳定区间。",
+      "tags": [
+        "light",
+        "high_protein"
+      ],
+      "days": [
+        {
+          "date": "2026-05-04",
+          "day": "周一",
+          "meals": [
+            {
+              "id": "meal_breakfast_1",
+              "mealType": "breakfast",
+              "title": "燕麦水果杯 + 水煮蛋",
+              "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 352,
+                "protein": 22,
+                "carbs": 48,
+                "fat": 9,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+            },
+            {
+              "id": "meal_lunch_2",
+              "mealType": "lunch",
+              "title": "西兰花虾仁荞麦面",
+              "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 20,
+              "nutrition": {
+                "calories": 525,
+                "protein": 39,
+                "carbs": 61,
+                "fat": 12,
+                "fiber": 8
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+            },
+            {
+              "id": "meal_dinner_1",
+              "mealType": "dinner",
+              "title": "番茄豆腐汤 + 清炒时蔬",
+              "description": "晚餐控制热量，用热汤增加饱腹感。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 430,
+                "protein": 20,
+                "carbs": 36,
+                "fat": 15,
+                "fiber": 5
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "豆腐",
+                  "amount": "200 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "青菜",
+                  "amount": "250 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐热量较低，适合今天的控油目标。"
+            }
+          ],
+          "breakfast": "燕麦水果杯 + 水煮蛋",
+          "lunch": "西兰花虾仁荞麦面",
+          "dinner": "番茄豆腐汤 + 清炒时蔬",
+          "calories": 1307,
+          "status": "light",
+          "note": "周一 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "番茄",
+            "鸡胸肉",
+            "西兰花"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "糙米饭",
+            "豆腐",
+            "青菜"
+          ]
+        },
+        {
+          "date": "2026-05-05",
+          "day": "周二",
+          "meals": [
+            {
+              "id": "meal_breakfast_2",
+              "mealType": "breakfast",
+              "title": "鸡蛋蔬菜卷 + 无糖豆浆",
+              "description": "更高蛋白的早餐替代，适合早晨训练日。",
+              "imageUrl": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 12,
+              "nutrition": {
+                "calories": 390,
+                "protein": 28,
+                "carbs": 35,
+                "fat": 13,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "蛋白质更高，但脂肪略升，适合需要更强饱腹感时使用。"
+            },
+            {
+              "id": "meal_lunch_3",
+              "mealType": "lunch",
+              "title": "鸡肉沙拉饭",
+              "description": "鸡肉保留蛋白质，蔬菜让午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 540,
+                "protein": 35,
+                "carbs": 55,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "鸡胸肉",
+                  "amount": "150 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "生菜",
+                  "amount": "150 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "适合中周保持清爽，蛋白也不低。"
+            },
+            {
+              "id": "meal_dinner_1",
+              "mealType": "dinner",
+              "title": "番茄豆腐汤 + 清炒时蔬",
+              "description": "晚餐控制热量，用热汤增加饱腹感。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 430,
+                "protein": 20,
+                "carbs": 36,
+                "fat": 15,
+                "fiber": 5
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "豆腐",
+                  "amount": "200 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "青菜",
+                  "amount": "250 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐热量较低，适合今天的控油目标。"
+            }
+          ],
+          "breakfast": "鸡蛋蔬菜卷 + 无糖豆浆",
+          "lunch": "鸡肉沙拉饭",
+          "dinner": "番茄豆腐汤 + 清炒时蔬",
+          "calories": 1360,
+          "status": "light",
+          "note": "周二 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "鸡胸肉",
+            "番茄"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "生菜",
+            "糙米饭",
+            "豆腐",
+            "青菜"
+          ]
+        },
+        {
+          "date": "2026-05-06",
+          "day": "周三",
+          "meals": [
+            {
+              "id": "meal_breakfast_3",
+              "mealType": "breakfast",
+              "title": "牛奶香蕉燕麦杯",
+              "description": "用牛奶和香蕉做快手早餐，适合工作日清淡开场。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 338,
+                "protein": 18,
+                "carbs": 50,
+                "fat": 8,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "250 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "香蕉",
+                  "amount": "1 根",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "优先消耗牛奶，早餐热量保持轻盈。"
+            },
+            {
+              "id": "meal_lunch_1",
+              "mealType": "lunch",
+              "title": "番茄鸡胸肉糙米饭",
+              "description": "番茄提鲜，鸡胸肉提供优质蛋白，适合工作日午餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 560,
+                "protein": 42,
+                "carbs": 58,
+                "fat": 16,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "相较外卖方案，蛋白质约 +18g，热量约 -120kcal。"
+            },
+            {
+              "id": "meal_dinner_2",
+              "mealType": "dinner",
+              "title": "鸡蛋番茄燕麦粥",
+              "description": "把库存番茄和鸡蛋用于晚餐，温和且低负担。",
+              "imageUrl": "https://images.unsplash.com/photo-1604909052743-94e838986d24?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 16,
+              "nutrition": {
+                "calories": 410,
+                "protein": 24,
+                "carbs": 44,
+                "fat": 10,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "燕麦",
+                  "amount": "35 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐继续使用库存番茄和鸡蛋，脂肪控制更好。"
+            }
+          ],
+          "breakfast": "牛奶香蕉燕麦杯",
+          "lunch": "番茄鸡胸肉糙米饭",
+          "dinner": "鸡蛋番茄燕麦粥",
+          "calories": 1308,
+          "status": "light",
+          "note": "周三 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "番茄",
+            "鸡胸肉",
+            "西兰花",
+            "鸡蛋"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "香蕉",
+            "糙米饭"
+          ]
+        },
+        {
+          "date": "2026-05-07",
+          "day": "周四",
+          "meals": [
+            {
+              "id": "meal_breakfast_1",
+              "mealType": "breakfast",
+              "title": "燕麦水果杯 + 水煮蛋",
+              "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 352,
+                "protein": 22,
+                "carbs": 48,
+                "fat": 9,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+            },
+            {
+              "id": "meal_lunch_2",
+              "mealType": "lunch",
+              "title": "西兰花虾仁荞麦面",
+              "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 20,
+              "nutrition": {
+                "calories": 525,
+                "protein": 39,
+                "carbs": 61,
+                "fat": 12,
+                "fiber": 8
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+            },
+            {
+              "id": "meal_dinner_3",
+              "mealType": "dinner",
+              "title": "清炒时蔬豆腐",
+              "description": "蔬菜和豆腐为主，脂肪较低的周中晚餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 398,
+                "protein": 21,
+                "carbs": 28,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "豆腐",
+                  "amount": "220 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "时蔬",
+                  "amount": "300 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "用豆腐顶住蛋白质，晚餐仍保持轻。"
+            }
+          ],
+          "breakfast": "燕麦水果杯 + 水煮蛋",
+          "lunch": "西兰花虾仁荞麦面",
+          "dinner": "清炒时蔬豆腐",
+          "calories": 1275,
+          "status": "light",
+          "note": "周四 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "番茄",
+            "鸡胸肉",
+            "西兰花"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "糙米饭",
+            "豆腐",
+            "时蔬"
+          ]
+        },
+        {
+          "date": "2026-05-08",
+          "day": "周五",
+          "meals": [
+            {
+              "id": "meal_breakfast_2",
+              "mealType": "breakfast",
+              "title": "鸡蛋蔬菜卷 + 无糖豆浆",
+              "description": "更高蛋白的早餐替代，适合早晨训练日。",
+              "imageUrl": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 12,
+              "nutrition": {
+                "calories": 390,
+                "protein": 28,
+                "carbs": 35,
+                "fat": 13,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "蛋白质更高，但脂肪略升，适合需要更强饱腹感时使用。"
+            },
+            {
+              "id": "meal_lunch_3",
+              "mealType": "lunch",
+              "title": "鸡肉沙拉饭",
+              "description": "鸡肉保留蛋白质，蔬菜让午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 540,
+                "protein": 35,
+                "carbs": 55,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "鸡胸肉",
+                  "amount": "150 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "生菜",
+                  "amount": "150 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "适合中周保持清爽，蛋白也不低。"
+            },
+            {
+              "id": "meal_dinner_1",
+              "mealType": "dinner",
+              "title": "番茄豆腐汤 + 清炒时蔬",
+              "description": "晚餐控制热量，用热汤增加饱腹感。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 430,
+                "protein": 20,
+                "carbs": 36,
+                "fat": 15,
+                "fiber": 5
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "豆腐",
+                  "amount": "200 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "青菜",
+                  "amount": "250 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐热量较低，适合今天的控油目标。"
+            }
+          ],
+          "breakfast": "鸡蛋蔬菜卷 + 无糖豆浆",
+          "lunch": "鸡肉沙拉饭",
+          "dinner": "番茄豆腐汤 + 清炒时蔬",
+          "calories": 1360,
+          "status": "light",
+          "note": "周五 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "鸡胸肉",
+            "番茄"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "生菜",
+            "糙米饭",
+            "豆腐",
+            "青菜"
+          ]
+        },
+        {
+          "date": "2026-05-09",
+          "day": "周六",
+          "meals": [
+            {
+              "id": "meal_breakfast_3",
+              "mealType": "breakfast",
+              "title": "牛奶香蕉燕麦杯",
+              "description": "用牛奶和香蕉做快手早餐，适合工作日清淡开场。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 338,
+                "protein": 18,
+                "carbs": 50,
+                "fat": 8,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "250 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "香蕉",
+                  "amount": "1 根",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "优先消耗牛奶，早餐热量保持轻盈。"
+            },
+            {
+              "id": "meal_lunch_1",
+              "mealType": "lunch",
+              "title": "番茄鸡胸肉糙米饭",
+              "description": "番茄提鲜，鸡胸肉提供优质蛋白，适合工作日午餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 25,
+              "nutrition": {
+                "calories": 560,
+                "protein": 42,
+                "carbs": 58,
+                "fat": 16,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "相较外卖方案，蛋白质约 +18g，热量约 -120kcal。"
+            },
+            {
+              "id": "meal_dinner_2",
+              "mealType": "dinner",
+              "title": "鸡蛋番茄燕麦粥",
+              "description": "把库存番茄和鸡蛋用于晚餐，温和且低负担。",
+              "imageUrl": "https://images.unsplash.com/photo-1604909052743-94e838986d24?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 16,
+              "nutrition": {
+                "calories": 410,
+                "protein": 24,
+                "carbs": 44,
+                "fat": 10,
+                "fiber": 6
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "燕麦",
+                  "amount": "35 g",
+                  "fromInventory": false,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "晚餐继续使用库存番茄和鸡蛋，脂肪控制更好。"
+            }
+          ],
+          "breakfast": "牛奶香蕉燕麦杯",
+          "lunch": "番茄鸡胸肉糙米饭",
+          "dinner": "鸡蛋番茄燕麦粥",
+          "calories": 1308,
+          "status": "light",
+          "note": "周六 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "番茄",
+            "鸡胸肉",
+            "西兰花",
+            "鸡蛋"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "香蕉",
+            "糙米饭"
+          ]
+        },
+        {
+          "date": "2026-05-10",
+          "day": "周日",
+          "meals": [
+            {
+              "id": "meal_breakfast_1",
+              "mealType": "breakfast",
+              "title": "燕麦水果杯 + 水煮蛋",
+              "description": "用牛奶和水果做轻负担早餐，补足纤维和蛋白质。",
+              "imageUrl": "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 10,
+              "nutrition": {
+                "calories": 352,
+                "protein": 22,
+                "carbs": 48,
+                "fat": 9,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "燕麦",
+                  "amount": "45 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "牛奶",
+                  "amount": "200 ml",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡蛋",
+                  "amount": "1 个",
+                  "fromInventory": true,
+                  "optional": false
+                }
+              ],
+              "steps": [
+                "燕麦加入牛奶浸泡 5 分钟。",
+                "鸡蛋冷水下锅煮熟。",
+                "加入水果后装杯。"
+              ],
+              "aiTip": "早餐蛋白质达标，牛奶建议优先使用临期库存。"
+            },
+            {
+              "id": "meal_lunch_2",
+              "mealType": "lunch",
+              "title": "西兰花虾仁荞麦面",
+              "description": "用西兰花和虾仁提高蛋白质，午餐更清爽。",
+              "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 20,
+              "nutrition": {
+                "calories": 525,
+                "protein": 39,
+                "carbs": 61,
+                "fat": 12,
+                "fiber": 8
+              },
+              "ingredients": [
+                {
+                  "name": "番茄",
+                  "amount": "2 个",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "鸡胸肉",
+                  "amount": "180 g",
+                  "fromInventory": true,
+                  "optional": false
+                },
+                {
+                  "name": "糙米饭",
+                  "amount": "1 碗",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "鸡胸肉切片后少油煎熟。",
+                "番茄炒出汁后加入鸡肉。",
+                "搭配糙米饭和焯水西兰花。"
+              ],
+              "aiTip": "脂肪更低，纤维更高，适合下午需要轻盈状态。"
+            },
+            {
+              "id": "meal_dinner_3",
+              "mealType": "dinner",
+              "title": "清炒时蔬豆腐",
+              "description": "蔬菜和豆腐为主，脂肪较低的周中晚餐。",
+              "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=720&q=80",
+              "cookTimeMinutes": 18,
+              "nutrition": {
+                "calories": 398,
+                "protein": 21,
+                "carbs": 28,
+                "fat": 14,
+                "fiber": 7
+              },
+              "ingredients": [
+                {
+                  "name": "豆腐",
+                  "amount": "220 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "时蔬",
+                  "amount": "300 g",
+                  "fromInventory": false,
+                  "optional": false
+                },
+                {
+                  "name": "西兰花",
+                  "amount": "半颗",
+                  "fromInventory": true,
+                  "optional": true
+                }
+              ],
+              "steps": [
+                "番茄切块煮出汤底。",
+                "加入豆腐小火煮 8 分钟。",
+                "青菜少油快炒后搭配食用。"
+              ],
+              "aiTip": "用豆腐顶住蛋白质，晚餐仍保持轻。"
+            }
+          ],
+          "breakfast": "燕麦水果杯 + 水煮蛋",
+          "lunch": "西兰花虾仁荞麦面",
+          "dinner": "清炒时蔬豆腐",
+          "calories": 1275,
+          "status": "light",
+          "note": "周日 以轻负担为主，适合压一压整体节奏。",
+          "inventoryFocus": [
+            "牛奶",
+            "鸡蛋",
+            "番茄",
+            "鸡胸肉",
+            "西兰花"
+          ],
+          "shoppingGap": [
+            "燕麦",
+            "糙米饭",
+            "豆腐",
+            "时蔬"
+          ]
+        }
+      ],
+      "insights": [
+        "平均每日热量约 1313 kcal。",
+        "本周热量波动较平稳。",
+        "库存优先食材包括 牛奶、鸡蛋、番茄、鸡胸肉。"
+      ],
+      "adopted": true,
+      "createdAt": "2026-05-04T11:53:44.254Z",
+      "updatedAt": "2026-05-04T11:53:44.270Z"
+    }
+  ],
+  "shoppingLists": [
+    {
+      "id": "shop_ce51e8faae5a",
+      "sourceType": "weekly_plan",
+      "sourceId": "week_045fac86e54e",
+      "items": [
+        {
+          "id": "shop_item_207dcf3da52f",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": false,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_ae8b00b97dca",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「西兰花虾仁荞麦面」需要"
+        },
+        {
+          "id": "shop_item_792eba205ab4",
+          "stableKey": "豆腐|200 g",
+          "name": "豆腐",
+          "category": "meat_egg",
+          "amount": "200 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        },
+        {
+          "id": "shop_item_96dda18ac587",
+          "stableKey": "青菜|250 g",
+          "name": "青菜",
+          "category": "vegetable",
+          "amount": "250 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        },
+        {
+          "id": "shop_item_ad0bd0e6befa",
+          "stableKey": "生菜|150 g",
+          "name": "生菜",
+          "category": "vegetable",
+          "amount": "150 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_58bac408541a",
+          "stableKey": "香蕉|1 根",
+          "name": "香蕉",
+          "category": "fruit",
+          "amount": "1 根",
+          "checked": false,
+          "reason": "今日餐单中的「牛奶香蕉燕麦杯」需要"
+        },
+        {
+          "id": "shop_item_74c0789039e8",
+          "stableKey": "燕麦|35 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "35 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡蛋番茄燕麦粥」需要"
+        },
+        {
+          "id": "shop_item_6d0be4c09203",
+          "stableKey": "豆腐|220 g",
+          "name": "豆腐",
+          "category": "meat_egg",
+          "amount": "220 g",
+          "checked": false,
+          "reason": "今日餐单中的「清炒时蔬豆腐」需要"
+        },
+        {
+          "id": "shop_item_dfbc2adb9c06",
+          "stableKey": "时蔬|300 g",
+          "name": "时蔬",
+          "category": "vegetable",
+          "amount": "300 g",
+          "checked": false,
+          "reason": "今日餐单中的「清炒时蔬豆腐」需要"
+        }
+      ],
+      "createdAt": "2026-05-04T11:57:38.051Z",
+      "updatedAt": "2026-05-04T11:57:38.051Z"
+    },
+    {
+      "id": "shop_a1ea83cb249a",
+      "sourceType": "meal_plan",
+      "sourceId": "plan_a53ae48f737b",
+      "items": [
+        {
+          "id": "shop_item_aceb93ae1835",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": true,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_47cbb6c63453",
+          "stableKey": "生菜|150 g",
+          "name": "生菜",
+          "category": "vegetable",
+          "amount": "150 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_f9326f3122f0",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_2daa68139663",
+          "stableKey": "燕麦|35 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "35 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡蛋番茄燕麦粥」需要"
+        }
+      ],
+      "createdAt": "2026-05-04T11:57:37.897Z",
+      "updatedAt": "2026-05-04T11:57:37.972Z"
+    },
+    {
+      "id": "shop_60a963b4d274",
+      "sourceType": "weekly_plan",
+      "sourceId": "week_3d020955e019",
+      "items": [
+        {
+          "id": "shop_item_154114a5f20b",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": false,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_c3bff286d8b9",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「西兰花虾仁荞麦面」需要"
+        },
+        {
+          "id": "shop_item_2a2c71f94d5b",
+          "stableKey": "豆腐|200 g",
+          "name": "豆腐",
+          "category": "meat_egg",
+          "amount": "200 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        },
+        {
+          "id": "shop_item_e585f814195d",
+          "stableKey": "青菜|250 g",
+          "name": "青菜",
+          "category": "vegetable",
+          "amount": "250 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        },
+        {
+          "id": "shop_item_8e449d4ceecd",
+          "stableKey": "生菜|150 g",
+          "name": "生菜",
+          "category": "vegetable",
+          "amount": "150 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_5cd91be80481",
+          "stableKey": "香蕉|1 根",
+          "name": "香蕉",
+          "category": "fruit",
+          "amount": "1 根",
+          "checked": false,
+          "reason": "今日餐单中的「牛奶香蕉燕麦杯」需要"
+        },
+        {
+          "id": "shop_item_dfad76413300",
+          "stableKey": "燕麦|35 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "35 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡蛋番茄燕麦粥」需要"
+        },
+        {
+          "id": "shop_item_d1b369cf5bf4",
+          "stableKey": "豆腐|220 g",
+          "name": "豆腐",
+          "category": "meat_egg",
+          "amount": "220 g",
+          "checked": false,
+          "reason": "今日餐单中的「清炒时蔬豆腐」需要"
+        },
+        {
+          "id": "shop_item_61ae17751258",
+          "stableKey": "时蔬|300 g",
+          "name": "时蔬",
+          "category": "vegetable",
+          "amount": "300 g",
+          "checked": false,
+          "reason": "今日餐单中的「清炒时蔬豆腐」需要"
+        }
+      ],
+      "createdAt": "2026-05-04T11:55:51.887Z",
+      "updatedAt": "2026-05-04T11:55:51.887Z"
+    },
+    {
+      "id": "shop_a9558a925cea",
+      "sourceType": "meal_plan",
+      "sourceId": "plan_227c9d26512f",
+      "items": [
+        {
+          "id": "shop_item_06a91968a2b7",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": true,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_18973d09bc8e",
+          "stableKey": "生菜|150 g",
+          "name": "生菜",
+          "category": "vegetable",
+          "amount": "150 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_b7211fe00ad4",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_68111cebce32",
+          "stableKey": "燕麦|35 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "35 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡蛋番茄燕麦粥」需要"
+        }
+      ],
+      "createdAt": "2026-05-04T11:55:51.838Z",
+      "updatedAt": "2026-05-04T11:55:51.861Z"
+    },
+    {
+      "id": "shop_d2988bdf4d72",
+      "sourceType": "weekly_plan",
+      "sourceId": "week_8fa227c1c7e6",
+      "items": [
+        {
+          "id": "shop_item_6218ff215111",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": false,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_4a482982b03e",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「西兰花虾仁荞麦面」需要"
+        },
+        {
+          "id": "shop_item_e81bbbde54cd",
+          "stableKey": "豆腐|200 g",
+          "name": "豆腐",
+          "category": "meat_egg",
+          "amount": "200 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        },
+        {
+          "id": "shop_item_d366c40f315a",
+          "stableKey": "青菜|250 g",
+          "name": "青菜",
+          "category": "vegetable",
+          "amount": "250 g",
+          "checked": false,
+          "reason": "今日餐单中的「番茄豆腐汤 + 清炒时蔬」需要"
+        },
+        {
+          "id": "shop_item_f962db4c8988",
+          "stableKey": "生菜|150 g",
+          "name": "生菜",
+          "category": "vegetable",
+          "amount": "150 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_f889471043bf",
+          "stableKey": "香蕉|1 根",
+          "name": "香蕉",
+          "category": "fruit",
+          "amount": "1 根",
+          "checked": false,
+          "reason": "今日餐单中的「牛奶香蕉燕麦杯」需要"
+        },
+        {
+          "id": "shop_item_c5686c9f1bfc",
+          "stableKey": "燕麦|35 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "35 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡蛋番茄燕麦粥」需要"
+        },
+        {
+          "id": "shop_item_56d71b47908a",
+          "stableKey": "豆腐|220 g",
+          "name": "豆腐",
+          "category": "meat_egg",
+          "amount": "220 g",
+          "checked": false,
+          "reason": "今日餐单中的「清炒时蔬豆腐」需要"
+        },
+        {
+          "id": "shop_item_ca6a17940ee3",
+          "stableKey": "时蔬|300 g",
+          "name": "时蔬",
+          "category": "vegetable",
+          "amount": "300 g",
+          "checked": false,
+          "reason": "今日餐单中的「清炒时蔬豆腐」需要"
+        }
+      ],
+      "createdAt": "2026-05-04T11:53:44.271Z",
+      "updatedAt": "2026-05-04T11:53:44.271Z"
+    },
+    {
+      "id": "shop_b6c21e3ebc48",
+      "sourceType": "meal_plan",
+      "sourceId": "plan_9d0be1f4f705",
+      "items": [
+        {
+          "id": "shop_item_a30661661d9b",
+          "stableKey": "燕麦|45 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "45 g",
+          "checked": true,
+          "reason": "今日餐单中的「燕麦水果杯 + 水煮蛋」需要"
+        },
+        {
+          "id": "shop_item_6ccdb9803f1a",
+          "stableKey": "生菜|150 g",
+          "name": "生菜",
+          "category": "vegetable",
+          "amount": "150 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_966c8391d324",
+          "stableKey": "糙米饭|1 碗",
+          "name": "糙米饭",
+          "category": "staple",
+          "amount": "1 碗",
+          "checked": false,
+          "reason": "今日餐单中的「鸡肉沙拉饭」需要"
+        },
+        {
+          "id": "shop_item_eecb9e9357a3",
+          "stableKey": "燕麦|35 g",
+          "name": "燕麦",
+          "category": "staple",
+          "amount": "35 g",
+          "checked": false,
+          "reason": "今日餐单中的「鸡蛋番茄燕麦粥」需要"
+        }
+      ],
+      "createdAt": "2026-05-04T11:53:44.227Z",
+      "updatedAt": "2026-05-04T11:53:44.249Z"
+    }
+  ],
+  "conversations": [
+    {
+      "id": "conv_00ebe6470867",
+      "title": "API Smoke Test",
+      "lastMessageAt": "2026-05-04T11:57:37.905Z",
+      "createdAt": "2026-05-04T11:57:37.857Z",
+      "updatedAt": "2026-05-04T11:57:37.905Z"
+    },
+    {
+      "id": "conv_ad6b101d1651",
+      "title": "API Smoke Test",
+      "lastMessageAt": "2026-05-04T11:55:51.840Z",
+      "createdAt": "2026-05-04T11:55:51.821Z",
+      "updatedAt": "2026-05-04T11:55:51.840Z"
+    },
+    {
+      "id": "conv_8f5ece365ff5",
+      "title": "API Smoke Test",
+      "lastMessageAt": "2026-05-04T11:53:44.228Z",
+      "createdAt": "2026-05-04T11:53:44.203Z",
+      "updatedAt": "2026-05-04T11:53:44.228Z"
+    }
+  ],
+  "conversationMessages": [
+    {
+      "id": "msg_36935bc8c0cf",
+      "conversationId": "conv_8f5ece365ff5",
+      "role": "user",
+      "content": "今天清淡，多用鸡蛋和番茄。",
+      "createdAt": "2026-05-04T11:53:44.223Z"
+    },
+    {
+      "id": "msg_f23f6fff4d9d",
+      "conversationId": "conv_8f5ece365ff5",
+      "role": "assistant",
+      "content": "我把整体口味收敛到更清淡的范围，并优先使用了 牛奶、鸡蛋、番茄、鸡胸肉、西兰花，还整理了 3 项采购缺口。",
+      "mealPlanId": "plan_9d0be1f4f705",
+      "shoppingListId": "shop_b6c21e3ebc48",
+      "createdAt": "2026-05-04T11:53:44.228Z"
+    },
+    {
+      "id": "msg_f8daae62bae1",
+      "conversationId": "conv_ad6b101d1651",
+      "role": "user",
+      "content": "今天清淡，多用鸡蛋和番茄。",
+      "createdAt": "2026-05-04T11:55:51.837Z"
+    },
+    {
+      "id": "msg_37e6c96173c5",
+      "conversationId": "conv_ad6b101d1651",
+      "role": "assistant",
+      "content": "我把整体口味收敛到更清淡的范围，并优先使用了 牛奶、鸡蛋、番茄、鸡胸肉、西兰花，还整理了 3 项采购缺口。",
+      "mealPlanId": "plan_227c9d26512f",
+      "shoppingListId": "shop_a9558a925cea",
+      "createdAt": "2026-05-04T11:55:51.840Z"
+    },
+    {
+      "id": "msg_c0b7ea2b0e70",
+      "conversationId": "conv_00ebe6470867",
+      "role": "user",
+      "content": "今天清淡，多用鸡蛋和番茄。",
+      "createdAt": "2026-05-04T11:57:37.881Z"
+    },
+    {
+      "id": "msg_37e5cf3d8b75",
+      "conversationId": "conv_00ebe6470867",
+      "role": "assistant",
+      "content": "我把整体口味收敛到更清淡的范围，并优先使用了 牛奶、鸡蛋、番茄、鸡胸肉、西兰花，还整理了 3 项采购缺口。",
+      "mealPlanId": "plan_a53ae48f737b",
+      "shoppingListId": "shop_a1ea83cb249a",
+      "createdAt": "2026-05-04T11:57:37.905Z"
+    }
+  ],
+  "workspaceState": {
+    "planningMode": "weekly",
+    "updatedAt": "2026-05-04T11:57:38.069Z",
+    "currentConversationId": "conv_00ebe6470867",
+    "currentMealPlanId": "plan_4415f7befdb1",
+    "currentShoppingListId": "shop_ce51e8faae5a",
+    "currentWeeklyPlanId": "week_045fac86e54e",
+    "selectedWeekday": "周一"
+  }
 }

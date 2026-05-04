@@ -9,7 +9,8 @@
     "build": "tsc -b && vite build",
     "build:server": "tsc -p tsconfig.server.json",
     "start:server": "node server-dist/index.js",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "test:api-smoke": "tsx scripts/api-smoke.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.1.1",

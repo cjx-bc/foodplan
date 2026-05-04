@@ -11,6 +11,7 @@ export type InventoryStatus = "fresh" | "expiring_soon" | "expired" | "need_buy"
 export type MealType = "breakfast" | "lunch" | "dinner";
 export type PlanningMode = "daily" | "weekly";
 export type ConversationRole = "user" | "assistant";
+export type WeeklyPlanDayStatus = "balanced" | "light" | "needs_attention";
 
 export type ProfileRecord = {
   id: string;
@@ -99,6 +100,33 @@ export type MealPlanRecord = {
   updatedAt: string;
 };
 
+export type WeeklyPlanDayRecord = {
+  date: string;
+  day: string;
+  meals: MealRecommendationRecord[];
+  breakfast: string;
+  lunch: string;
+  dinner: string;
+  calories: number;
+  status: WeeklyPlanDayStatus;
+  note: string;
+  inventoryFocus: string[];
+  shoppingGap: string[];
+};
+
+export type WeeklyPlanRecord = {
+  id: string;
+  conversationId?: string;
+  title: string;
+  description: string;
+  tags: string[];
+  days: WeeklyPlanDayRecord[];
+  insights: string[];
+  adopted: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type ShoppingListRecord = {
   id: string;
   sourceType: "meal_plan" | "weekly_plan";
@@ -122,16 +150,30 @@ export type ConversationMessageRecord = {
   role: ConversationRole;
   content: string;
   mealPlanId?: string;
+  shoppingListId?: string;
+  weeklyPlanId?: string;
   createdAt: string;
+};
+
+export type WorkspaceStateRecord = {
+  currentConversationId?: string;
+  currentMealPlanId?: string;
+  currentWeeklyPlanId?: string;
+  currentShoppingListId?: string;
+  planningMode: PlanningMode;
+  selectedWeekday?: string;
+  updatedAt: string;
 };
 
 export type AppStore = {
   profile: ProfileRecord;
   inventoryItems: InventoryItemRecord[];
   mealPlans: MealPlanRecord[];
+  weeklyPlans: WeeklyPlanRecord[];
   shoppingLists: ShoppingListRecord[];
   conversations: ConversationRecord[];
   conversationMessages: ConversationMessageRecord[];
+  workspaceState: WorkspaceStateRecord;
 };
 
 export type ApiFieldError = {

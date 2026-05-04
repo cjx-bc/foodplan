@@ -2,35 +2,21 @@ import {
   Bell,
   BotMessageSquare,
   CalendarDays,
-  CheckCircle2,
-  ChevronRight,
   CircleUserRound,
   ClipboardCheck,
-  Clock3,
   Download,
   LayoutDashboard,
   Leaf,
-  Lightbulb,
   NotebookTabs,
   PieChart,
   Printer,
-  RefreshCw,
   ShoppingCart,
-  SlidersHorizontal,
   Soup,
+  Utensils,
 } from "lucide-react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { IconButton } from "../components/IconButton";
-import {
-  initialInventory,
-  initialMeals,
-  initialMessages,
-  initialShoppingList,
-  mealAlternatives,
-  userProfile,
-  weeklyPlanPresets,
-  weeklyPreferenceOptions,
-} from "../data/mockData";
+import { userProfile, weeklyPreferenceOptions } from "../data/mockData";
 import { ChatPanel } from "../features/chat/ChatPanel";
 import { InventoryPanel, type InventoryFormValue } from "../features/inventory/InventoryPanel";
 import { TodayMealsPanel } from "../features/meals/TodayMealsPanel";
@@ -41,14 +27,32 @@ import type {
   ChatMessage,
   DerivedShoppingListItem,
   InventoryItem,
-  MealRecommendation,
+  MealPlan,
   MealType,
   PlanningMode,
-  ShoppingListItem,
+  ShoppingList,
+  UserProfile,
+  WeeklyPlan,
   WeeklyPlanDay,
-  WeeklyPlanPreset,
 } from "../types/smartmeal";
 import { mealTypeLabels } from "../utils/labels";
+import {
+  adoptWeeklyPlan,
+  createConversation,
+  createInventoryItem,
+  createWeeklyPlan,
+  generateShoppingList,
+  getConversationMessages,
+  getCurrentShoppingList,
+  getInventoryItems,
+  getMealPlan,
+  getProfile,
+  getWeeklyPlan,
+  patchWeeklyPlanDay,
+  regenerateMeal,
+  sendConversationMessage,
+  toggleShoppingItem,
+} from "./api";
 import {
   buildShoppingSummary,
   deriveActiveMeals,
@@ -56,13 +60,22 @@ import {
   deriveShoppingList,
   deriveWeeklyInsights,
   getSelectedWeeklyDay,
-  mergeShoppingSelection,
   type PlanningState,
 } from "../utils/planning";
 import { buildNutritionSummary, formatDelta } from "../utils/nutrition";
 import styles from "./App.module.css";
 
 type PageId = "overview" | "chat" | "today" | "inventory" | "weekly" | "nutrition" | "shopping";
+
+type PersistedAppState = {
+  currentConversationId?: string;
+  currentMealPlanId?: string;
+  currentWeeklyPlanId?: string;
+  currentShoppingListId?: string;
+  planningMode: PlanningMode;
+  selectedWeekday: string;
+  selectedWeeklyPreferences: string[];
+};
 
 const navItems: Array<{ id: PageId; label: string; icon: typeof BotMessageSquare }> = [
   { id: "overview", label: "总览", icon: LayoutDashboard },
@@ -112,22 +125,6 @@ const pageMeta: Record<PageId, { step: number; title: string; description: strin
   },
 };
 
-const actionReplies: Record<string, string> = {
-  推荐食材替换: "可以，我先保留整体营养目标，只对今天的餐单做更适合库存的替换。",
-  快捷调整营养目标: "已按轻体力工作日目标微调：总热量控制在 1900 kcal，蛋白质目标 95g。",
-  减少油脂: "已减少烹调用油，午餐改为少油煎，晚餐以汤菜为主，预计脂肪减少约 8g。",
-  提升蛋白质: "已提高蛋白质优先级，晚餐增加鸡蛋，全天蛋白质更接近目标。",
-  控制热量: "已控制热量，午餐和晚餐更轻，全天热量预计更接近目标下沿。",
-  多用库存食材: "已优先使用库存中的鸡蛋、番茄、鸡胸肉、西兰花和牛奶，购物清单已按缺口重算。",
-  生成购物清单: "已根据当前执行方案重新整理购物清单，并保留已勾选采购项。",
-};
-
-const suggestions = [
-  "蛋白质略低，建议晚餐加 1 个鸡蛋或增加 80g 豆腐。",
-  "蔬菜摄入接近目标，西兰花和青菜可优先安排在午晚餐。",
-  "脂肪控制良好，继续保持少油煎和汤菜组合。",
-];
-
 const defaultActionSummary: AiActionSummary = {
   title: "已生成今日方案",
   affectedMeals: ["早餐", "午餐", "晚餐"],
@@ -136,101 +133,49 @@ const defaultActionSummary: AiActionSummary = {
   inventoryUsage: ["鸡蛋", "番茄", "鸡胸肉", "西兰花", "牛奶"],
 };
 
-const mealTypeOrder: MealType[] = ["breakfast", "lunch", "dinner"];
-const weekDates = ["05/12", "05/13", "05/14", "05/15", "05/16", "05/17", "05/18"];
+const quickActionPrompts: Record<string, string> = {
+  推荐食材替换: "帮我推荐更适合当前库存的食材替换方案，并同步刷新今日三餐。",
+  快捷调整营养目标: "把今天的执行方案调整到更接近当前默认营养目标，并保留清淡方向。",
+  减少油脂: "今天的三餐请减少油脂，尤其是午餐和晚餐。",
+  提升蛋白质: "请在尽量不明显增加总热量的前提下提升今天的蛋白质。",
+  控制热量: "把今天的总热量再控制一点，优先压低晚餐负担。",
+  多用库存食材: "优先使用家里现有库存，尤其是鸡蛋、番茄、鸡胸肉和牛奶。",
+};
+
+const storageKey = "smartmeal_mvp_state_v3";
+const fixedWeeklyStartDate = "2026-05-04";
 
 function getInitialPage(): PageId {
   const page = window.location.hash.replace("#/", "") as PageId;
   return navItems.some((item) => item.id === page) ? page : "overview";
 }
 
-function nowTime() {
+function formatClockTime(value?: string) {
   return new Intl.DateTimeFormat("zh-CN", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-  }).format(new Date());
+  }).format(value ? new Date(value) : new Date());
 }
 
-function cloneMeal(meal: MealRecommendation): MealRecommendation {
-  return {
+function cloneMeals(meals: MealPlan["meals"]) {
+  return meals.map((meal) => ({
     ...meal,
     nutrition: { ...meal.nutrition },
     ingredients: meal.ingredients.map((item) => ({ ...item })),
     steps: [...meal.steps],
-  };
-}
-
-function cloneMeals(meals: MealRecommendation[]) {
-  return meals.map((meal) => cloneMeal(meal));
-}
-
-function cloneWeeklyDays(days: WeeklyPlanDay[]) {
-  return days.map((day) => ({
-    ...day,
-    meals: cloneMeals(day.meals),
-    inventoryFocus: [...day.inventoryFocus],
-    shoppingGap: [...day.shoppingGap],
   }));
-}
-
-function getPlanStatusLabel(status: WeeklyPlanDay["status"]) {
-  if (status === "balanced") return "均衡";
-  if (status === "light") return "轻负担";
-  return "需微调";
-}
-
-function getBestWeeklyPreset(preferences: string[], currentPresetId: string) {
-  const ranked = weeklyPlanPresets
-    .map((preset, index) => ({
-      preset,
-      index,
-      score: preferences.filter((item) => preset.tags.includes(item)).length,
-    }))
-    .sort((left, right) => right.score - left.score || left.index - right.index);
-
-  const bestScore = ranked[0]?.score ?? 0;
-  const tied = ranked.filter((item) => item.score === bestScore);
-  return tied.find((item) => item.preset.id !== currentPresetId)?.preset ?? ranked[0]?.preset ?? weeklyPlanPresets[0];
-}
-
-function buildAssistantMessage(content: string, meals: MealRecommendation[], shoppingList: DerivedShoppingListItem[]): ChatMessage {
-  return {
-    id: `msg_${Date.now()}_${Math.random().toString(16).slice(2)}`,
-    role: "assistant",
-    content,
-    createdAt: nowTime(),
-    structuredResult: {
-      meals,
-      nutritionSummary: buildNutritionSummary(meals, userProfile),
-      shoppingList: shoppingList.map(({ source, stableKey, ...item }) => item),
-      inventoryUsage: unique(meals.flatMap((meal) => meal.ingredients.filter((item) => item.fromInventory).map((item) => item.name))),
-      suggestions,
-    },
-  };
 }
 
 function unique(values: string[]) {
   return Array.from(new Set(values));
 }
 
-function createShoppingSelectionRecord(items: ShoppingListItem[]) {
-  return items.reduce<Record<string, boolean>>((record, item) => {
-    record[`${item.name}|${item.amount}`] = item.checked;
-    record[item.name] = item.checked;
-    return record;
-  }, {});
-}
-
 function getDefaultSelectedWeekday() {
-  return weeklyPlanPresets[0]?.days[0]?.day ?? "周一";
+  return "周一";
 }
 
-function getMealsForSelectedDay(days: WeeklyPlanDay[], selectedWeekday: string) {
-  return cloneMeals(getSelectedWeeklyDay(days, selectedWeekday)?.meals ?? []);
-}
-
-function haveSameMealIds(left: MealRecommendation[], right: MealRecommendation[]) {
+function haveSameMealIds(left: MealPlan["meals"], right: MealPlan["meals"]) {
   if (left.length !== right.length) return false;
   return left.every((meal, index) => meal.id === right[index]?.id);
 }
@@ -238,25 +183,6 @@ function haveSameMealIds(left: MealRecommendation[], right: MealRecommendation[]
 function toCurrency(amount: number) {
   return `¥ ${amount.toFixed(1)}`;
 }
-
-const storageKey = "smartmeal_mvp_state_v2";
-
-type PersistedAppState = {
-  messages: ChatMessage[];
-  actionSummary: AiActionSummary;
-  inventory: InventoryItem[];
-  dailyPlan: MealRecommendation[];
-  planningMode: PlanningMode;
-  selectedWeekday: string;
-  shoppingSelections: Record<string, boolean>;
-  alternativeIndex: Record<MealType, number>;
-  selectedWeeklyPreferences: string[];
-  weeklyPresetId: string;
-  weeklyPlanDraft: WeeklyPlanDay[];
-  weeklyPlanApplied: boolean;
-  weeklyUpdatedAt: string;
-  weeklyDayAdjustments: Record<string, number>;
-};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -266,105 +192,100 @@ function getStringArray(value: unknown, fallback: string[]) {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : fallback;
 }
 
-function getBooleanRecord(value: unknown, fallback: Record<string, boolean>) {
-  if (!isRecord(value)) return fallback;
-  return Object.entries(value).reduce<Record<string, boolean>>((record, [key, entry]) => {
-    if (typeof entry === "boolean") {
-      record[key] = entry;
-    }
-    return record;
-  }, {});
-}
-
-function getNumberRecord(value: unknown, fallback: Record<string, number>) {
-  if (!isRecord(value)) return fallback;
-  return Object.entries(value).reduce<Record<string, number>>((record, [key, entry]) => {
-    if (typeof entry === "number") {
-      record[key] = entry;
-    }
-    return record;
-  }, {});
-}
-
-function getWeeklyPresetById(presetId?: string) {
-  return weeklyPlanPresets.find((preset) => preset.id === presetId) ?? weeklyPlanPresets[0];
-}
-
 function getPersistedState(): PersistedAppState | null {
   if (typeof window === "undefined") return null;
 
   try {
     const raw = window.localStorage.getItem(storageKey);
     if (!raw) return null;
-
     const parsed = JSON.parse(raw) as unknown;
     if (!isRecord(parsed)) return null;
 
-    const preset = getWeeklyPresetById(typeof parsed.weeklyPresetId === "string" ? parsed.weeklyPresetId : undefined);
-    const weeklyPlanDraft = Array.isArray(parsed.weeklyPlanDraft) && parsed.weeklyPlanDraft.length > 0
-      ? (parsed.weeklyPlanDraft as WeeklyPlanDay[])
-      : cloneWeeklyDays(preset.days);
-    const selectedWeekday = typeof parsed.selectedWeekday === "string"
-      ? parsed.selectedWeekday
-      : weeklyPlanDraft[0]?.day ?? getDefaultSelectedWeekday();
-    const alternativeIndexRecord = isRecord(parsed.alternativeIndex) ? parsed.alternativeIndex : {};
-
     return {
-      messages: Array.isArray(parsed.messages) && parsed.messages.length > 0 ? (parsed.messages as ChatMessage[]) : initialMessages,
-      actionSummary: isRecord(parsed.actionSummary) ? (parsed.actionSummary as AiActionSummary) : defaultActionSummary,
-      inventory: Array.isArray(parsed.inventory) && parsed.inventory.length > 0 ? (parsed.inventory as InventoryItem[]) : initialInventory,
-      dailyPlan: Array.isArray(parsed.dailyPlan) && parsed.dailyPlan.length > 0 ? (parsed.dailyPlan as MealRecommendation[]) : cloneMeals(initialMeals),
+      currentConversationId: typeof parsed.currentConversationId === "string" ? parsed.currentConversationId : undefined,
+      currentMealPlanId: typeof parsed.currentMealPlanId === "string" ? parsed.currentMealPlanId : undefined,
+      currentWeeklyPlanId: typeof parsed.currentWeeklyPlanId === "string" ? parsed.currentWeeklyPlanId : undefined,
+      currentShoppingListId: typeof parsed.currentShoppingListId === "string" ? parsed.currentShoppingListId : undefined,
       planningMode: parsed.planningMode === "weekly" ? "weekly" : "daily",
-      selectedWeekday,
-      shoppingSelections: getBooleanRecord(parsed.shoppingSelections, createShoppingSelectionRecord(initialShoppingList)),
-      alternativeIndex: {
-        breakfast: typeof alternativeIndexRecord.breakfast === "number" ? alternativeIndexRecord.breakfast : 0,
-        lunch: typeof alternativeIndexRecord.lunch === "number" ? alternativeIndexRecord.lunch : 0,
-        dinner: typeof alternativeIndexRecord.dinner === "number" ? alternativeIndexRecord.dinner : 0,
-      },
+      selectedWeekday: typeof parsed.selectedWeekday === "string" ? parsed.selectedWeekday : getDefaultSelectedWeekday(),
       selectedWeeklyPreferences: getStringArray(parsed.selectedWeeklyPreferences, ["清淡饮食", "库存优先"]),
-      weeklyPresetId: preset.id,
-      weeklyPlanDraft,
-      weeklyPlanApplied: parsed.weeklyPlanApplied === true,
-      weeklyUpdatedAt: typeof parsed.weeklyUpdatedAt === "string" ? parsed.weeklyUpdatedAt : nowTime(),
-      weeklyDayAdjustments: getNumberRecord(parsed.weeklyDayAdjustments, {}),
     };
   } catch {
     return null;
   }
 }
 
+function buildActionSummary(title: string, mealPlan: MealPlan | null, shoppingList: ShoppingList | null): AiActionSummary {
+  return {
+    title,
+    affectedMeals: mealPlan?.meals.map((meal) => mealTypeLabels[meal.mealType]) ?? ["早餐", "午餐", "晚餐"],
+    nutritionChanges: mealPlan
+      ? [
+          `热量 ${mealPlan.nutritionSummary.actual.calories} kcal`,
+          `蛋白质 ${mealPlan.nutritionSummary.actual.protein} g`,
+        ]
+      : defaultActionSummary.nutritionChanges,
+    shoppingChanges: shoppingList
+      ? [`待买 ${shoppingList.items.filter((item) => !item.checked).length} 项`, `已完成 ${shoppingList.items.filter((item) => item.checked).length} 项`]
+      : defaultActionSummary.shoppingChanges,
+    inventoryUsage: mealPlan?.inventoryUsage.length ? mealPlan.inventoryUsage : defaultActionSummary.inventoryUsage,
+  };
+}
+
+function appendMessage(list: ChatMessage[], message: ChatMessage) {
+  if (list.some((item) => item.id === message.id)) {
+    return list;
+  }
+  return [...list, message];
+}
+
+function toDerivedShoppingItems(shoppingList: ShoppingList | null, planningMode: PlanningMode): DerivedShoppingListItem[] {
+  if (!shoppingList) return [];
+  const source = shoppingList.sourceType === "weekly_plan" || planningMode === "weekly" ? "weekly" : "daily";
+  return shoppingList.items.map((item) => ({
+    ...item,
+    stableKey: item.stableKey ?? `${item.name}|${item.amount}`,
+    source,
+  }));
+}
+
+function mapWeeklyPreferenceTag(preference: string) {
+  const mapping: Record<string, string> = {
+    清淡饮食: "light",
+    高蛋白: "high_protein",
+    低脂减油: "low_fat",
+    控糖控盐: "low_sugar_salt",
+    库存优先: "inventory_priority",
+  };
+  return mapping[preference] ?? preference;
+}
+
 export function App() {
   const persistedState = useMemo(() => getPersistedState(), []);
-  const restoredWeeklyPreset = useMemo(() => getWeeklyPresetById(persistedState?.weeklyPresetId), [persistedState]);
   const [activePage, setActivePage] = useState<PageId>(getInitialPage);
-  const [messages, setMessages] = useState<ChatMessage[]>(persistedState?.messages ?? initialMessages);
+  const [profile, setProfile] = useState<UserProfile>(userProfile);
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [actionSummary, setActionSummary] = useState<AiActionSummary>(persistedState?.actionSummary ?? defaultActionSummary);
-  const [inventory, setInventory] = useState<InventoryItem[]>(persistedState?.inventory ?? initialInventory);
-  const [dailyPlan, setDailyPlan] = useState<MealRecommendation[]>(persistedState?.dailyPlan ?? cloneMeals(initialMeals));
+  const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const [actionSummary, setActionSummary] = useState<AiActionSummary>(defaultActionSummary);
+  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>(persistedState?.currentConversationId);
+  const [currentMealPlanId, setCurrentMealPlanId] = useState<string | undefined>(persistedState?.currentMealPlanId);
+  const [currentWeeklyPlanId, setCurrentWeeklyPlanId] = useState<string | undefined>(persistedState?.currentWeeklyPlanId);
+  const [currentShoppingListId, setCurrentShoppingListId] = useState<string | undefined>(persistedState?.currentShoppingListId);
+  const [currentMealPlan, setCurrentMealPlan] = useState<MealPlan | null>(null);
+  const [currentShoppingList, setCurrentShoppingList] = useState<ShoppingList | null>(null);
+  const [currentWeeklyPlan, setCurrentWeeklyPlan] = useState<WeeklyPlan | null>(null);
   const [planningMode, setPlanningMode] = useState<PlanningMode>(persistedState?.planningMode ?? "daily");
   const [selectedWeekday, setSelectedWeekday] = useState(persistedState?.selectedWeekday ?? getDefaultSelectedWeekday());
-  const [shoppingSelections, setShoppingSelections] = useState<Record<string, boolean>>(
-    () => persistedState?.shoppingSelections ?? createShoppingSelectionRecord(initialShoppingList),
-  );
-  const [alternativeIndex, setAlternativeIndex] = useState<Record<MealType, number>>(
-    persistedState?.alternativeIndex ?? {
-      breakfast: 0,
-      lunch: 0,
-      dinner: 0,
-    },
-  );
   const [selectedWeeklyPreferences, setSelectedWeeklyPreferences] = useState<string[]>(
     persistedState?.selectedWeeklyPreferences ?? ["清淡饮食", "库存优先"],
   );
-  const [weeklyPreset, setWeeklyPreset] = useState<WeeklyPlanPreset>(restoredWeeklyPreset);
-  const [weeklyPlanDraft, setWeeklyPlanDraft] = useState<WeeklyPlanDay[]>(
-    () => persistedState?.weeklyPlanDraft ?? cloneWeeklyDays(restoredWeeklyPreset.days),
-  );
-  const [weeklyPlanApplied, setWeeklyPlanApplied] = useState(persistedState?.weeklyPlanApplied ?? false);
-  const [weeklyUpdatedAt, setWeeklyUpdatedAt] = useState(persistedState?.weeklyUpdatedAt ?? nowTime());
-  const [weeklyDayAdjustments, setWeeklyDayAdjustments] = useState<Record<string, number>>(persistedState?.weeklyDayAdjustments ?? {});
+
+  const dailyPlan = useMemo(() => currentMealPlan?.meals ?? [], [currentMealPlan]);
+  const weeklyPlanDraft = useMemo(() => currentWeeklyPlan?.days ?? [], [currentWeeklyPlan]);
+  const weeklyPlanApplied = currentWeeklyPlan?.adopted ?? false;
+  const weeklyUpdatedAt = currentWeeklyPlan?.updatedAt ? formatClockTime(currentWeeklyPlan.updatedAt) : formatClockTime();
 
   const planningState: PlanningState = useMemo(() => ({
     planningMode,
@@ -376,30 +297,39 @@ export function App() {
   }), [planningMode, dailyPlan, weeklyPlanDraft, weeklyPlanApplied, selectedWeekday, inventory]);
 
   const activeMeals = useMemo(() => deriveActiveMeals(planningState), [planningState]);
-  const rawShoppingItems = useMemo(() => deriveShoppingList(planningState), [planningState]);
-  const shoppingItems = useMemo(() => mergeShoppingSelection(rawShoppingItems, shoppingSelections), [rawShoppingItems, shoppingSelections]);
+  const shoppingItems = useMemo(() => {
+    const fromServer = toDerivedShoppingItems(currentShoppingList, planningMode);
+    return fromServer.length > 0 ? fromServer : deriveShoppingList(planningState);
+  }, [currentShoppingList, planningMode, planningState]);
   const shoppingSummary = useMemo(() => buildShoppingSummary(shoppingItems), [shoppingItems]);
   const overviewMetrics = useMemo(() => deriveOverviewMetrics(planningState, shoppingItems), [planningState, shoppingItems]);
-  const nutritionSummary = useMemo(() => buildNutritionSummary(activeMeals, userProfile), [activeMeals]);
+  const nutritionSummary = useMemo(
+    () => currentMealPlan?.nutritionSummary ?? buildNutritionSummary(activeMeals, profile),
+    [activeMeals, currentMealPlan, profile],
+  );
   const weeklyInsightResult = useMemo(() => deriveWeeklyInsights(planningState, weeklyUpdatedAt), [planningState, weeklyUpdatedAt]);
   const selectedWeeklyDay = useMemo(() => getSelectedWeeklyDay(weeklyPlanDraft, selectedWeekday), [weeklyPlanDraft, selectedWeekday]);
   const weeklyTodayMeals = useMemo(() => cloneMeals(selectedWeeklyDay?.meals ?? []), [selectedWeeklyDay]);
+  const weekDates = useMemo(
+    () => weeklyPlanDraft.map((day) => (day.date ? day.date.slice(5).replace("-", "/") : "--/--")),
+    [weeklyPlanDraft],
+  );
 
   const expiringItems = inventory.filter((item) => item.status === "expiring_soon");
-  const expiringCount = expiringItems.length;
   const weeklyAttentionCount = weeklyPlanDraft.filter((day) => day.status === "needs_attention").length;
   const weeklyBalancedCount = weeklyPlanDraft.filter((day) => day.status === "balanced").length;
   const isWeeklyMode = planningMode === "weekly" && weeklyPlanApplied;
   const isDailySyncedFromWeekly = weeklyPlanApplied && haveSameMealIds(dailyPlan, weeklyTodayMeals);
+
   const weeklyMacroAverages = useMemo(() => {
     const days = Math.max(1, weeklyPlanDraft.length);
     const totals = weeklyPlanDraft.reduce(
       (sum, day) => {
-        const nutrition = buildNutritionSummary(day.meals, userProfile).actual;
+        const actual = buildNutritionSummary(day.meals, profile).actual;
         return {
-          protein: sum.protein + nutrition.protein,
-          carbs: sum.carbs + nutrition.carbs,
-          fat: sum.fat + nutrition.fat,
+          protein: sum.protein + actual.protein,
+          carbs: sum.carbs + actual.carbs,
+          fat: sum.fat + actual.fat,
         };
       },
       { protein: 0, carbs: 0, fat: 0 },
@@ -410,7 +340,8 @@ export function App() {
       carbs: Math.round(totals.carbs / days),
       fat: Math.round(totals.fat / days),
     };
-  }, [weeklyPlanDraft]);
+  }, [profile, weeklyPlanDraft]);
+
   const todayContextNote = weeklyPlanApplied
     ? isDailySyncedFromWeekly
       ? `当前餐单来自已确认周计划的 ${selectedWeekday} 安排。`
@@ -419,7 +350,7 @@ export function App() {
   const nutritionContextNote = isWeeklyMode
     ? `当前营养统计展示的是 ${selectedWeekday} 的执行餐单，整周采购缺口已另外汇总到购物清单。`
     : "当前营养统计只跟随今日三餐变化。";
-  const weeklySelectedDayStatus = getPlanStatusLabel(selectedWeeklyDay?.status ?? "balanced");
+  const weeklySelectedDayStatus = selectedWeeklyDay ? (selectedWeeklyDay.status === "balanced" ? "均衡" : selectedWeeklyDay.status === "light" ? "轻负担" : "需微调") : "均衡";
   const weeklySelectedDayFocus = selectedWeeklyDay?.inventoryFocus.slice(0, 3).join("、") ?? "鸡蛋、青菜、西兰花";
 
   useEffect(() => {
@@ -433,201 +364,212 @@ export function App() {
 
   useEffect(() => {
     const payload: PersistedAppState = {
-      messages,
-      actionSummary,
-      inventory,
-      dailyPlan,
+      currentConversationId,
+      currentMealPlanId,
+      currentWeeklyPlanId,
+      currentShoppingListId,
       planningMode,
       selectedWeekday,
-      shoppingSelections,
-      alternativeIndex,
       selectedWeeklyPreferences,
-      weeklyPresetId: weeklyPreset.id,
-      weeklyPlanDraft,
-      weeklyPlanApplied,
-      weeklyUpdatedAt,
-      weeklyDayAdjustments,
     };
-
     window.localStorage.setItem(storageKey, JSON.stringify(payload));
   }, [
-    messages,
-    actionSummary,
-    inventory,
-    dailyPlan,
+    currentConversationId,
+    currentMealPlanId,
+    currentWeeklyPlanId,
+    currentShoppingListId,
     planningMode,
     selectedWeekday,
-    shoppingSelections,
-    alternativeIndex,
     selectedWeeklyPreferences,
-    weeklyPreset,
-    weeklyPlanDraft,
-    weeklyPlanApplied,
-    weeklyUpdatedAt,
-    weeklyDayAdjustments,
   ]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function bootstrap() {
+      try {
+        const [profileData, inventoryData] = await Promise.all([getProfile(), getInventoryItems()]);
+        if (cancelled) return;
+        setProfile(profileData);
+        setInventory(inventoryData);
+
+        if (persistedState?.currentConversationId) {
+          const nextMessages = await getConversationMessages(persistedState.currentConversationId);
+          if (!cancelled) {
+            setMessages(nextMessages);
+          }
+        }
+
+        if (persistedState?.currentMealPlanId) {
+          const nextMealPlan = await getMealPlan(persistedState.currentMealPlanId);
+          if (!cancelled) {
+            setCurrentMealPlan(nextMealPlan);
+            setActionSummary(buildActionSummary("已恢复今日方案", nextMealPlan, null));
+          }
+        }
+
+        if (persistedState?.currentWeeklyPlanId) {
+          const nextWeeklyPlan = await getWeeklyPlan(persistedState.currentWeeklyPlanId);
+          if (!cancelled) {
+            setCurrentWeeklyPlan(nextWeeklyPlan);
+            if (nextWeeklyPlan.days[0]?.day && !persistedState.selectedWeekday) {
+              setSelectedWeekday(nextWeeklyPlan.days[0].day);
+            }
+          }
+        }
+
+        const sourceType = persistedState?.planningMode === "weekly" && persistedState.currentWeeklyPlanId
+          ? "weekly_plan"
+          : persistedState?.currentMealPlanId
+            ? "meal_plan"
+            : null;
+        const sourceId = sourceType === "weekly_plan" ? persistedState?.currentWeeklyPlanId : persistedState?.currentMealPlanId;
+
+        if (sourceType && sourceId) {
+          try {
+            const shoppingList = await getCurrentShoppingList(sourceType, sourceId);
+            if (!cancelled) {
+              setCurrentShoppingList(shoppingList);
+              setCurrentShoppingListId(shoppingList.id);
+            }
+          } catch {
+            // Leave the shopping list empty until the next successful generation.
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setIsBootstrapping(false);
+        }
+      }
+    }
+
+    void bootstrap();
+    return () => {
+      cancelled = true;
+    };
+  }, [persistedState]);
 
   function navigate(page: PageId) {
     window.location.hash = `/${page}`;
     setActivePage(page);
   }
 
-  function runChatAction(action: string) {
-    navigate("chat");
-    handleQuickAction(action);
-  }
-
-  function getShoppingSnapshot(nextState: PlanningState, nextSelections = shoppingSelections) {
-    return mergeShoppingSelection(deriveShoppingList(nextState), nextSelections);
-  }
-
-  function appendAssistantMessage(content: string, mealsSnapshot = activeMeals, shoppingSnapshot = shoppingItems) {
-    setMessages((current) => [...current, buildAssistantMessage(content, cloneMeals(mealsSnapshot), shoppingSnapshot)]);
-  }
-
-  function pushUserAndAssistant(message: string, reply: string, mealsSnapshot = activeMeals, shoppingSnapshot = shoppingItems) {
-    const userMessage: ChatMessage = {
-      id: `msg_${Date.now()}`,
-      role: "user",
-      content: message,
-      createdAt: nowTime(),
-    };
-    setMessages((current) => [...current, userMessage]);
-    setIsGenerating(true);
-    window.setTimeout(() => {
-      setMessages((current) => [...current, buildAssistantMessage(reply, cloneMeals(mealsSnapshot), shoppingSnapshot)]);
-      setIsGenerating(false);
-    }, 650);
-  }
-
-  function handleSend(message: string) {
-    const reply = message.includes("番茄") || message.includes("鸡蛋")
-      ? "收到，我会优先使用库存中的番茄和鸡蛋，并把今天的午餐做成高蛋白、晚餐控制热量的组合。"
-      : "收到，我会先围绕今天的执行餐单给出建议，并同步刷新营养概览与购物清单。";
-
-    setPlanningMode("daily");
-    setActionSummary({
-      title: "已按输入生成方案",
-      affectedMeals: ["午餐", "晚餐"],
-      nutritionChanges: ["蛋白质 +9g", "晚餐热量降低"],
-      shoppingChanges: ["已切回今日采购", "购物缺口按当前执行方案重算"],
-      inventoryUsage: message.includes("番茄") || message.includes("鸡蛋") ? ["番茄", "鸡蛋", "鸡胸肉"] : defaultActionSummary.inventoryUsage,
-    });
-    pushUserAndAssistant(message, reply);
-  }
-
-  function handleQuickAction(action: string) {
-    let nextDailyPlan = cloneMeals(dailyPlan);
-
-    if (action === "提升蛋白质") {
-      nextDailyPlan = nextDailyPlan.map((meal) =>
-        meal.mealType === "dinner"
-          ? {
-              ...meal,
-              title: "番茄豆腐鸡蛋汤 + 清炒时蔬",
-              nutrition: { ...meal.nutrition, calories: meal.nutrition.calories + 70, protein: meal.nutrition.protein + 9, fat: meal.nutrition.fat + 4 },
-              ingredients: [...meal.ingredients, { name: "鸡蛋", amount: "1 个", fromInventory: true, optional: false }],
-              aiTip: "已加入库存鸡蛋，蛋白质提升约 9g。",
-            }
-          : meal,
-      );
-    }
-
-    if (action === "减少油脂" || action === "控制热量") {
-      nextDailyPlan = nextDailyPlan.map((meal) =>
-        meal.mealType === "lunch"
-          ? {
-              ...meal,
-              nutrition: { ...meal.nutrition, calories: Math.max(0, meal.nutrition.calories - 80), fat: Math.max(0, meal.nutrition.fat - 6) },
-              aiTip: "已将午餐改为少油烹饪，热量和脂肪同步下降。",
-            }
-          : meal,
-      );
-    }
-
-    const nextPlanningState: PlanningState = {
-      ...planningState,
-      planningMode: "daily",
-      dailyPlan: nextDailyPlan,
-    };
-
-    setPlanningMode("daily");
-    setDailyPlan(nextDailyPlan);
-    setActionSummary({
-      title: action,
-      affectedMeals: action === "提升蛋白质" ? ["早餐", "晚餐"] : action === "多用库存食材" ? ["午餐", "晚餐"] : ["午餐"],
-      nutritionChanges: action === "减少油脂" || action === "控制热量" ? ["热量 -80kcal", "脂肪 -6g"] : action === "提升蛋白质" ? ["蛋白质 +9g"] : ["目标已同步"],
-      shoppingChanges: action === "生成购物清单" ? ["按今日执行方案重算", "保留已勾选采购项"] : ["购物清单已复核"],
-      inventoryUsage: ["鸡蛋", "番茄", "鸡胸肉", "西兰花"],
-    });
-    pushUserAndAssistant(action, actionReplies[action] ?? "已应用该快捷操作，并同步更新今日方案。", nextDailyPlan, getShoppingSnapshot(nextPlanningState));
-  }
-
-  function handleSwapMeal(mealType: MealType) {
-    const alternatives = mealAlternatives[mealType];
-    const nextIndex = (alternativeIndex[mealType] + 1) % alternatives.length;
-    const nextMeal = cloneMeal(alternatives[nextIndex]);
-    const nextDailyPlan = dailyPlan.map((meal) => (meal.mealType === mealType ? nextMeal : cloneMeal(meal)));
-    const nextPlanningState: PlanningState = {
-      ...planningState,
-      planningMode: "daily",
-      dailyPlan: nextDailyPlan,
-    };
-
-    setAlternativeIndex((current) => ({ ...current, [mealType]: nextIndex }));
-    setPlanningMode("daily");
-    setDailyPlan(nextDailyPlan);
+  function appendLocalAssistantMessage(content: string, structuredResult?: ChatMessage["structuredResult"]) {
     setMessages((current) => [
       ...current,
-      buildAssistantMessage(`已替换${mealTypeLabels[mealType]}为「${nextMeal.title}」。这次修改只影响今天的执行餐单，不会改写整周草稿。`, nextDailyPlan, getShoppingSnapshot(nextPlanningState)),
+      {
+        id: `local_msg_${Date.now()}`,
+        role: "assistant",
+        content,
+        createdAt: formatClockTime(),
+        structuredResult: structuredResult ?? null,
+      },
     ]);
-    setActionSummary({
-      title: `已替换${mealTypeLabels[mealType]}`,
-      affectedMeals: [mealTypeLabels[mealType]],
-      nutritionChanges: [`热量 ${nextMeal.nutrition.calories}kcal`, `蛋白质 ${nextMeal.nutrition.protein}g`],
-      shoppingChanges: ["已切回今日采购视图", "按新食材复核缺口"],
-      inventoryUsage: nextMeal.ingredients.filter((item) => item.fromInventory).map((item) => item.name),
-    });
   }
 
-  function deriveInventoryStatus(expireDate: string): InventoryItem["status"] {
-    const today = new Date("2026-05-04T00:00:00");
-    const expiry = new Date(`${expireDate}T00:00:00`);
-    const daysLeft = Math.ceil((expiry.getTime() - today.getTime()) / 86400000);
-    if (daysLeft < 0) return "expired";
-    if (daysLeft <= 3) return "expiring_soon";
-    return "fresh";
+  async function ensureConversation() {
+    if (currentConversationId) {
+      return currentConversationId;
+    }
+
+    const conversation = await createConversation("SmartMeal 当前对话");
+    setCurrentConversationId(conversation.id);
+    return conversation.id;
   }
 
-  function handleAddInventory(value: InventoryFormValue) {
-    const nextItem: InventoryItem = {
-      id: `inv_${Date.now()}`,
-      name: value.name,
-      category: value.category,
-      quantity: value.quantity,
-      expireDate: value.expireDate,
-      status: deriveInventoryStatus(value.expireDate),
-    };
+  async function refreshShoppingFromSource(nextPlanningMode = planningMode, mealPlanId = currentMealPlanId, weeklyPlanId = currentWeeklyPlanId) {
+    const sourceType = nextPlanningMode === "weekly" && weeklyPlanId ? "weekly_plan" : mealPlanId ? "meal_plan" : null;
+    const sourceId = sourceType === "weekly_plan" ? weeklyPlanId : mealPlanId;
+    if (!sourceType || !sourceId) {
+      setCurrentShoppingList(null);
+      setCurrentShoppingListId(undefined);
+      return null;
+    }
 
-    setInventory((current) => [nextItem, ...current]);
+    const shoppingList = await getCurrentShoppingList(sourceType, sourceId);
+    setCurrentShoppingList(shoppingList);
+    setCurrentShoppingListId(shoppingList.id);
+    return shoppingList;
+  }
+
+  async function handleSend(message: string) {
+    setIsGenerating(true);
+    try {
+      const conversationId = await ensureConversation();
+      const payload = await sendConversationMessage(conversationId, message, "daily");
+      setMessages((current) => appendMessage(appendMessage(current, payload.userMessage), payload.assistantMessage));
+      setPlanningMode("daily");
+      setCurrentMealPlan(payload.mealPlan);
+      setCurrentMealPlanId(payload.mealPlan?.id);
+      setCurrentShoppingList(payload.shoppingList);
+      setCurrentShoppingListId(payload.shoppingList?.id);
+      setActionSummary(buildActionSummary("已按输入生成方案", payload.mealPlan, payload.shoppingList));
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  async function handleQuickAction(action: string) {
+    const prompt = quickActionPrompts[action] ?? action;
+    await handleSend(prompt);
+    setActionSummary((current) => ({ ...current, title: action }));
+  }
+
+  function runChatAction(action: string) {
+    navigate("chat");
+    void handleQuickAction(action);
+  }
+
+  async function handleSwapMeal(mealType: MealType) {
+    if (!currentMealPlanId) return;
+    setIsGenerating(true);
+    try {
+      const payload = await regenerateMeal(currentMealPlanId, mealType, `替换${mealTypeLabels[mealType]}`);
+      setCurrentMealPlan(payload.mealPlan);
+      setCurrentShoppingList(payload.shoppingListResource);
+      setCurrentShoppingListId(payload.shoppingListResource?.id);
+      setActionSummary(buildActionSummary(`已替换${mealTypeLabels[mealType]}`, payload.mealPlan, payload.shoppingListResource));
+      appendLocalAssistantMessage(
+        `已替换${mealTypeLabels[mealType]}为「${payload.mealPlan.meals.find((item) => item.mealType === mealType)?.title ?? "新的方案"}」。这次修改只影响今天的执行餐单。`,
+        { mealPlanId: payload.mealPlan.id, shoppingListId: payload.shoppingListResource?.id },
+      );
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  async function handleAddInventory(value: InventoryFormValue) {
+    const created = await createInventoryItem(value);
+    const nextInventory = [created, ...inventory];
+    setInventory(nextInventory);
+
+    if (planningMode === "weekly" && currentWeeklyPlanId) {
+      const nextShoppingList = await generateShoppingList("weekly_plan", currentWeeklyPlanId);
+      setCurrentShoppingList(nextShoppingList);
+      setCurrentShoppingListId(nextShoppingList.id);
+    } else if (currentMealPlanId) {
+      const nextShoppingList = await generateShoppingList("meal_plan", currentMealPlanId);
+      setCurrentShoppingList(nextShoppingList);
+      setCurrentShoppingListId(nextShoppingList.id);
+    }
+
     setActionSummary({
       title: "库存已更新",
       affectedMeals: ["后续推荐"],
       nutritionChanges: ["营养目标不变"],
-      shoppingChanges: ["购物缺口会按新库存重新判断"],
+      shoppingChanges: ["购物缺口已按最新库存重算"],
       inventoryUsage: [value.name],
     });
-    appendAssistantMessage(`已新增库存「${value.name}」，当前采购缺口会自动按最新库存重算。`);
+    appendLocalAssistantMessage(`已新增库存「${value.name}」，当前采购缺口会自动按最新库存重算。`);
   }
 
-  function handleToggleShopping(id: string) {
-    const target = shoppingItems.find((item) => item.id === id);
+  async function handleToggleShopping(id: string) {
+    if (!currentShoppingList) return;
+    const target = currentShoppingList.items.find((item) => item.id === id);
     if (!target) return;
-    setShoppingSelections((current) => ({
-      ...current,
-      [target.stableKey]: !(current[target.stableKey] ?? target.checked),
-      [target.name]: !(current[target.stableKey] ?? target.checked),
-    }));
+    const nextShoppingList = await toggleShoppingItem(currentShoppingList.id, id, !target.checked);
+    setCurrentShoppingList(nextShoppingList);
+    setCurrentShoppingListId(nextShoppingList.id);
   }
 
   function handleToggleWeeklyPreference(preference: string) {
@@ -637,53 +579,77 @@ export function App() {
       }
       return [...current, preference];
     });
-    setWeeklyPlanApplied(false);
   }
 
-  function handleGenerateWeeklyPlan() {
-    const nextPreset = getBestWeeklyPreset(selectedWeeklyPreferences, weeklyPreset.id);
-    const nextDays = cloneWeeklyDays(nextPreset.days);
-
-    setWeeklyPreset(nextPreset);
-    setWeeklyPlanDraft(nextDays);
-    setWeeklyPlanApplied(false);
-    setWeeklyUpdatedAt(nowTime());
-    setWeeklyDayAdjustments({});
-    setSelectedWeekday(nextDays[0]?.day ?? selectedWeekday);
-    appendAssistantMessage(`已生成「${nextPreset.title}」，当前仍是周计划草稿；确认采用后，总览和采购会切到本周执行视图。`);
+  async function handleGenerateWeeklyPlan() {
+    const conversationId = await ensureConversation();
+    const weeklyPlan = await createWeeklyPlan({
+      message: "本周尽量清淡，高蛋白，工作日做饭时间不要超过 30 分钟。",
+      preferenceTags: selectedWeeklyPreferences.map(mapWeeklyPreferenceTag),
+      startDate: fixedWeeklyStartDate,
+      days: 7,
+      conversationId,
+    });
+    setCurrentWeeklyPlan(weeklyPlan);
+    setCurrentWeeklyPlanId(weeklyPlan.id);
+    setSelectedWeekday(weeklyPlan.days[0]?.day ?? selectedWeekday);
+    appendLocalAssistantMessage(`已生成「${weeklyPlan.title}」，当前仍是周计划草稿；确认采用后，总览和采购会切到本周执行视图。`, {
+      weeklyPlanId: weeklyPlan.id,
+    });
   }
 
-  function handleAdjustWeeklyDay(dayName: string) {
-    const dayIndex = weeklyPlanDraft.findIndex((day) => day.day === dayName);
-    if (dayIndex < 0) return;
+  async function handleAdjustWeeklyDay(dayName: string) {
+    if (!currentWeeklyPlan) return;
+    const targetDay = currentWeeklyPlan.days.find((day) => day.day === dayName);
+    if (!targetDay?.date) return;
 
-    const nextIndex = ((weeklyDayAdjustments[dayName] ?? weeklyPlanPresets.findIndex((preset) => preset.id === weeklyPreset.id)) + 1) % weeklyPlanPresets.length;
-    const replacement = cloneWeeklyDays([weeklyPlanPresets[nextIndex].days[dayIndex]])[0];
-    const nextWeeklyPlan = weeklyPlanDraft.map((day, index) => (index === dayIndex ? replacement : day));
+    const weeklyPlan = await patchWeeklyPlanDay(currentWeeklyPlan.id, targetDay.date, ["dinner"]);
+    setCurrentWeeklyPlan(weeklyPlan);
 
-    setWeeklyPlanDraft(nextWeeklyPlan);
-    setWeeklyDayAdjustments((current) => ({ ...current, [dayName]: nextIndex }));
-    setWeeklyPlanApplied(false);
-    setWeeklyUpdatedAt(nowTime());
-    if (dayName === selectedWeekday && weeklyPlanApplied) {
-      setDailyPlan(cloneMeals(replacement.meals));
+    if (weeklyPlan.adopted && currentMealPlan && dayName === selectedWeekday) {
+      const refreshedDay = weeklyPlan.days.find((day) => day.day === dayName);
+      if (refreshedDay) {
+        setCurrentMealPlan((previous) =>
+          previous
+            ? {
+                ...previous,
+                meals: cloneMeals(refreshedDay.meals),
+                nutritionSummary: buildNutritionSummary(refreshedDay.meals, profile),
+                inventoryUsage: refreshedDay.inventoryFocus,
+                suggestions: weeklyPlan.insights,
+              }
+            : previous,
+        );
+      }
     }
-    appendAssistantMessage(`已微调${dayName}，新的晚餐重点是「${replacement.dinner}」，相关采购缺口和周洞察已同步重算。`);
+
+    if (planningMode === "weekly") {
+      await refreshShoppingFromSource("weekly", currentMealPlanId, currentWeeklyPlan.id);
+    }
+
+    appendLocalAssistantMessage(
+      `已微调${dayName}，新的晚餐重点是「${weeklyPlan.days.find((day) => day.day === dayName)?.dinner ?? "新的方案"}」，相关采购缺口和周洞察已同步重算。`,
+      { weeklyPlanId: weeklyPlan.id },
+    );
   }
 
-  function handleConfirmWeeklyPlan() {
-    const nextDailyMeals = getMealsForSelectedDay(weeklyPlanDraft, selectedWeekday);
-    const nextPlanningState: PlanningState = {
-      ...planningState,
-      planningMode: "weekly",
-      dailyPlan: nextDailyMeals,
-      weeklyPlanApplied: true,
-    };
+  async function handleConfirmWeeklyPlan() {
+    if (!currentWeeklyPlanId || !selectedWeeklyDay?.date) return;
 
-    setWeeklyPlanApplied(true);
+    const result = await adoptWeeklyPlan(currentWeeklyPlanId, selectedWeeklyDay.date);
+    const [weeklyPlan, mealPlan] = await Promise.all([
+      getWeeklyPlan(result.weeklyPlanId),
+      getMealPlan(result.syncedMealPlanId),
+    ]);
+    const shoppingList = result.shoppingListId ? await getCurrentShoppingList("weekly_plan", weeklyPlan.id) : null;
+
+    setCurrentWeeklyPlan(weeklyPlan);
+    setCurrentWeeklyPlanId(weeklyPlan.id);
+    setCurrentMealPlan(mealPlan);
+    setCurrentMealPlanId(mealPlan.id);
+    setCurrentShoppingList(shoppingList);
+    setCurrentShoppingListId(shoppingList?.id);
     setPlanningMode("weekly");
-    setDailyPlan(nextDailyMeals);
-    setWeeklyUpdatedAt(nowTime());
     setActionSummary({
       title: "已采用本周计划",
       affectedMeals: [selectedWeekday],
@@ -691,15 +657,14 @@ export function App() {
       shoppingChanges: ["购物清单已切到本周采购", "已勾选食材状态保留"],
       inventoryUsage: weeklyInsightResult.inventoryItems,
     });
-    appendAssistantMessage(
-      `本周计划已确认采用，今日三餐已切换为 ${selectedWeekday} 的安排，购物清单会按整周缺口整理。`,
-      nextDailyMeals,
-      getShoppingSnapshot(nextPlanningState),
-    );
+    appendLocalAssistantMessage(`本周计划已确认采用，今日三餐已切换为 ${selectedWeekday} 的安排，购物清单会按整周缺口整理。`, {
+      weeklyPlanId: weeklyPlan.id,
+      mealPlanId: mealPlan.id,
+      shoppingListId: shoppingList?.id,
+    });
   }
 
   function renderOverviewPage() {
-    const selectedDayLabel = selectedWeeklyDay?.day ?? selectedWeekday;
     const completedWeeklyDays = weeklyPlanDraft.filter((day) => day.status !== "needs_attention").length;
 
     return (
@@ -710,116 +675,61 @@ export function App() {
             <span className={styles.heroEyebrow}>{overviewMetrics.heroEyebrow}</span>
             <h3>{overviewMetrics.heroTitle}</h3>
             <p>{overviewMetrics.heroDescription}</p>
-            <div className={styles.overviewActionRow}>
-              <button className={styles.primaryMiniAction} type="button" onClick={() => runChatAction(isWeeklyMode ? "快捷调整营养目标" : "提升蛋白质")}>
-                <BotMessageSquare size={16} />
-                让 AI 继续优化
-              </button>
-              <button className={styles.inlineAction} type="button" onClick={() => navigate(isWeeklyMode ? "weekly" : "today")}>
-                {isWeeklyMode ? "查看本周执行" : "查看今日执行"}
-              </button>
-              <button className={styles.inlineAction} type="button" onClick={() => navigate("shopping")}>查看采购缺口</button>
-            </div>
-            <div className={styles.overviewFlowStrip}>
-              <button type="button" onClick={() => runChatAction("多用库存食材")}>
-                <strong>1</strong>
-                <span>先用 AI 重排库存优先方案</span>
-              </button>
-              <button type="button" onClick={() => navigate(isWeeklyMode ? "today" : "chat")}>
-                <strong>2</strong>
-                <span>{isWeeklyMode ? "确认今天执行餐单" : "回到对话生成方案"}</span>
-              </button>
-              <button type="button" onClick={() => navigate("shopping")}>
-                <strong>3</strong>
-                <span>去购物清单完成补货</span>
-              </button>
-            </div>
-          </div>
-          <div className={styles.overviewHeroSide}>
-            <div className={styles.modeBadge}>
+            <div className={styles.summaryPills}>
               <span>{overviewMetrics.modeLabel}</span>
-              <strong>{isWeeklyMode ? selectedDayLabel : "今日草稿"}</strong>
-            </div>
-            <p>{overviewMetrics.modeDescription}</p>
-            <div className={styles.modeActionStack}>
-              <button className={styles.inlineAction} type="button" onClick={() => navigate("chat")}>打开 AI 对话工作区</button>
-              {!weeklyPlanApplied ? (
-                <button className={styles.inlineAction} type="button" onClick={() => navigate("weekly")}>先确认本周计划</button>
-              ) : (
-                <button className={styles.inlineAction} type="button" onClick={() => navigate("today")}>查看今日落地餐单</button>
-              )}
+              <span>{shoppingSummary.remainingCount} 项待采购</span>
+              <span>{nutritionSummary.score} 分营养贴合度</span>
             </div>
           </div>
-        </div>
-
-        <div className={styles.overviewMetricGrid}>
-          <MetricTile label="待买缺口" value={overviewMetrics.shoppingValue} />
-          <MetricTile label="库存提醒" value={overviewMetrics.inventoryValue} />
-          <MetricTile label="营养完成度" value={`${nutritionSummary.score} 分`} />
-          <MetricTile label="本周进度" value={`${completedWeeklyDays}/${weeklyPlanDraft.length} 天`} />
+          <div className={styles.overviewHeroStats}>
+            <MetricTile label="采购缺口" value={overviewMetrics.shoppingValue} />
+            <MetricTile label="库存提醒" value={overviewMetrics.inventoryValue} />
+            <MetricTile label="本周进度" value={`${completedWeeklyDays}/${Math.max(weeklyPlanDraft.length, 1)} 天`} />
+          </div>
         </div>
 
         <div className={styles.overviewGrid}>
-          <div className={styles.overviewMainColumn}>
-            <SurfaceCard title="当前执行餐单" emphasis={isWeeklyMode ? `${selectedDayLabel} 执行中` : "今日执行"}>
-              <div className={styles.miniMealList}>
-                {activeMeals.map((meal) => (
-                  <MiniMealRow key={meal.id} image={meal.imageUrl} title={meal.title} meta={mealTypeLabels[meal.mealType]} value={`${meal.nutrition.calories} kcal`} />
-                ))}
-              </div>
-              <button className={styles.inlineAction} type="button" onClick={() => navigate("today")}>打开三餐详情</button>
-            </SurfaceCard>
-
-            <div className={styles.overviewSplit}>
-              <SurfaceCard title="营养与节奏">
-                <div className={styles.compactProgressList}>
-                  <CompactProgressRow label="热量" value={`${nutritionSummary.actual.calories} / ${nutritionSummary.target.calories} kcal`} percent={Math.round((nutritionSummary.actual.calories / nutritionSummary.target.calories) * 100)} />
-                  <CompactProgressRow label="蛋白质" value={`${nutritionSummary.actual.protein} / ${nutritionSummary.target.protein} g`} percent={Math.round((nutritionSummary.actual.protein / nutritionSummary.target.protein) * 100)} />
-                  <CompactProgressRow label="碳水" value={`${nutritionSummary.actual.carbs} / ${nutritionSummary.target.carbs} g`} percent={Math.round((nutritionSummary.actual.carbs / nutritionSummary.target.carbs) * 100)} />
-                </div>
-                <p className={styles.cardDetail}>{nutritionContextNote}</p>
-              </SurfaceCard>
-
-              <SurfaceCard title="采购摘要" emphasis={shoppingSummary.focusLabel}>
-                <p className={styles.cardDetail}>{overviewMetrics.shoppingDetail}</p>
-                <div className={styles.summaryPills}>
-                  {shoppingSummary.firstItems.map((item) => (
-                    <span key={item}>{item}</span>
-                  ))}
-                </div>
-                <button className={styles.inlineAction} type="button" onClick={() => navigate("shopping")}>管理购物清单</button>
-              </SurfaceCard>
+          <SurfaceCard title="当前执行摘要" emphasis={overviewMetrics.modeLabel}>
+            <p className={styles.cardDetail}>{overviewMetrics.modeDescription}</p>
+            <div className={styles.actionStack}>
+              <button type="button" className={styles.primaryMiniAction} onClick={() => navigate("chat")}>和 AI 聊聊</button>
+              <button type="button" className={styles.inlineAction} onClick={() => navigate(isWeeklyMode ? "weekly" : "today")}>
+                {isWeeklyMode ? "回看周计划" : "查看今日三餐"}
+              </button>
             </div>
-          </div>
+          </SurfaceCard>
 
-          <div className={styles.overviewSideColumn}>
-            <SurfaceCard title="库存覆盖" emphasis={`${inventory.length} 项库存`}>
-              <p className={styles.cardDetail}>{overviewMetrics.inventoryDetail}</p>
-              <div className={styles.summaryPills}>
-                {expiringItems.slice(0, 4).map((item) => (
-                  <span key={item.id}>{item.name}</span>
-                ))}
-              </div>
-              <button className={styles.inlineAction} type="button" onClick={() => navigate("inventory")}>查看库存管理</button>
-            </SurfaceCard>
+          <SurfaceCard title="今日餐单预览" emphasis={`${activeMeals.length} 餐`}>
+            <div className={styles.miniMealList}>
+              {activeMeals.map((meal) => (
+                <MiniMealRow
+                  key={meal.id}
+                  image={meal.imageUrl}
+                  title={meal.title}
+                  meta={mealTypeLabels[meal.mealType]}
+                  value={`${meal.nutrition.calories} kcal`}
+                />
+              ))}
+            </div>
+          </SurfaceCard>
 
-            <SurfaceCard title="本周工作区" emphasis={weeklyPlanApplied ? "已采用" : "草稿中"}>
-              <ul className={styles.insightList}>
-                <li>{weeklyInsightResult.items[0]?.detail}</li>
-                <li>{weeklyInsightResult.items[1]?.detail}</li>
-                <li>{weeklyInsightResult.items[3]?.detail}</li>
-              </ul>
-              <button className={styles.inlineAction} type="button" onClick={() => navigate("weekly")}>打开每周计划</button>
-            </SurfaceCard>
+          <SurfaceCard title="AI 执行结果摘要" emphasis={actionSummary.title}>
+            <div className={styles.summaryPills}>
+              {actionSummary.affectedMeals.map((item) => <span key={item}>{item}</span>)}
+            </div>
+            <ul className={styles.insightList}>
+              {actionSummary.nutritionChanges.map((item) => <li key={item}>{item}</li>)}
+              {actionSummary.shoppingChanges.map((item) => <li key={item}>{item}</li>)}
+            </ul>
+          </SurfaceCard>
 
-            <SurfaceCard title="下一步建议">
-              <ul className={styles.insightList}>
-                <li>{weeklyPlanApplied ? "今天的餐单已经接入周计划，可以继续替换单餐做局部优化。" : "先确认周计划，再统一切换总览和采购模式。"}</li>
-                <li>{shoppingSummary.remainingCount > 0 ? "采购清单还有缺口，建议先完成主食和蛋白类食材补货。" : "当前采购缺口已清空，可以继续打磨营养结构。"}</li>
-                <li>{expiringCount > 0 ? `有 ${expiringCount} 项临期食材，优先安排在今天和明天。` : "库存状态稳定，可以继续按当前节奏执行。"}</li>
-              </ul>
-            </SurfaceCard>
-          </div>
+          <SurfaceCard title="下一步动作" emphasis={planningMode === "weekly" ? "周执行" : "今日执行"}>
+            <div className={styles.actionStack}>
+              <button type="button" className={styles.primaryBlockAction} onClick={() => navigate("shopping")}>查看采购清单</button>
+              <button type="button" className={styles.inlineAction} onClick={() => navigate("nutrition")}>打开营养统计</button>
+              <button type="button" className={styles.inlineAction} onClick={() => navigate("inventory")}>管理库存</button>
+            </div>
+          </SurfaceCard>
         </div>
       </section>
     );
@@ -829,59 +739,43 @@ export function App() {
     return (
       <section className={styles.pageFrame}>
         <PageTitle step={pageMeta.chat.step} title={pageMeta.chat.title} description={pageMeta.chat.description} />
-        <div className={styles.chatWorkflowCard}>
-          <div className={styles.chatWorkflowHeader}>
-            <span className={styles.heroEyebrow}>Conversation To Execution</span>
-            <strong>先对话，再确认今天吃什么，最后回购物清单补缺口。</strong>
-          </div>
-          <div className={styles.chatWorkflowActions}>
-            <button type="button" className={styles.primaryMiniAction} onClick={() => handleQuickAction("提升蛋白质")}>提升蛋白质并重算</button>
-            <button type="button" className={styles.inlineAction} onClick={() => navigate("today")}>查看今日执行</button>
-            <button type="button" className={styles.inlineAction} onClick={() => navigate("shopping")}>查看采购缺口</button>
-            <button type="button" className={styles.inlineAction} onClick={() => navigate("weekly")}>{weeklyPlanApplied ? "回看周计划" : "先确认本周计划"}</button>
-          </div>
-        </div>
-        <div className={styles.chatGrid}>
-          <ChatPanel messages={messages} isGenerating={isGenerating} onSend={handleSend} onQuickAction={handleQuickAction} />
-          <div className={styles.chatRail}>
-            <SurfaceCard title="今日三餐总览">
+        <div className={styles.chatPage}>
+          <ChatPanel messages={messages} isGenerating={isGenerating || isBootstrapping} onSend={(message) => void handleSend(message)} onQuickAction={(action) => void handleQuickAction(action)} />
+
+          <div className={styles.chatWorkspace}>
+            <SurfaceCard title="当前方案" emphasis={currentMealPlan ? `${currentMealPlan.nutritionSummary.actual.calories} kcal` : "等待生成"}>
+              <p className={styles.cardDetail}>
+                {currentMealPlan ? currentMealPlan.reply : "先发一条需求，让系统生成真实日计划和购物清单。"}
+              </p>
+              <div className={styles.summaryPills}>
+                <span>{planningMode === "weekly" ? "周模式" : "日模式"}</span>
+                <span>{currentShoppingList?.items.filter((item) => !item.checked).length ?? 0} 项待买</span>
+                <span>{currentMealPlan?.inventoryUsage.length ?? 0} 项库存已使用</span>
+              </div>
+            </SurfaceCard>
+
+            <SurfaceCard title="今日执行" emphasis={`${activeMeals.length} 餐`}>
               <div className={styles.miniMealList}>
                 {activeMeals.map((meal) => (
-                  <MiniMealRow key={meal.id} image={meal.imageUrl} title={meal.title} meta={`${mealTypeLabels[meal.mealType]}`} value={`${meal.nutrition.calories} kcal`} />
+                  <MiniMealRow
+                    key={meal.id}
+                    image={meal.imageUrl}
+                    title={meal.title}
+                    meta={mealTypeLabels[meal.mealType]}
+                    value={`${meal.nutrition.protein} g 蛋白`}
+                  />
                 ))}
               </div>
-              <button className={styles.inlineAction} type="button" onClick={() => navigate("today")}>查看今日三餐详情</button>
+              <button type="button" className={styles.inlineAction} onClick={() => navigate("today")}>查看今日三餐</button>
             </SurfaceCard>
-            <SurfaceCard title="营养完成度" emphasis={`${nutritionSummary.score} 分`}>
-              <div className={styles.compactProgressList}>
-                <CompactProgressRow label="热量" value={`${nutritionSummary.actual.calories} / ${nutritionSummary.target.calories} kcal`} percent={Math.round((nutritionSummary.actual.calories / nutritionSummary.target.calories) * 100)} />
-                <CompactProgressRow label="蛋白质" value={`${nutritionSummary.actual.protein} / ${nutritionSummary.target.protein} g`} percent={Math.round((nutritionSummary.actual.protein / nutritionSummary.target.protein) * 100)} />
-                <CompactProgressRow label="碳水" value={`${nutritionSummary.actual.carbs} / ${nutritionSummary.target.carbs} g`} percent={Math.round((nutritionSummary.actual.carbs / nutritionSummary.target.carbs) * 100)} />
-                <CompactProgressRow label="脂肪" value={`${nutritionSummary.actual.fat} / ${nutritionSummary.target.fat} g`} percent={Math.round((nutritionSummary.actual.fat / nutritionSummary.target.fat) * 100)} />
-                <CompactProgressRow label="膳食纤维" value={`${nutritionSummary.actual.fiber} / ${nutritionSummary.target.fiber} g`} percent={Math.round((nutritionSummary.actual.fiber / nutritionSummary.target.fiber) * 100)} />
-              </div>
-              <button className={styles.inlineAction} type="button" onClick={() => navigate("nutrition")}>查看营养统计</button>
+
+            <SurfaceCard title="执行摘要" emphasis={actionSummary.title}>
+              <ul className={styles.insightList}>
+                {actionSummary.nutritionChanges.map((item) => <li key={item}>{item}</li>)}
+                {actionSummary.shoppingChanges.map((item) => <li key={item}>{item}</li>)}
+                {actionSummary.inventoryUsage.slice(0, 4).map((item) => <li key={item}>已使用 {item}</li>)}
+              </ul>
             </SurfaceCard>
-          </div>
-          <div className={styles.chatRail}>
-            <SurfaceCard title="库存提醒" emphasis={`${expiringCount} 个临期`}>
-              <p className={styles.cardDetail}>番茄、西兰花、牛奶建议优先使用。</p>
-              <button className={styles.inlineAction} type="button" onClick={() => navigate("inventory")}>查看库存管理</button>
-            </SurfaceCard>
-            <SurfaceCard title="购物清单" emphasis={`${shoppingSummary.remainingCount} 项待买`}>
-              <p className={styles.cardDetail}>{shoppingSummary.firstItems.join("、") || "当前无待买项目。"}，可按分类快速勾选。</p>
-              <button className={styles.inlineAction} type="button" onClick={() => navigate("shopping")}>查看购物清单</button>
-            </SurfaceCard>
-          </div>
-        </div>
-        <div className={styles.bottomShortcutBar}>
-          <span>智能快捷操作</span>
-          <div className={styles.shortcutButtons}>
-            {["推荐食材替换", "提升蛋白质", "控制热量", "多用库存食材", "快捷调整营养目标"].map((label) => (
-              <button key={label} type="button" onClick={() => handleQuickAction(label)}>
-                {label}
-              </button>
-            ))}
           </div>
         </div>
       </section>
@@ -892,15 +786,9 @@ export function App() {
     return (
       <section className={styles.pageFrame}>
         <PageTitle step={pageMeta.today.step} title={pageMeta.today.title} description={pageMeta.today.description} />
-        <div className={styles.contentSplit}>
-          <TodayMealsPanel meals={activeMeals} contextNote={todayContextNote} onSwapMeal={handleSwapMeal} />
-          <div className={styles.sideStack}>
-            <NutritionPanel summary={nutritionSummary} suggestions={suggestions} contextNote={nutritionContextNote} />
-            <SurfaceCard title="AI 个性化建议">
-              <p className={styles.cardDetail}>当前方案已接近目标值，蛋白质和蔬菜覆盖最稳定。确认方案后，购物清单会直接作为执行入口。</p>
-              <button className={styles.primaryBlockAction} type="button" onClick={() => navigate("shopping")}>生成明日方案</button>
-            </SurfaceCard>
-          </div>
+        <div className={styles.todayLayout}>
+          <TodayMealsPanel meals={activeMeals} contextNote={todayContextNote} onSwapMeal={(mealType) => void handleSwapMeal(mealType)} />
+          <NutritionPanel summary={nutritionSummary} suggestions={currentMealPlan?.suggestions ?? currentWeeklyPlan?.insights ?? []} contextNote={nutritionContextNote} />
         </div>
       </section>
     );
@@ -910,7 +798,7 @@ export function App() {
     return (
       <section className={styles.pageFrame}>
         <PageTitle step={pageMeta.inventory.step} title={pageMeta.inventory.title} description={pageMeta.inventory.description} />
-        <InventoryPanel inventory={inventory} onAddInventory={handleAddInventory} />
+        <InventoryPanel inventory={inventory} onAddInventory={(value) => void handleAddInventory(value)} />
       </section>
     );
   }
@@ -934,7 +822,7 @@ export function App() {
                   </button>
                 ))}
               </div>
-              <button className={styles.inlineAction} type="button" onClick={handleGenerateWeeklyPlan}>更多偏好设置</button>
+              <button className={styles.inlineAction} type="button" onClick={() => void handleGenerateWeeklyPlan()}>更多偏好设置</button>
               <div className={styles.preferenceHint}>
                 <span>当前草稿</span>
                 <strong>{weeklyPlanApplied ? "已接管今日执行" : "待确认采用"}</strong>
@@ -942,39 +830,42 @@ export function App() {
               </div>
             </SurfaceCard>
           </aside>
+
           <div className={styles.weeklyMainBoard}>
             <div className={styles.weeklyTopbar}>
               <div className={styles.weekRange}>
                 <small>Weekly Planner</small>
-                <strong>本周计划</strong>
-                <span>2026/05/12 - 2026/05/18</span>
+                <strong>{currentWeeklyPlan?.title ?? "本周计划"}</strong>
+                <span>{weekDates[0] ?? "--/--"} - {weekDates[weekDates.length - 1] ?? "--/--"}</span>
               </div>
               <div className={styles.weeklyActions}>
-                <button type="button" className={styles.secondaryAction} onClick={handleGenerateWeeklyPlan}>
+                <button type="button" className={styles.secondaryAction} onClick={() => void handleGenerateWeeklyPlan()}>
                   <ClipboardCheck size={16} />
                   生成本周计划
                 </button>
                 <button
                   type="button"
                   className={weeklyPlanApplied ? styles.inlineAction : styles.primaryMiniAction}
-                  onClick={handleConfirmWeeklyPlan}
-                  disabled={weeklyPlanApplied && isWeeklyMode}
+                  onClick={() => void handleConfirmWeeklyPlan()}
+                  disabled={!currentWeeklyPlan || (weeklyPlanApplied && isWeeklyMode)}
                 >
                   {weeklyPlanApplied && isWeeklyMode ? "已确认采用" : "确认采用"}
                 </button>
               </div>
             </div>
+
             <div className={styles.weeklyDigestGrid}>
-              <MetricTile label="稳定天数" value={`${weeklyBalancedCount} / ${weeklyPlanDraft.length} 天`} />
+              <MetricTile label="稳定天数" value={`${weeklyBalancedCount} / ${Math.max(weeklyPlanDraft.length, 1)} 天`} />
               <MetricTile label="需继续微调" value={`${weeklyAttentionCount} 天`} />
               <MetricTile label="库存优先食材" value={`${weeklyInsightResult.inventoryItems.length} 项`} />
             </div>
+
             <div className={styles.weekPlanner}>
               <div className={styles.weekPlannerHeader}>
                 <span>计划阶段</span>
                 {weeklyPlanDraft.map((day, index) => (
                   <button
-                    key={day.day}
+                    key={day.date ?? day.day}
                     type="button"
                     className={day.day === selectedWeekday ? styles.dayPillActive : styles.dayPill}
                     onClick={() => setSelectedWeekday(day.day)}
@@ -984,20 +875,20 @@ export function App() {
                   </button>
                 ))}
               </div>
-              {mealTypeOrder.map((mealType) => (
+
+              {["breakfast", "lunch", "dinner"].map((mealType) => (
                 <div key={mealType} className={styles.weekPlannerRow}>
-                  <span className={styles.mealAxisLabel}>{mealTypeLabels[mealType]}</span>
-                  {weeklyPlanDraft.map((day, dayIndex) => {
+                  <span className={styles.mealAxisLabel}>{mealTypeLabels[mealType as MealType]}</span>
+                  {weeklyPlanDraft.map((day) => {
                     const meal = day.meals.find((item) => item.mealType === mealType) ?? day.meals[0];
-                    const image = mealAlternatives[mealType][dayIndex % mealAlternatives[mealType].length]?.imageUrl ?? meal.imageUrl;
                     return (
                       <button
-                        key={`${day.day}-${mealType}`}
+                        key={`${day.date ?? day.day}-${mealType}`}
                         type="button"
                         className={day.day === selectedWeekday ? `${styles.weekMealCell} ${styles.weekMealCellActive}` : styles.weekMealCell}
                         onClick={() => setSelectedWeekday(day.day)}
                       >
-                        <img src={image} alt={meal.title} />
+                        <img src={meal.imageUrl} alt={meal.title} />
                         <strong>{meal.title}</strong>
                         <span>{meal.nutrition.calories} kcal</span>
                       </button>
@@ -1006,6 +897,7 @@ export function App() {
                 </div>
               ))}
             </div>
+
             <div className={styles.weeklyFooterCards}>
               <SurfaceCard title="本周营养预估" emphasis={`${weeklyInsightResult.averageCalories} kcal`}>
                 <div className={styles.footerMetricGrid}>
@@ -1015,6 +907,7 @@ export function App() {
                   <MetricTile label="碳水均值" value={`${weeklyMacroAverages.carbs} g`} />
                 </div>
               </SurfaceCard>
+
               <SurfaceCard title={`${selectedWeekday} 聚焦`} emphasis={weeklySelectedDayStatus}>
                 <p className={styles.cardDetail}>
                   当前选中日预计 {selectedWeeklyDay?.calories ?? weeklyInsightResult.averageCalories} kcal，
@@ -1025,8 +918,9 @@ export function App() {
                   <span>{selectedWeeklyDay?.meals.length ?? 3} 餐已排布</span>
                   <span>{weeklyPlanApplied ? "已接入执行流" : "草稿未采用"}</span>
                 </div>
-                <button className={styles.inlineAction} type="button" onClick={() => handleAdjustWeeklyDay(selectedWeekday)}>微调这一天</button>
+                <button className={styles.inlineAction} type="button" onClick={() => void handleAdjustWeeklyDay(selectedWeekday)}>微调这一天</button>
               </SurfaceCard>
+
               <SurfaceCard title="执行提示" emphasis={weeklyPlanApplied ? "已接入今日流" : "待接入"}>
                 <ul className={styles.insightList}>
                   <li>{weeklyPlanApplied ? `${selectedWeekday} 已驱动今日执行，继续微调会同步影响三餐和采购。` : "先确认采用，再让今日三餐、购物清单和总览统一切到周模式。"}</li>
@@ -1043,8 +937,8 @@ export function App() {
   }
 
   function renderNutritionPage() {
-    const trendValues = weeklyPlanDraft.map((day) => day.calories);
-    const chartTarget = userProfile.dailyCalorieTarget;
+    const trendValues = weeklyPlanDraft.length > 0 ? weeklyPlanDraft.map((day) => day.calories) : [nutritionSummary.actual.calories];
+    const chartTarget = profile.dailyCalorieTarget;
     const chartActual = Math.round(trendValues.reduce((sum, value) => sum + value, 0) / Math.max(1, trendValues.length));
     const weeklyPeak = Math.max(...trendValues);
     const weeklyLow = Math.min(...trendValues);
@@ -1075,15 +969,7 @@ export function App() {
               </div>
             </div>
           </section>
-          <div className={styles.nutritionTopbar}>
-            <div className={styles.filterPills}>
-              <button type="button" className={styles.filterActive}>今日</button>
-              <button type="button">近 7 天</button>
-              <button type="button">近 30 天</button>
-              <button type="button">自定义</button>
-            </div>
-            <div className={styles.dateRange}>2026/05/06 - 2026/05/12</div>
-          </div>
+
           <div className={styles.metricStrip}>
             <MetricTile label="总热量（日均）" value={`${chartActual} kcal`} />
             <MetricTile label="蛋白质（日均）" value={`${Math.round(nutritionSummary.actual.protein)} g`} />
@@ -1091,6 +977,7 @@ export function App() {
             <MetricTile label="脂肪（日均）" value={`${Math.round(nutritionSummary.actual.fat)} g`} />
             <MetricTile label="膳食纤维（日均）" value={`${Math.round(nutritionSummary.actual.fiber)} g`} />
           </div>
+
           <div className={styles.nutritionCharts}>
             <SurfaceCard title="热量趋势">
               <div className={styles.chartStatRow}>
@@ -1100,6 +987,7 @@ export function App() {
               </div>
               <LineChartCard values={trendValues} target={chartTarget} />
             </SurfaceCard>
+
             <SurfaceCard title="营养素占比">
               <div className={styles.chartStatRow}>
                 <span>蛋白 {Math.round(nutritionSummary.actual.protein)} g</span>
@@ -1109,18 +997,19 @@ export function App() {
               <DonutChartCard segments={macroSegments} />
             </SurfaceCard>
           </div>
+
           <div className={styles.nutritionBottom}>
-            <NutritionPanel summary={nutritionSummary} suggestions={suggestions} contextNote={nutritionContextNote} />
+            <NutritionPanel summary={nutritionSummary} suggestions={currentMealPlan?.suggestions ?? currentWeeklyPlan?.insights ?? []} contextNote={nutritionContextNote} />
             <div className={styles.nutritionInsights}>
               <SurfaceCard title="AI 解读">
-                <p className={styles.cardDetail}>近 7 天整体营养摄入良好，热量略低于目标，有助于体重管理；蛋白质基本达标，建议在运动日增加豆腐或鸡蛋摄入；碳水来源以全麦更为稳妥。</p>
+                <p className={styles.cardDetail}>
+                  {currentMealPlan?.reply ?? "当前还没有真实餐单数据，先去对话页生成一份方案。"}
+                </p>
                 <button className={styles.inlineAction} type="button" onClick={() => navigate("today")}>查看详细分析</button>
               </SurfaceCard>
               <SurfaceCard title="执行建议" emphasis={isWeeklyMode ? "周模式" : "日模式"}>
                 <ul className={styles.suggestionList}>
-                  <li>若继续减脂，优先保持晚餐轻负担，把热量差值稳定在目标下沿附近。</li>
-                  <li>若当天训练量上升，可在早餐或午餐补 15g 到 20g 蛋白质。</li>
-                  <li>若切回本周模式，购物缺口和营养解读会按 {selectedWeekday} 重新联动。</li>
+                  {(currentMealPlan?.suggestions ?? currentWeeklyPlan?.insights ?? []).map((item) => <li key={item}>{item}</li>)}
                 </ul>
               </SurfaceCard>
               <SurfaceCard title="下一步动作" emphasis="闭环推进">
@@ -1157,8 +1046,9 @@ export function App() {
               <MetricTile label="预计花费" value={toCurrency(estimatedBudget)} />
               <MetricTile label="覆盖餐次" value={`${categories} 类食材`} />
             </div>
-            <ShoppingListPanel items={shoppingItems} modeLabel={isWeeklyMode ? "本周采购" : "今日采购"} onToggle={handleToggleShopping} />
+            <ShoppingListPanel items={shoppingItems} modeLabel={isWeeklyMode ? "本周采购" : "今日采购"} onToggle={(id) => void handleToggleShopping(id)} />
           </div>
+
           <aside className={styles.shoppingAside}>
             <div className={styles.asideActions}>
               <button type="button">
@@ -1170,14 +1060,32 @@ export function App() {
                 导出清单
               </button>
             </div>
+
             <SurfaceCard title="AI 购物建议">
               <ul className={styles.suggestionList}>
-                <li>优先采购叶菜和豆腐，已为晚餐组合做过联动优化。</li>
-                <li>预算里约 9 成是高频消耗类食材，可一次性补足。</li>
-                <li>预计可节省约 {toCurrency(15.2)}，避免重复购买库存食材。</li>
+                {(currentMealPlan?.suggestions ?? currentWeeklyPlan?.insights ?? []).map((item) => <li key={item}>{item}</li>)}
               </ul>
-              <button className={styles.primaryBlockAction} type="button">更新生成清单</button>
+              <button
+                className={styles.primaryBlockAction}
+                type="button"
+                onClick={() => void (
+                  planningMode === "weekly" && currentWeeklyPlanId
+                    ? generateShoppingList("weekly_plan", currentWeeklyPlanId).then((list) => {
+                        setCurrentShoppingList(list);
+                        setCurrentShoppingListId(list.id);
+                      })
+                    : currentMealPlanId
+                      ? generateShoppingList("meal_plan", currentMealPlanId).then((list) => {
+                          setCurrentShoppingList(list);
+                          setCurrentShoppingListId(list.id);
+                        })
+                      : Promise.resolve()
+                )}
+              >
+                更新生成清单
+              </button>
             </SurfaceCard>
+
             <SurfaceCard title="常买清单" emphasis={toCurrency(optimizedBudget)}>
               <p className={styles.cardDetail}>豆腐、青菜、燕麦、牛奶是当前阶段最稳定的缺口食材，可直接复用到下一次生成。</p>
               <button className={styles.inlineAction} type="button" onClick={() => navigate("inventory")}>管理常买食材</button>
@@ -1269,21 +1177,6 @@ function MiniMealRow({ image, title, meta, value }: { image: string; title: stri
       </div>
       <em>{value}</em>
     </article>
-  );
-}
-
-function CompactProgressRow({ label, value, percent }: { label: string; value: string; percent: number }) {
-  return (
-    <div className={styles.compactProgressRow}>
-      <div>
-        <span>{label}</span>
-        <small>{value}</small>
-      </div>
-      <div className={styles.progressTrack}>
-        <i style={{ width: `${Math.min(percent, 100)}%` }} />
-      </div>
-      <em>{percent}%</em>
-    </div>
   );
 }
 

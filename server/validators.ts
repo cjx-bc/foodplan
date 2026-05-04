@@ -3,6 +3,7 @@ import type {
   ConversationRecord,
   InventoryCategory,
   InventoryItemRecord,
+  MealType,
   ProfileRecord,
   ShoppingListRecord,
 } from "./types.js";
@@ -232,7 +233,19 @@ export function validateInventoryPatch(
   return errors.length > 0 ? { errors } : { errors, value: nextItem };
 }
 
-export function validateMealPlanCreate(body: unknown): { errors: ApiFieldError[]; value?: { message: string; mode: "daily"; conversationId?: string } } {
+export function validateMealPlanCreate(body: unknown): {
+  errors: ApiFieldError[];
+  value?: {
+    message: string;
+    mode: "daily";
+    conversationId?: string;
+    preferences?: {
+      prioritizeInventory?: boolean;
+      maxDinnerCalories?: number;
+      focus?: string[];
+    };
+  };
+} {
   const errors: ApiFieldError[] = [];
 
   if (!body || typeof body !== "object" || Array.isArray(body)) {
@@ -261,6 +274,45 @@ export function validateMealPlanCreate(body: unknown): { errors: ApiFieldError[]
           message,
           mode: "daily",
           conversationId: typeof payload.conversationId === "string" ? payload.conversationId.trim() : undefined,
+          preferences: typeof payload.preferences === "object" && payload.preferences !== null
+            ? {
+                prioritizeInventory: (payload.preferences as Record<string, unknown>).prioritizeInventory === true,
+                maxDinnerCalories:
+                  typeof (payload.preferences as Record<string, unknown>).maxDinnerCalories === "number"
+                    ? ((payload.preferences as Record<string, unknown>).maxDinnerCalories as number)
+                    : undefined,
+                focus: Array.isArray((payload.preferences as Record<string, unknown>).focus)
+                  ? ((payload.preferences as Record<string, unknown>).focus as unknown[]).filter((item): item is string => typeof item === "string")
+                  : undefined,
+              }
+            : undefined,
+        },
+      };
+}
+
+export function validateMealRegenerate(body: unknown): {
+  errors: ApiFieldError[];
+  value?: { reason: string; message?: string };
+} {
+  const errors: ApiFieldError[] = [];
+
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return { errors: [{ field: "body", message: "Must be a JSON object" }] };
+  }
+
+  const payload = body as Record<string, unknown>;
+  const reason = typeof payload.reason === "string" ? payload.reason.trim() : "";
+  if (!reason) {
+    errors.push({ field: "reason", message: "Reason is required" });
+  }
+
+  return errors.length > 0
+    ? { errors }
+    : {
+        errors,
+        value: {
+          reason,
+          message: typeof payload.message === "string" && payload.message.trim() ? payload.message.trim() : undefined,
         },
       };
 }
@@ -381,4 +433,104 @@ export function validateConversationMessageCreate(body: unknown): {
           triggerPlanGeneration: payload.triggerPlanGeneration !== false,
         },
       };
+}
+
+export function validateWeeklyPlanCreate(body: unknown): {
+  errors: ApiFieldError[];
+  value?: { message: string; preferenceTags: string[]; startDate: string; days: number; conversationId?: string };
+} {
+  const errors: ApiFieldError[] = [];
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return { errors: [{ field: "body", message: "Must be a JSON object" }] };
+  }
+
+  const payload = body as Record<string, unknown>;
+  const message = typeof payload.message === "string" ? payload.message.trim() : "";
+  if (!message) {
+    errors.push({ field: "message", message: "Message is required" });
+  }
+
+  const preferenceTags = Array.isArray(payload.preferenceTags)
+    ? payload.preferenceTags.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    : [];
+
+  const startDate = typeof payload.startDate === "string" && parseDateOnly(payload.startDate) !== null ? payload.startDate : "";
+  if (!startDate) {
+    errors.push({ field: "startDate", message: "Must be a YYYY-MM-DD date string" });
+  }
+
+  const days = typeof payload.days === "number" && Number.isInteger(payload.days) && payload.days > 0 && payload.days <= 7 ? payload.days : 0;
+  if (!days) {
+    errors.push({ field: "days", message: "Days must be an integer between 1 and 7" });
+  }
+
+  if (payload.conversationId !== undefined && (typeof payload.conversationId !== "string" || !payload.conversationId.trim())) {
+    errors.push({ field: "conversationId", message: "Conversation ID must be a non-empty string" });
+  }
+
+  return errors.length > 0
+    ? { errors }
+    : {
+        errors,
+        value: {
+          message,
+          preferenceTags,
+          startDate,
+          days,
+          conversationId: typeof payload.conversationId === "string" ? payload.conversationId.trim() : undefined,
+        },
+      };
+}
+
+export function validateWeeklyDayPatch(body: unknown): {
+  errors: ApiFieldError[];
+  value?: { message?: string; replaceMeals: MealType[] };
+} {
+  const errors: ApiFieldError[] = [];
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return { errors: [{ field: "body", message: "Must be a JSON object" }] };
+  }
+
+  const payload = body as Record<string, unknown>;
+  const replaceMeals = Array.isArray(payload.replaceMeals)
+    ? payload.replaceMeals.filter(
+        (item): item is MealType => item === "breakfast" || item === "lunch" || item === "dinner",
+      )
+    : [];
+
+  if (replaceMeals.length === 0) {
+    errors.push({ field: "replaceMeals", message: "At least one meal type is required" });
+  }
+
+  return errors.length > 0
+    ? { errors }
+    : {
+        errors,
+        value: {
+          message: typeof payload.message === "string" && payload.message.trim() ? payload.message.trim() : undefined,
+          replaceMeals,
+        },
+      };
+}
+
+export function validateWeeklyPlanAdopt(body: unknown): {
+  errors: ApiFieldError[];
+  value?: { selectedDate?: string };
+} {
+  if (body === undefined || body === null || body === "") {
+    return { errors: [], value: {} };
+  }
+  if (typeof body !== "object" || Array.isArray(body)) {
+    return { errors: [{ field: "body", message: "Must be a JSON object" }] };
+  }
+  const payload = body as Record<string, unknown>;
+  if (payload.selectedDate !== undefined && (typeof payload.selectedDate !== "string" || parseDateOnly(payload.selectedDate) === null)) {
+    return { errors: [{ field: "selectedDate", message: "Must be a YYYY-MM-DD date string" }] };
+  }
+  return {
+    errors: [],
+    value: {
+      selectedDate: typeof payload.selectedDate === "string" ? payload.selectedDate : undefined,
+    },
+  };
 }

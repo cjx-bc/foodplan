@@ -9,7 +9,7 @@
 项目当前由两部分组成：
 
 - Web 前端：Vite + React + TypeScript 单页应用，页面切换由 `src/app/App.tsx` 内的 hash 路由状态实现，并已通过 `localStorage` 保留本地工作台状态。
-- 后端骨架：Node.js 原生 HTTP + TypeScript，位于 `server/`，当前提供 `health`、`profile`、`inventory-items`、`meal-plans`、`shopping-lists`、`conversations` API，并使用 `server/data/store.json` 作为本地 JSON 存储。
+- 后端服务：Node.js 原生 HTTP + TypeScript，位于 `server/`，当前提供 `health`、`profile`、`inventory-items`、`meal-plans`、`weekly-plans`、`shopping-lists`、`conversations` API，并使用 `server/data/store.json` 作为本地 JSON 存储。
 
 当前还没有数据库、真实 AI API 或 React Router。
 
@@ -93,10 +93,17 @@ npm run build:server
 
 ## 验证流程
 
-当前没有 `test`、`lint` 或格式化脚本。修改源码后至少运行：
+当前没有 `lint` 或格式化脚本。修改源码后至少运行：
 
 ```powershell
 npm run build
+npm run build:server
+```
+
+涉及后端链路、前后端接线或接口契约改动时，再额外运行：
+
+```powershell
+npm run test:api-smoke
 ```
 
 只修改文档时，至少用 UTF-8 读取确认内容正常：
@@ -145,6 +152,7 @@ src
 ├── vite-env.d.ts
 ├── app
 │   ├── App.tsx
+│   ├── api.ts
 │   └── App.module.css
 ├── components
 │   ├── IconButton.tsx
@@ -163,6 +171,8 @@ src
 │   └── global.css
 ├── types
 │   └── smartmeal.ts
+├── scripts
+│   └── api-smoke.ts
 └── utils
     ├── labels.ts
     ├── nutrition.ts
@@ -234,10 +244,11 @@ server
 | FE-03 mock 数据 | 已完成 | 用户目标、库存、餐食、购物清单、对话数据和周计划日卡餐单详情已在 `src/data/mockData.ts`。 |
 | FE-04 首页框架 | 已完成 | 顶部品牌、导航和 7 页桌面工作台页面容器已实现，默认入口为 `overview` 总览页。 |
 | FE-05 AI 对话区 | 已完成 | 支持输入、快捷操作、mock 回复和右侧三餐/营养/库存/购物摘要工作区。 |
-| FE-06 今日三餐卡片 | 已完成 | 支持展示、展开详情和单餐替换。 |
+| FE-05A 前端真实 API 接线 | 已完成 | `chat / today / shopping / weekly / inventory` 已改为消费后端真实接口，`src/app/api.ts` 负责最小请求封装。 |
+| FE-06 今日三餐卡片 | 已完成 | 支持展示、展开详情和单餐替换，并已接入 `POST /api/v1/meal-plans/:id/meals/:mealType/regenerate`。 |
 | FE-07 营养概览 | 已完成 | 三餐变化后通过 `buildNutritionSummary` 同步计算。 |
-| FE-08 库存模块 | 已完成 | 支持新增库存、临期状态计算和列表展示。 |
-| FE-09 购物清单模块 | 已完成 | 支持分类展示和勾选已购买。 |
+| FE-08 库存模块 | 已完成 | 支持新增库存、临期状态计算和列表展示，新增库存后会触发当前采购缺口重算。 |
+| FE-09 购物清单模块 | 已完成 | 支持分类展示和勾选已购买，并已接入真实 `shopping-lists` API。 |
 | FE-10 页面视觉改版 | 已完成 | 已按参考图把 `chat`、`today`、`inventory`、`weekly`、`nutrition`、`shopping` 六页改成统一的 A 方向健康工具台样式。 |
 | 每周计划页 | 已完成 | 已支持偏好选择、生成本周计划、单日微调、洞察摘要和确认采用的本地状态工作区。 |
 | Weekly / Nutrition 桌面细化 | 已完成 | 已增强 `weekly` 页的计划摘要、选中日聚焦和餐格信息密度，并把 `nutrition` 页升级为更接近分析台的 Hero + 图表指标布局。 |
@@ -255,17 +266,19 @@ server
 | BE-04 今日餐单 API | 已完成 | 已实现 `POST /api/v1/meal-plans`、`GET /api/v1/meal-plans/:id`，支持基于库存和目标生成结构化日计划。 |
 | BE-05 购物清单 API | 已完成 | 已实现 `POST /api/v1/shopping-lists/generate`、`GET /api/v1/shopping-lists/current`、`PATCH /api/v1/shopping-lists/:id/items/:itemId`。 |
 | BE-06 对话 API | 已完成 | 已实现 `POST/GET /api/v1/conversations`、`GET/POST /api/v1/conversations/:id/messages`，支持消息记录与餐单联动。 |
-| 后端实现 | 进行中 | 今日餐单、购物清单和会话主链路已可运行，但 weekly-plan 与真实 AI 仍未实现。 |
+| BE-07 每周计划 API | 已完成 | 已实现 `POST /api/v1/weekly-plans`、`GET /api/v1/weekly-plans/:id`、`PATCH /api/v1/weekly-plans/:id/days/:date`、`POST /api/v1/weekly-plans/:id/adopt`。 |
+| 后端实现 | 进行中 | 日计划、购物、会话、weekly-plan 和 adopt 主链路已可运行；真实 AI、数据库和更细的错误降级仍未实现。 |
 | AI 结构化生成 | 待评估 | 当前为本地 mock 和规则调整。 |
-| 持久化存储 | 已完成 | 已在 `src/app/App.tsx` 中接入 `localStorage`，保留周计划确认态、今日餐单、库存、购物勾选、AI 摘要和对话记录；尚未接后端持久化。 |
+| 接口回归脚本 | 已完成 | 已新增 `scripts/api-smoke.ts` 和 `npm run test:api-smoke`，覆盖会话、日计划、购物清单、weekly-plan、adopt 主链路。 |
+| 持久化存储 | 已完成 | 前端已改为仅在 `localStorage` 保存轻量资源指针与模式，业务真相源切换为后端 JSON 存储。 |
 
 ## 当前进度
 
 | 范围 | 百分比 | 状态 | 依据 |
 | --- | ---: | --- | --- |
-| 前端 MVP 演示闭环 | 100% | 进行中 | 总览、AI 对话、今日三餐、库存、周计划、营养和购物清单已串成统一工作台，`overview/chat` CTA 闭环、`weekly/nutrition` 桌面细节和 `390px-768px` 首屏压缩已完成；前端剩余工作主要是接真实接口而非继续补演示态。 |
-| 整体 MVP | 81% | 进行中 | 前端高保真、页面联动、本地规则闭环、默认总览入口、后端 API 合约、核心数据模型以及日计划/购物/会话主链路已落地；仍缺周计划服务、真实 AI 与数据库层。 |
-| 文档与交接 | 100% | 进行中 | PRD、任务清单、开发拆解、README、本文件、正式 API/数据模型文档和后端命令说明已同步；后续主要补 weekly-plan、数据库与前后端接线记录。 |
+| 前端 MVP 演示闭环 | 100% | 进行中 | 总览、AI 对话、今日三餐、库存、周计划、营养和购物清单已统一到真实后端数据源，刷新恢复改为“轻量 ID + 后端回拉”。 |
+| 整体 MVP | 89% | 进行中 | 前端主要工作区、日计划/购物/会话/weekly-plan/adopt 主链路、接口回归脚本和后端 JSON 持久化已落地；仍缺真实 AI、数据库与更完整异常体验。 |
+| 文档与交接 | 100% | 进行中 | PRD、任务清单、开发拆解、README、本文件、正式 API/数据模型文档和回归命令说明已同步；后续主要补真实 AI 与数据库接线记录。 |
 
 ## 下一步计划
 
@@ -282,11 +295,13 @@ server
 | P0 | 已完成 | 实现 meal-plan、shopping-list、conversation API | 已完成日计划生成、购物缺口推导、购物勾选和对话消息落库，并打通 `conversation -> meal-plan -> shopping-list` 主链路。 |
 | P1 | 已完成 | 继续打磨 `weekly` 和 `nutrition` 页的桌面细节 | 已增强周计划摘要、选中日聚焦、图表统计胶囊和营养页 Hero 布局，并完成 `1440px` 浏览器回归截图。 |
 | P0 | 已完成 | 继续把 `overview` 与 `chat` 的 CTA 闭环压实 | 已补齐总览三步流转、模式动作区和聊天页流程卡，用户可直接从总览跳到 AI 调整、今日执行、本周确认和采购补缺口。 |
-| P1 | 待执行 | 把前端 `chat / today / shopping` 接到已存在的后端 API | 从本地 mock 过渡到真实接口，验证前后端状态口径、异常处理和本地缓存策略。 |
+| P1 | 已完成 | 把前端 `chat / today / shopping` 接到已存在的后端 API | 已从本地 mock 过渡到真实接口，并改为资源 ID + 后端回拉恢复。 |
 | P1 | 已完成 | 压缩 390px 到 768px 视口下的头部和首屏高度 | 已压缩头部、导航、按钮和 Hero 间距，并通过 `390px`、`768px` 浏览器截图确认首屏高度收敛。 |
-| P1 | 待执行 | 实现 weekly-plan API 与 adopt 同步逻辑 | 对齐当前前端每周计划工作区能力。 |
-| P2 | 待评估 | 接入持久化与真实 AI 结构化输出 | 替换本地 mock 数据，增加 JSON schema 校验和失败降级。 |
-| P2 | 待评估 | 视需要补充 README 中的运行截图或在线预览入口 | 提升 GitHub 仓库首屏可读性，但不改变当前前端实现范围。 |
+| P1 | 已完成 | 实现 weekly-plan API 与 adopt 同步逻辑 | 已支持周计划生成、微调、确认采用，并同步今日餐单和周采购。 |
+| P1 | 待执行 | 收紧前端错误态与加载态 | 补齐接口失败提示、空状态和重试行为，减少当前“静默失败”窗口。 |
+| P1 | 待执行 | 做一轮桌面端运行态回归 | 在真实后端模式下检查 `overview / chat / today / weekly / shopping` 的溢出、错位和按钮行为。 |
+| P2 | 待评估 | 接入真实 AI 结构化输出 | 在 `planner.ts` 规则 fallback 之上增加 schema 校验、模型调用和失败降级。 |
+| P2 | 待评估 | 升级数据库持久化 | 用数据库替换 `server/data/store.json`，并补用户认证上下文。 |
 
 ## 编码规范
 
@@ -345,6 +360,7 @@ server
 
 | 日期 | 状态 | 变更 | 原因与目标 | 验证 |
 | --- | --- | --- | --- | --- |
+| 2026-05-04 | 已完成 | 打通真实后端主链路：新增 `src/app/api.ts`，将前端 `chat / today / shopping / weekly / inventory` 改接真实 API；同时补齐 `weekly-plans`、`meal regenerate`、`adopt` 后端路由、`workspaceState` 存储和 `scripts/api-smoke.ts` 回归脚本，并更新 `AGENTS.md` | 需要把 SmartMeal 从“前端 mock 工作台”推进到“真实接口 + 周计划 adopt + 刷新可恢复”的可联调状态，减少继续依赖分散 mock 和重型 `localStorage` 快照。 | 已通过 `npm run build`、`npm run build:server`、`npm run test:api-smoke`；已启动 `server-dist/index.js` 验证 `GET /api/v1/health`；已验证 `http://localhost:5173/` 可返回 200。 |
 | 2026-05-04 | 已完成 | 压实 `overview / chat` CTA 闭环，并继续细化 `weekly / nutrition` 桌面卡片层级；同时压缩 `390px-768px` 视口下头部与首屏高度，涉及 `src/app/App.tsx`、`src/app/App.module.css` 与 `AGENTS.md` | 需要把总览入口到 AI 调整、今日执行、本周确认、采购补缺口的动作路径收紧，并解决窄屏首屏过高的问题，让当前前端演示闭环可以真正从总览页走通。 | 已通过 `npm run build`；已使用 Playwright + 本机 Chrome 回归 `#/overview`、`#/chat`、`#/weekly`、`#/nutrition` 在 `1440px`、`768px`、`390px` 视口下的截图检查。 |
 | 2026-05-04 | 已完成 | 继续打磨 `weekly` / `nutrition` 桌面页面：更新 `src/app/App.tsx` 与 `src/app/App.module.css`，补充周计划摘要条、选中日聚焦卡、营养页 Hero 和图表统计胶囊 | 需要把每周计划页和营养统计页进一步贴近参考图的图表密度、间距和按钮层级，同时保留现有状态流和组件边界。 | 已通过 `npm run build`；已启动 `npm run dev` 并使用 Playwright 回归 `#/weekly`、`#/nutrition` 1440px 视口截图；控制台仅有 `favicon.ico` 404。 |
 | 2026-05-04 | 已完成 | 以产品经理视角复核当前项目现状并更新 `AGENTS.md`：补齐默认总览入口、后端已实现接口、源码结构与下一步计划 | 需要避免后续会话继续沿用过期的首页与后端能力判断，让产品、研发和代理都基于同一份真实状态协作。 | 已通过 `npm run build`；已用 UTF-8 读取确认；已启动 `server-dist/index.js` 并验证 `GET /api/v1/health`、`GET /api/v1/profile`、`GET /api/v1/conversations`、`POST /api/v1/meal-plans`。 |

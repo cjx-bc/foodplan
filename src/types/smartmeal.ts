@@ -26,6 +26,8 @@ export type InventoryItem = {
   name: string;
   category: InventoryCategory;
   quantity: string;
+  quantityValue?: number;
+  quantityUnit?: string;
   expireDate?: string;
   status: "fresh" | "expiring_soon" | "expired" | "need_buy";
 };
@@ -60,6 +62,7 @@ export type MealRecommendation = {
 
 export type ShoppingListItem = {
   id: string;
+  stableKey?: string;
   name: string;
   category: InventoryCategory;
   amount: string;
@@ -89,12 +92,58 @@ export type MealPlanResult = {
   suggestions: string[];
 };
 
+export type MealPlan = MealPlanResult & {
+  id: string;
+  mode: PlanningMode;
+  reply: string;
+  conversationId?: string;
+  sourceMessage: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ShoppingList = {
+  id: string;
+  sourceType: "meal_plan" | "weekly_plan";
+  sourceId: string;
+  items: ShoppingListItem[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type WeeklyPlan = {
+  id: string;
+  conversationId?: string;
+  title: string;
+  description: string;
+  tags: string[];
+  days: WeeklyPlanDay[];
+  insights: string[];
+  adopted: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Conversation = {
+  id: string;
+  title: string;
+  lastMessageAt: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ConversationMessageRef = {
+  mealPlanId?: string;
+  shoppingListId?: string;
+  weeklyPlanId?: string;
+};
+
 export type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
   createdAt: string;
-  structuredResult?: MealPlanResult;
+  structuredResult?: ConversationMessageRef | null;
 };
 
 export type AiActionSummary = {
@@ -106,6 +155,7 @@ export type AiActionSummary = {
 };
 
 export type WeeklyPlanDay = {
+  date?: string;
   day: string;
   meals: MealRecommendation[];
   breakfast: string;

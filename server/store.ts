@@ -9,6 +9,8 @@ import type {
   MealPlanRecord,
   ProfileRecord,
   ShoppingListRecord,
+  WeeklyPlanRecord,
+  WorkspaceStateRecord,
 } from "./types.js";
 import { normalizeInventoryItem } from "./utils.js";
 
@@ -24,9 +26,14 @@ async function readStoreFromDisk(): Promise<AppStore> {
     profile: parsed.profile,
     inventoryItems: parsed.inventoryItems.map(normalizeInventoryItem),
     mealPlans: parsed.mealPlans ?? [],
+    weeklyPlans: parsed.weeklyPlans ?? [],
     shoppingLists: parsed.shoppingLists ?? [],
     conversations: parsed.conversations ?? [],
     conversationMessages: parsed.conversationMessages ?? [],
+    workspaceState: parsed.workspaceState ?? {
+      planningMode: "daily",
+      updatedAt: new Date(0).toISOString(),
+    },
   };
 }
 
@@ -101,6 +108,41 @@ export async function createMealPlan(mealPlan: MealPlanRecord): Promise<MealPlan
   return mealPlan;
 }
 
+export async function updateMealPlan(mealPlan: MealPlanRecord): Promise<MealPlanRecord> {
+  const store = await getStore();
+  const nextStore: AppStore = {
+    ...store,
+    mealPlans: store.mealPlans.map((item) => (item.id === mealPlan.id ? mealPlan : item)),
+  };
+  await saveStore(nextStore);
+  return mealPlan;
+}
+
+export async function readWeeklyPlan(weeklyPlanId: string): Promise<WeeklyPlanRecord | undefined> {
+  const store = await getStore();
+  return store.weeklyPlans.find((item) => item.id === weeklyPlanId);
+}
+
+export async function createWeeklyPlan(weeklyPlan: WeeklyPlanRecord): Promise<WeeklyPlanRecord> {
+  const store = await getStore();
+  const nextStore: AppStore = {
+    ...store,
+    weeklyPlans: [weeklyPlan, ...store.weeklyPlans],
+  };
+  await saveStore(nextStore);
+  return weeklyPlan;
+}
+
+export async function updateWeeklyPlan(weeklyPlan: WeeklyPlanRecord): Promise<WeeklyPlanRecord> {
+  const store = await getStore();
+  const nextStore: AppStore = {
+    ...store,
+    weeklyPlans: store.weeklyPlans.map((item) => (item.id === weeklyPlan.id ? weeklyPlan : item)),
+  };
+  await saveStore(nextStore);
+  return weeklyPlan;
+}
+
 export async function listShoppingLists(): Promise<ShoppingListRecord[]> {
   const store = await getStore();
   return [...store.shoppingLists];
@@ -173,4 +215,19 @@ export async function createConversationMessages(messages: ConversationMessageRe
   };
   await saveStore(nextStore);
   return messages;
+}
+
+export async function readWorkspaceState(): Promise<WorkspaceStateRecord> {
+  const store = await getStore();
+  return store.workspaceState;
+}
+
+export async function updateWorkspaceState(workspaceState: WorkspaceStateRecord): Promise<WorkspaceStateRecord> {
+  const store = await getStore();
+  const nextStore: AppStore = {
+    ...store,
+    workspaceState,
+  };
+  await saveStore(nextStore);
+  return workspaceState;
 }
