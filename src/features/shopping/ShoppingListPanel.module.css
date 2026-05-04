@@ -1,0 +1,140 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header span {
+  align-items: center;
+  color: var(--primary);
+  display: inline-flex;
+  font-weight: 900;
+  gap: 7px;
+}
+
+.header strong {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.groups {
+  display: grid;
+  gap: 12px;
+}
+
+.group {
+  display: grid;
+  gap: 8px;
+}
+
+.groupToggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  gap: 6px;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  padding: 0;
+  text-align: left;
+}
+
+.groupToggle em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.complete {
+  align-items: center;
+  background: var(--green-soft);
+  border: 1px solid rgba(17, 130, 59, 0.24);
+  border-radius: var(--radius-xs);
+  color: var(--primary-dark);
+  display: flex;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 8px;
+  padding: 10px;
+}
+
+.item {
+  align-items: center;
+  background: #fbfdfb;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 10px;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  padding: 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.item:hover {
+  border-color: rgba(17, 130, 59, 0.5);
+}
+
+.checkbox {
+  align-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  color: white;
+  display: flex;
+  height: 20px;
+  justify-content: center;
+  width: 20px;
+}
+
+.item strong {
+  display: block;
+  font-size: 14px;
+}
+
+.item small {
+  color: var(--muted);
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.item em {
+  color: var(--primary);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.checked {
+  background: #f2f6f3;
+}
+
+.checked .checkbox {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.checked strong,
+.checked small,
+.checked em {
+  opacity: 0.55;
+  text-decoration: line-through;
+}

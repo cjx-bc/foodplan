@@ -1,0 +1,80 @@
+:root {
+  color-scheme: light;
+  --primary: #11823b;
+  --primary-dark: #086a2e;
+  --success: #1f9d55;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --tomato: #d95b43;
+  --tomato-soft: #fff1ec;
+  --amber-soft: #fff7df;
+  --cream: #fbf7ed;
+  --oat: #f4efe4;
+  --surface-muted: #faf8f1;
+  --background: #fbf7ed;
+  --surface: #ffffff;
+  --green-soft: #eefaf1;
+  --ink: #17211b;
+  --muted: #66736a;
+  --muted-light: #97a39b;
+  --border: #dde7df;
+  --border-strong: #bfd2c5;
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --shadow: 0 16px 40px rgba(76, 63, 43, 0.08);
+  font-family: Inter, "Segoe UI", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  font-synthesis: none;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(251, 247, 237, 0.92)),
+    radial-gradient(circle at top left, rgba(217, 91, 67, 0.08), transparent 32%),
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.08), transparent 26%),
+    var(--background);
+  color: var(--ink);
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.srOnly {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

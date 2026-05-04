@@ -1,0 +1,96 @@
+.panel {
+  background: linear-gradient(180deg, #ffffff 0%, #f7fcf8 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 15px;
+  padding: 16px;
+}
+
+.header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header span {
+  align-items: center;
+  color: var(--primary);
+  display: inline-flex;
+  font-weight: 900;
+  gap: 7px;
+}
+
+.header strong {
+  background: var(--primary);
+  border-radius: 999px;
+  color: white;
+  font-size: 13px;
+  padding: 5px 10px;
+}
+
+.delta {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.delta div {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+}
+
+.delta small {
+  color: var(--muted);
+}
+
+.delta strong {
+  color: var(--primary);
+  font-size: 24px;
+}
+
+.delta span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.progressList {
+  display: grid;
+  gap: 12px;
+}
+
+.suggestions {
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.suggestions h3 {
+  align-items: center;
+  color: var(--ink);
+  display: inline-flex;
+  font-size: 16px;
+  gap: 7px;
+  margin: 0;
+}
+
+.suggestions p {
+  align-items: start;
+  color: var(--muted);
+  display: grid;
+  font-size: 13px;
+  gap: 8px;
+  grid-template-columns: 16px minmax(0, 1fr);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.suggestions svg {
+  color: var(--success);
+  margin-top: 2px;
+}

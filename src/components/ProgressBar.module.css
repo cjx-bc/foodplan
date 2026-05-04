@@ -1,0 +1,39 @@
+.row {
+  display: grid;
+  gap: 7px;
+}
+
+.meta {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 86px 1fr 44px;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.meta strong {
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.meta em {
+  color: var(--primary);
+  font-style: normal;
+  font-weight: 800;
+  text-align: right;
+}
+
+.track {
+  background: #dce7df;
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.track span {
+  background: linear-gradient(90deg, var(--primary), var(--success));
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
