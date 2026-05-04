@@ -1,5 +1,6 @@
 import { mealCatalog } from "./catalog.js";
 import type {
+  GenerationMetaRecord,
   InventoryCategory,
   InventoryItemRecord,
   MealPlanRecord,
@@ -178,10 +179,12 @@ export function createDailyMealPlanFromMeals(
   profile: ProfileRecord,
   inventory: InventoryItemRecord[],
   previousShoppingList: ShoppingListItemRecord[] = [],
+  userId = "user_guest_default",
   conversationId?: string,
   sourceMessage = "",
   reply = "已根据当前方案生成今日餐单。",
   suggestionsOverride?: string[],
+  generationMeta?: GenerationMetaRecord,
 ): MealPlanRecord {
   const shoppingList = deriveShoppingItems(meals, inventory, previousShoppingList);
   const nutritionSummary = buildNutritionSummary(meals, profile);
@@ -193,6 +196,7 @@ export function createDailyMealPlanFromMeals(
 
   return {
     id: createId("plan"),
+    userId,
     conversationId,
     mode: "daily",
     sourceMessage,
@@ -202,6 +206,7 @@ export function createDailyMealPlanFromMeals(
     shoppingList,
     inventoryUsage,
     suggestions,
+    generationMeta,
     createdAt,
     updatedAt: createdAt,
   };
@@ -256,6 +261,27 @@ function cycleMeal(kind: MealType, index: number) {
   return cloneMeal(options[index % options.length] ?? options[0]);
 }
 
+function findMealInCatalog(kind: MealType, mealId: string): MealRecommendationRecord | null {
+  const found = mealCatalog[kind].find((meal) => meal.id === mealId);
+  return found ? cloneMeal(found) : null;
+}
+
+export function buildMealSetFromIds(input: {
+  breakfastId: string;
+  lunchId: string;
+  dinnerId: string;
+}): MealRecommendationRecord[] | null {
+  const breakfast = findMealInCatalog("breakfast", input.breakfastId);
+  const lunch = findMealInCatalog("lunch", input.lunchId);
+  const dinner = findMealInCatalog("dinner", input.dinnerId);
+
+  if (!breakfast || !lunch || !dinner) {
+    return null;
+  }
+
+  return [breakfast, lunch, dinner];
+}
+
 export function regenerateMealInPlan(
   mealPlan: MealPlanRecord,
   mealType: MealType,
@@ -293,6 +319,7 @@ export function generateDailyMealPlan(
   profile: ProfileRecord,
   inventory: InventoryItemRecord[],
   previousShoppingList: ShoppingListItemRecord[] = [],
+  userId = "user_guest_default",
   conversationId?: string,
 ): MealPlanRecord {
   const meals = [
@@ -309,6 +336,7 @@ export function generateDailyMealPlan(
     profile,
     inventory,
     previousShoppingList,
+    userId,
     conversationId,
     message,
     buildReply(message, inventoryUsage, previewShoppingList),
@@ -321,6 +349,7 @@ export function generateWeeklyPlan(
   startDate: string,
   days: number,
   inventory: InventoryItemRecord[],
+  userId = "user_guest_default",
   conversationId?: string,
 ): WeeklyPlanRecord {
   const startAt = new Date(`${startDate}T00:00:00.000Z`);
@@ -361,6 +390,7 @@ export function generateWeeklyPlan(
 
   return {
     id: createId("week"),
+    userId,
     conversationId,
     title: buildWeeklyTitle(tags),
     description: buildWeeklyDescription(tags),
@@ -368,6 +398,64 @@ export function generateWeeklyPlan(
     days: weekDays,
     insights: buildWeeklyInsights(weekDays),
     adopted: false,
+    createdAt,
+    updatedAt: createdAt,
+  };
+}
+
+export function createWeeklyPlanFromDays(input: {
+  title: string;
+  description: string;
+  tags: string[];
+  days: Array<{
+    date: string;
+    meals: MealRecommendationRecord[];
+  }>;
+  inventory: InventoryItemRecord[];
+  userId: string;
+  conversationId?: string;
+  adopted?: boolean;
+  generationMeta?: GenerationMetaRecord;
+}): WeeklyPlanRecord {
+  const createdAt = nowIso();
+  const days: WeeklyPlanDayRecord[] = input.days.map((day, index) => {
+    const calories = day.meals.reduce((total, meal) => total + meal.nutrition.calories, 0);
+    const status = buildWeeklyStatus(calories, index);
+    const currentDate = new Date(`${day.date}T00:00:00.000Z`);
+    const dayLabel = weekdayLabel(currentDate);
+    const inventoryFocus = unique(
+      day.meals.flatMap((meal) =>
+        meal.ingredients.filter((item) => item.fromInventory && inventoryHasIngredient(item.name, input.inventory)).map((item) => item.name),
+      ),
+    );
+    const shoppingGap = unique(deriveShoppingItems(day.meals, input.inventory).map((item) => item.name));
+
+    return {
+      date: day.date,
+      day: dayLabel,
+      meals: day.meals.map((meal) => cloneMeal(meal)),
+      breakfast: day.meals.find((meal) => meal.mealType === "breakfast")?.title ?? "",
+      lunch: day.meals.find((meal) => meal.mealType === "lunch")?.title ?? "",
+      dinner: day.meals.find((meal) => meal.mealType === "dinner")?.title ?? "",
+      calories,
+      status,
+      note: buildWeeklyNote(status, dayLabel),
+      inventoryFocus,
+      shoppingGap,
+    };
+  });
+
+  return {
+    id: createId("week"),
+    userId: input.userId,
+    conversationId: input.conversationId,
+    title: input.title,
+    description: input.description,
+    tags: input.tags,
+    days,
+    insights: buildWeeklyInsights(days),
+    adopted: input.adopted ?? false,
+    generationMeta: input.generationMeta,
     createdAt,
     updatedAt: createdAt,
   };

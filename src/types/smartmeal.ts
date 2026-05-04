@@ -71,6 +71,13 @@ export type ShoppingListItem = {
 };
 
 export type PlanningMode = "daily" | "weekly";
+export type GenerationSource = "ai" | "fallback";
+
+export type GenerationMeta = {
+  source: GenerationSource;
+  model?: string;
+  requestId?: string;
+};
 
 export type DerivedShoppingListItem = ShoppingListItem & {
   source: PlanningMode;
@@ -98,6 +105,7 @@ export type MealPlan = MealPlanResult & {
   reply: string;
   conversationId?: string;
   sourceMessage: string;
+  generationMeta?: GenerationMeta;
   createdAt: string;
   updatedAt: string;
 };
@@ -120,7 +128,27 @@ export type WeeklyPlan = {
   days: WeeklyPlanDay[];
   insights: string[];
   adopted: boolean;
+  generationMeta?: GenerationMeta;
   createdAt: string;
+  updatedAt: string;
+};
+
+export type Session = {
+  id: string;
+  userId: string;
+  displayName: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type WorkspaceState = {
+  userId: string;
+  currentConversationId?: string;
+  currentMealPlanId?: string;
+  currentWeeklyPlanId?: string;
+  currentShoppingListId?: string;
+  planningMode: PlanningMode;
+  selectedWeekday?: string;
   updatedAt: string;
 };
 
@@ -181,3 +209,5 @@ export type InsightMetric = {
   value: string;
   detail: string;
 };
+
+export type ApiRequestState = "idle" | "loading" | "success" | "error";

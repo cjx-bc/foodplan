@@ -267,8 +267,8 @@ server
 | BE-05 购物清单 API | 已完成 | 已实现 `POST /api/v1/shopping-lists/generate`、`GET /api/v1/shopping-lists/current`、`PATCH /api/v1/shopping-lists/:id/items/:itemId`。 |
 | BE-06 对话 API | 已完成 | 已实现 `POST/GET /api/v1/conversations`、`GET/POST /api/v1/conversations/:id/messages`，支持消息记录与餐单联动。 |
 | BE-07 每周计划 API | 已完成 | 已实现 `POST /api/v1/weekly-plans`、`GET /api/v1/weekly-plans/:id`、`PATCH /api/v1/weekly-plans/:id/days/:date`、`POST /api/v1/weekly-plans/:id/adopt`。 |
-| 后端实现 | 进行中 | 日计划、购物、会话、weekly-plan 和 adopt 主链路已可运行；真实 AI、数据库和更细的错误降级仍未实现。 |
-| AI 结构化生成 | 待评估 | 当前为本地 mock 和规则调整。 |
+| 后端实现 | 进行中 | 日计划、购物、会话、weekly-plan 和 adopt 主链路已可运行；已新增 DeepSeek 结构化生成适配层与规则 fallback，数据库和更细的错误降级仍未实现。 |
+| AI 结构化生成 | 已完成（适配层） | 已新增 `server/ai/deepseek.ts` 与 `server/ai/schemas.ts`，模型固定为 `deepseek-v4-flash`，通过 `DEEPSEEK_API_KEY` / `DEEPSEEK_BASE_URL` 环境变量驱动；失败时回退本地规则生成。 |
 | 接口回归脚本 | 已完成 | 已新增 `scripts/api-smoke.ts` 和 `npm run test:api-smoke`，覆盖会话、日计划、购物清单、weekly-plan、adopt 主链路。 |
 | 持久化存储 | 已完成 | 前端已改为仅在 `localStorage` 保存轻量资源指针与模式，业务真相源切换为后端 JSON 存储。 |
 
@@ -277,8 +277,8 @@ server
 | 范围 | 百分比 | 状态 | 依据 |
 | --- | ---: | --- | --- |
 | 前端 MVP 演示闭环 | 100% | 进行中 | 总览、AI 对话、今日三餐、库存、周计划、营养和购物清单已统一到真实后端数据源，刷新恢复改为“轻量 ID + 后端回拉”。 |
-| 整体 MVP | 89% | 进行中 | 前端主要工作区、日计划/购物/会话/weekly-plan/adopt 主链路、接口回归脚本和后端 JSON 持久化已落地；仍缺真实 AI、数据库与更完整异常体验。 |
-| 文档与交接 | 100% | 进行中 | PRD、任务清单、开发拆解、README、本文件、正式 API/数据模型文档和回归命令说明已同步；后续主要补真实 AI 与数据库接线记录。 |
+| 整体 MVP | 91% | 进行中 | 前端主要工作区、日计划/购物/会话/weekly-plan/adopt 主链路、接口回归脚本、后端 JSON 持久化和 DeepSeek AI 适配层已落地；仍缺数据库与更完整异常体验。 |
+| 文档与交接 | 100% | 进行中 | PRD、任务清单、开发拆解、README、本文件、正式 API/数据模型文档和回归命令说明已同步；后续主要补数据库接线记录与真实模型联调结果。 |
 
 ## 下一步计划
 
@@ -300,7 +300,7 @@ server
 | P1 | 已完成 | 实现 weekly-plan API 与 adopt 同步逻辑 | 已支持周计划生成、微调、确认采用，并同步今日餐单和周采购。 |
 | P1 | 待执行 | 收紧前端错误态与加载态 | 补齐接口失败提示、空状态和重试行为，减少当前“静默失败”窗口。 |
 | P1 | 待执行 | 做一轮桌面端运行态回归 | 在真实后端模式下检查 `overview / chat / today / weekly / shopping` 的溢出、错位和按钮行为。 |
-| P2 | 待评估 | 接入真实 AI 结构化输出 | 在 `planner.ts` 规则 fallback 之上增加 schema 校验、模型调用和失败降级。 |
+| P1 | 已完成 | 接入 DeepSeek AI 适配层 | 已补 `server/ai/deepseek.ts`、schema 校验、meal/weekly 结构映射和规则 fallback，且不在仓库内落盘密钥。 |
 | P2 | 待评估 | 升级数据库持久化 | 用数据库替换 `server/data/store.json`，并补用户认证上下文。 |
 
 ## 编码规范
@@ -360,6 +360,7 @@ server
 
 | 日期 | 状态 | 变更 | 原因与目标 | 验证 |
 | --- | --- | --- | --- | --- |
+| 2026-05-04 | 已完成 | 新增 DeepSeek AI 适配层：补充 `server/ai/deepseek.ts`、`server/ai/schemas.ts`，将日计划与周计划生成链路改为“DeepSeek 结构化输出 -> schema 校验 -> meal catalog 映射 -> 规则 fallback”；同时补齐最小 guest session / workspace-state 接口并移除残留 `openai` 依赖 | 用户决定模型改为 `deepseek-v4-flash`，需要把服务端生成边界从纯规则升级为可切真实模型、可校验、可降级的适配层，同时保证密钥只走环境变量，不进入仓库文件。 | 已通过 `npm uninstall openai`、`npm run build:server`、`npm run build`。 |
 | 2026-05-04 | 已完成 | 打通真实后端主链路：新增 `src/app/api.ts`，将前端 `chat / today / shopping / weekly / inventory` 改接真实 API；同时补齐 `weekly-plans`、`meal regenerate`、`adopt` 后端路由、`workspaceState` 存储和 `scripts/api-smoke.ts` 回归脚本，并更新 `AGENTS.md` | 需要把 SmartMeal 从“前端 mock 工作台”推进到“真实接口 + 周计划 adopt + 刷新可恢复”的可联调状态，减少继续依赖分散 mock 和重型 `localStorage` 快照。 | 已通过 `npm run build`、`npm run build:server`、`npm run test:api-smoke`；已启动 `server-dist/index.js` 验证 `GET /api/v1/health`；已验证 `http://localhost:5173/` 可返回 200。 |
 | 2026-05-04 | 已完成 | 压实 `overview / chat` CTA 闭环，并继续细化 `weekly / nutrition` 桌面卡片层级；同时压缩 `390px-768px` 视口下头部与首屏高度，涉及 `src/app/App.tsx`、`src/app/App.module.css` 与 `AGENTS.md` | 需要把总览入口到 AI 调整、今日执行、本周确认、采购补缺口的动作路径收紧，并解决窄屏首屏过高的问题，让当前前端演示闭环可以真正从总览页走通。 | 已通过 `npm run build`；已使用 Playwright + 本机 Chrome 回归 `#/overview`、`#/chat`、`#/weekly`、`#/nutrition` 在 `1440px`、`768px`、`390px` 视口下的截图检查。 |
 | 2026-05-04 | 已完成 | 继续打磨 `weekly` / `nutrition` 桌面页面：更新 `src/app/App.tsx` 与 `src/app/App.module.css`，补充周计划摘要条、选中日聚焦卡、营养页 Hero 和图表统计胶囊 | 需要把每周计划页和营养统计页进一步贴近参考图的图表密度、间距和按钮层级，同时保留现有状态流和组件边界。 | 已通过 `npm run build`；已启动 `npm run dev` 并使用 Playwright 回归 `#/weekly`、`#/nutrition` 1440px 视口截图；控制台仅有 `favicon.ico` 404。 |

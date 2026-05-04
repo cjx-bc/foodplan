@@ -5,8 +5,10 @@ import type {
   InventoryItem,
   MealPlan,
   MealType,
+  Session,
   ShoppingList,
   WeeklyPlan,
+  WorkspaceState,
 } from "../types/smartmeal";
 
 const apiBase = import.meta.env.VITE_API_BASE_URL ?? "/api/v1";
@@ -24,13 +26,28 @@ type ApiListEnvelope<T> = {
 
 type ApiError = {
   error?: {
+    code?: string;
     message?: string;
+    requestId?: string;
   };
 };
+
+export class ApiClientError extends Error {
+  code?: string;
+  requestId?: string;
+
+  constructor(message: string, options?: { code?: string; requestId?: string }) {
+    super(message);
+    this.name = "ApiClientError";
+    this.code = options?.code;
+    this.requestId = options?.requestId;
+  }
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${apiBase}${path}`, {
     ...init,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       ...(init?.headers ?? {}),
@@ -39,7 +56,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const errorBody = (await response.json().catch(() => ({}))) as ApiError;
-    throw new Error(errorBody.error?.message ?? `Request failed with ${response.status}`);
+    throw new ApiClientError(errorBody.error?.message ?? `Request failed with ${response.status}`, {
+      code: errorBody.error?.code,
+      requestId: errorBody.error?.requestId,
+    });
   }
 
   if (response.status === 204) {
@@ -47,6 +67,32 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   return (await response.json()) as T;
+}
+
+export async function ensureGuestSession() {
+  const response = await request<ApiEnvelope<Session>>("/auth/guest", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+  return response.data;
+}
+
+export async function getSession() {
+  const response = await request<ApiEnvelope<Session>>("/session");
+  return response.data;
+}
+
+export async function getWorkspaceState() {
+  const response = await request<ApiEnvelope<WorkspaceState>>("/workspace-state");
+  return response.data;
+}
+
+export async function patchWorkspaceState(payload: Partial<WorkspaceState>) {
+  const response = await request<ApiEnvelope<WorkspaceState>>("/workspace-state", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
 }
 
 function parseQuantity(value: string) {

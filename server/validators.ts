@@ -90,6 +90,7 @@ export function validateInventoryCreate(
   body: unknown,
   now: string,
   id: string,
+  userId: string,
 ): { errors: ApiFieldError[]; value?: InventoryItemRecord } {
   const errors: ApiFieldError[] = [];
 
@@ -146,6 +147,7 @@ export function validateInventoryCreate(
 
   const value: InventoryItemRecord = {
     id,
+    userId,
     name,
     category: (category as InventoryCategory) ?? "other",
     quantity,
@@ -379,7 +381,12 @@ export function validateShoppingListItemPatch(
   };
 }
 
-export function validateConversationCreate(body: unknown, now: string, id: string): { errors: ApiFieldError[]; value?: ConversationRecord } {
+export function validateConversationCreate(
+  body: unknown,
+  now: string,
+  id: string,
+  userId: string,
+): { errors: ApiFieldError[]; value?: ConversationRecord } {
   const errors: ApiFieldError[] = [];
   if (!body || typeof body !== "object" || Array.isArray(body)) {
     return { errors: [{ field: "body", message: "Must be a JSON object" }] };
@@ -397,6 +404,7 @@ export function validateConversationCreate(body: unknown, now: string, id: strin
         errors,
         value: {
           id,
+          userId,
           title,
           lastMessageAt: now,
           createdAt: now,

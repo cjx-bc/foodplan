@@ -139,6 +139,41 @@
 
 .main {
   display: grid;
+  gap: 16px;
+}
+
+.infoBanner,
+.errorBanner {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.infoBanner {
+  background: #f6f0e4;
+  border-color: #ead9af;
+  color: #644e21;
+}
+
+.errorBanner {
+  background: #fff1eb;
+  border-color: #f0b7a8;
+  color: #a45036;
+}
+
+.infoBanner button,
+.errorBanner button {
+  background: rgba(255, 255, 255, 0.78);
+  border: 0;
+  border-radius: 999px;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 8px 14px;
 }
 
 .pageFrame {

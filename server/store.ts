@@ -8,29 +8,95 @@ import type {
   InventoryItemRecord,
   MealPlanRecord,
   ProfileRecord,
+  SessionRecord,
   ShoppingListRecord,
+  UserRecord,
   WeeklyPlanRecord,
   WorkspaceStateRecord,
 } from "./types.js";
 import { normalizeInventoryItem } from "./utils.js";
 
 const storePath = path.join(process.cwd(), "server", "data", "store.json");
+const defaultUserId = "user_guest_default";
 
 let cachedStore: AppStore | null = null;
 
+function ensureDefaultUser(now = new Date(0).toISOString()): UserRecord {
+  return {
+    id: defaultUserId,
+    displayName: "Guest",
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+function normalizeProfile(profile: ProfileRecord, userId = defaultUserId): ProfileRecord {
+  return {
+    ...profile,
+    userId: profile.userId ?? userId,
+  };
+}
+
+function normalizeInventory(items: InventoryItemRecord[], userId = defaultUserId) {
+  return items.map((item) => normalizeInventoryItem({
+    ...item,
+    userId: item.userId ?? userId,
+  }));
+}
+
+function normalizeMealPlans(items: MealPlanRecord[], userId = defaultUserId) {
+  return items.map((item) => ({
+    ...item,
+    userId: item.userId ?? userId,
+  }));
+}
+
+function normalizeWeeklyPlans(items: WeeklyPlanRecord[], userId = defaultUserId) {
+  return items.map((item) => ({
+    ...item,
+    userId: item.userId ?? userId,
+  }));
+}
+
+function normalizeShoppingLists(items: ShoppingListRecord[], userId = defaultUserId) {
+  return items.map((item) => ({
+    ...item,
+    userId: item.userId ?? userId,
+  }));
+}
+
+function normalizeConversations(items: ConversationRecord[], userId = defaultUserId) {
+  return items.map((item) => ({
+    ...item,
+    userId: item.userId ?? userId,
+  }));
+}
+
+function normalizeConversationMessages(items: ConversationMessageRecord[], userId = defaultUserId) {
+  return items.map((item) => ({
+    ...item,
+    userId: item.userId ?? userId,
+  }));
+}
+
 async function readStoreFromDisk(): Promise<AppStore> {
   const raw = await readFile(storePath, "utf8");
-  const parsed = JSON.parse(raw) as AppStore;
+  const parsed = JSON.parse(raw) as Partial<AppStore>;
+  const user = parsed.users?.[0] ?? ensureDefaultUser(parsed.workspaceState?.updatedAt);
+  const sessions = parsed.sessions ?? [];
 
   return {
-    profile: parsed.profile,
-    inventoryItems: parsed.inventoryItems.map(normalizeInventoryItem),
-    mealPlans: parsed.mealPlans ?? [],
-    weeklyPlans: parsed.weeklyPlans ?? [],
-    shoppingLists: parsed.shoppingLists ?? [],
-    conversations: parsed.conversations ?? [],
-    conversationMessages: parsed.conversationMessages ?? [],
+    users: parsed.users?.length ? parsed.users : [user],
+    sessions,
+    profile: normalizeProfile(parsed.profile as ProfileRecord, user.id),
+    inventoryItems: normalizeInventory(parsed.inventoryItems ?? [], user.id),
+    mealPlans: normalizeMealPlans(parsed.mealPlans ?? [], user.id),
+    weeklyPlans: normalizeWeeklyPlans(parsed.weeklyPlans ?? [], user.id),
+    shoppingLists: normalizeShoppingLists(parsed.shoppingLists ?? [], user.id),
+    conversations: normalizeConversations(parsed.conversations ?? [], user.id),
+    conversationMessages: normalizeConversationMessages(parsed.conversationMessages ?? [], user.id),
     workspaceState: parsed.workspaceState ?? {
+      userId: user.id,
       planningMode: "daily",
       updatedAt: new Date(0).toISOString(),
     },
@@ -73,7 +139,7 @@ export async function updateProfile(profile: ProfileRecord): Promise<ProfileReco
 
 export async function listInventoryItems(): Promise<InventoryItemRecord[]> {
   const store = await getStore();
-  return store.inventoryItems.map(normalizeInventoryItem);
+  return normalizeInventory(store.inventoryItems, store.workspaceState.userId);
 }
 
 export async function replaceInventoryItems(items: InventoryItemRecord[]): Promise<InventoryItemRecord[]> {
@@ -230,4 +296,39 @@ export async function updateWorkspaceState(workspaceState: WorkspaceStateRecord)
   };
   await saveStore(nextStore);
   return workspaceState;
+}
+
+export async function listUsers(): Promise<UserRecord[]> {
+  const store = await getStore();
+  return store.users;
+}
+
+export async function readUserById(userId: string): Promise<UserRecord | undefined> {
+  const store = await getStore();
+  return store.users.find((item) => item.id === userId);
+}
+
+export async function createUser(user: UserRecord): Promise<UserRecord> {
+  const store = await getStore();
+  const nextStore: AppStore = {
+    ...store,
+    users: [user, ...store.users],
+  };
+  await saveStore(nextStore);
+  return user;
+}
+
+export async function readSessionByToken(token: string): Promise<SessionRecord | undefined> {
+  const store = await getStore();
+  return store.sessions.find((item) => item.token === token);
+}
+
+export async function createSession(session: SessionRecord): Promise<SessionRecord> {
+  const store = await getStore();
+  const nextStore: AppStore = {
+    ...store,
+    sessions: [session, ...store.sessions],
+  };
+  await saveStore(nextStore);
+  return session;
 }

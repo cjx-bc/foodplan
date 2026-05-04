@@ -24,31 +24,39 @@ import { NutritionPanel } from "../features/nutrition/NutritionPanel";
 import { ShoppingListPanel } from "../features/shopping/ShoppingListPanel";
 import type {
   AiActionSummary,
+  ApiRequestState,
   ChatMessage,
   DerivedShoppingListItem,
   InventoryItem,
   MealPlan,
   MealType,
   PlanningMode,
+  Session,
   ShoppingList,
   UserProfile,
   WeeklyPlan,
   WeeklyPlanDay,
+  WorkspaceState,
 } from "../types/smartmeal";
 import { mealTypeLabels } from "../utils/labels";
 import {
   adoptWeeklyPlan,
+  ApiClientError,
   createConversation,
   createInventoryItem,
   createWeeklyPlan,
+  ensureGuestSession,
   generateShoppingList,
   getConversationMessages,
   getCurrentShoppingList,
   getInventoryItems,
   getMealPlan,
   getProfile,
+  getSession,
   getWeeklyPlan,
+  getWorkspaceState,
   patchWeeklyPlanDay,
+  patchWorkspaceState,
   regenerateMeal,
   sendConversationMessage,
   toggleShoppingItem,
@@ -68,12 +76,6 @@ import styles from "./App.module.css";
 type PageId = "overview" | "chat" | "today" | "inventory" | "weekly" | "nutrition" | "shopping";
 
 type PersistedAppState = {
-  currentConversationId?: string;
-  currentMealPlanId?: string;
-  currentWeeklyPlanId?: string;
-  currentShoppingListId?: string;
-  planningMode: PlanningMode;
-  selectedWeekday: string;
   selectedWeeklyPreferences: string[];
 };
 
@@ -202,12 +204,6 @@ function getPersistedState(): PersistedAppState | null {
     if (!isRecord(parsed)) return null;
 
     return {
-      currentConversationId: typeof parsed.currentConversationId === "string" ? parsed.currentConversationId : undefined,
-      currentMealPlanId: typeof parsed.currentMealPlanId === "string" ? parsed.currentMealPlanId : undefined,
-      currentWeeklyPlanId: typeof parsed.currentWeeklyPlanId === "string" ? parsed.currentWeeklyPlanId : undefined,
-      currentShoppingListId: typeof parsed.currentShoppingListId === "string" ? parsed.currentShoppingListId : undefined,
-      planningMode: parsed.planningMode === "weekly" ? "weekly" : "daily",
-      selectedWeekday: typeof parsed.selectedWeekday === "string" ? parsed.selectedWeekday : getDefaultSelectedWeekday(),
       selectedWeeklyPreferences: getStringArray(parsed.selectedWeeklyPreferences, ["清淡饮食", "库存优先"]),
     };
   } catch {
@@ -260,6 +256,13 @@ function mapWeeklyPreferenceTag(preference: string) {
   return mapping[preference] ?? preference;
 }
 
+function getErrorMessage(error: unknown) {
+  if (error instanceof ApiClientError || error instanceof Error) {
+    return error.message;
+  }
+  return "请求失败，请稍后重试。";
+}
+
 export function App() {
   const persistedState = useMemo(() => getPersistedState(), []);
   const [activePage, setActivePage] = useState<PageId>(getInitialPage);
@@ -268,16 +271,21 @@ export function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const [bootstrapState, setBootstrapState] = useState<ApiRequestState>("idle");
+  const [bootstrapError, setBootstrapError] = useState<string | null>(null);
+  const [runtimeError, setRuntimeError] = useState<string | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [workspaceState, setWorkspaceState] = useState<WorkspaceState | null>(null);
   const [actionSummary, setActionSummary] = useState<AiActionSummary>(defaultActionSummary);
-  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>(persistedState?.currentConversationId);
-  const [currentMealPlanId, setCurrentMealPlanId] = useState<string | undefined>(persistedState?.currentMealPlanId);
-  const [currentWeeklyPlanId, setCurrentWeeklyPlanId] = useState<string | undefined>(persistedState?.currentWeeklyPlanId);
-  const [currentShoppingListId, setCurrentShoppingListId] = useState<string | undefined>(persistedState?.currentShoppingListId);
+  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>(undefined);
+  const [currentMealPlanId, setCurrentMealPlanId] = useState<string | undefined>(undefined);
+  const [currentWeeklyPlanId, setCurrentWeeklyPlanId] = useState<string | undefined>(undefined);
+  const [currentShoppingListId, setCurrentShoppingListId] = useState<string | undefined>(undefined);
   const [currentMealPlan, setCurrentMealPlan] = useState<MealPlan | null>(null);
   const [currentShoppingList, setCurrentShoppingList] = useState<ShoppingList | null>(null);
   const [currentWeeklyPlan, setCurrentWeeklyPlan] = useState<WeeklyPlan | null>(null);
-  const [planningMode, setPlanningMode] = useState<PlanningMode>(persistedState?.planningMode ?? "daily");
-  const [selectedWeekday, setSelectedWeekday] = useState(persistedState?.selectedWeekday ?? getDefaultSelectedWeekday());
+  const [planningMode, setPlanningMode] = useState<PlanningMode>("daily");
+  const [selectedWeekday, setSelectedWeekday] = useState(getDefaultSelectedWeekday());
   const [selectedWeeklyPreferences, setSelectedWeeklyPreferences] = useState<string[]>(
     persistedState?.selectedWeeklyPreferences ?? ["清淡饮食", "库存优先"],
   );
@@ -364,66 +372,68 @@ export function App() {
 
   useEffect(() => {
     const payload: PersistedAppState = {
-      currentConversationId,
-      currentMealPlanId,
-      currentWeeklyPlanId,
-      currentShoppingListId,
-      planningMode,
-      selectedWeekday,
       selectedWeeklyPreferences,
     };
     window.localStorage.setItem(storageKey, JSON.stringify(payload));
-  }, [
-    currentConversationId,
-    currentMealPlanId,
-    currentWeeklyPlanId,
-    currentShoppingListId,
-    planningMode,
-    selectedWeekday,
-    selectedWeeklyPreferences,
-  ]);
+  }, [selectedWeeklyPreferences]);
 
   useEffect(() => {
     let cancelled = false;
 
     async function bootstrap() {
+      setBootstrapState("loading");
+      setBootstrapError(null);
       try {
-        const [profileData, inventoryData] = await Promise.all([getProfile(), getInventoryItems()]);
+        await ensureGuestSession();
+        const [sessionData, profileData, inventoryData, remoteWorkspace] = await Promise.all([
+          getSession(),
+          getProfile(),
+          getInventoryItems(),
+          getWorkspaceState(),
+        ]);
         if (cancelled) return;
+        setSession(sessionData);
         setProfile(profileData);
         setInventory(inventoryData);
+        setWorkspaceState(remoteWorkspace);
+        setCurrentConversationId(remoteWorkspace.currentConversationId);
+        setCurrentMealPlanId(remoteWorkspace.currentMealPlanId);
+        setCurrentWeeklyPlanId(remoteWorkspace.currentWeeklyPlanId);
+        setCurrentShoppingListId(remoteWorkspace.currentShoppingListId);
+        setPlanningMode(remoteWorkspace.planningMode);
+        setSelectedWeekday(remoteWorkspace.selectedWeekday ?? getDefaultSelectedWeekday());
 
-        if (persistedState?.currentConversationId) {
-          const nextMessages = await getConversationMessages(persistedState.currentConversationId);
+        if (remoteWorkspace.currentConversationId) {
+          const nextMessages = await getConversationMessages(remoteWorkspace.currentConversationId);
           if (!cancelled) {
             setMessages(nextMessages);
           }
         }
 
-        if (persistedState?.currentMealPlanId) {
-          const nextMealPlan = await getMealPlan(persistedState.currentMealPlanId);
+        if (remoteWorkspace.currentMealPlanId) {
+          const nextMealPlan = await getMealPlan(remoteWorkspace.currentMealPlanId);
           if (!cancelled) {
             setCurrentMealPlan(nextMealPlan);
             setActionSummary(buildActionSummary("已恢复今日方案", nextMealPlan, null));
           }
         }
 
-        if (persistedState?.currentWeeklyPlanId) {
-          const nextWeeklyPlan = await getWeeklyPlan(persistedState.currentWeeklyPlanId);
+        if (remoteWorkspace.currentWeeklyPlanId) {
+          const nextWeeklyPlan = await getWeeklyPlan(remoteWorkspace.currentWeeklyPlanId);
           if (!cancelled) {
             setCurrentWeeklyPlan(nextWeeklyPlan);
-            if (nextWeeklyPlan.days[0]?.day && !persistedState.selectedWeekday) {
+            if (nextWeeklyPlan.days[0]?.day && !remoteWorkspace.selectedWeekday) {
               setSelectedWeekday(nextWeeklyPlan.days[0].day);
             }
           }
         }
 
-        const sourceType = persistedState?.planningMode === "weekly" && persistedState.currentWeeklyPlanId
+        const sourceType = remoteWorkspace.planningMode === "weekly" && remoteWorkspace.currentWeeklyPlanId
           ? "weekly_plan"
-          : persistedState?.currentMealPlanId
+          : remoteWorkspace.currentMealPlanId
             ? "meal_plan"
             : null;
-        const sourceId = sourceType === "weekly_plan" ? persistedState?.currentWeeklyPlanId : persistedState?.currentMealPlanId;
+        const sourceId = sourceType === "weekly_plan" ? remoteWorkspace.currentWeeklyPlanId : remoteWorkspace.currentMealPlanId;
 
         if (sourceType && sourceId) {
           try {
@@ -436,6 +446,14 @@ export function App() {
             // Leave the shopping list empty until the next successful generation.
           }
         }
+        if (!cancelled) {
+          setBootstrapState("success");
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setBootstrapState("error");
+          setBootstrapError(getErrorMessage(error));
+        }
       } finally {
         if (!cancelled) {
           setIsBootstrapping(false);
@@ -447,7 +465,21 @@ export function App() {
     return () => {
       cancelled = true;
     };
-  }, [persistedState]);
+  }, []);
+
+  useEffect(() => {
+    if (!workspaceState || workspaceState.selectedWeekday === selectedWeekday) {
+      return;
+    }
+
+    void patchWorkspaceState({ selectedWeekday })
+      .then((nextWorkspace) => {
+        setWorkspaceState(nextWorkspace);
+      })
+      .catch(() => {
+        // Keep the local selection even if the workspace pointer update fails.
+      });
+  }, [selectedWeekday, workspaceState]);
 
   function navigate(page: PageId) {
     window.location.hash = `/${page}`;
@@ -474,6 +506,12 @@ export function App() {
 
     const conversation = await createConversation("SmartMeal 当前对话");
     setCurrentConversationId(conversation.id);
+    try {
+      const nextWorkspace = await patchWorkspaceState({ currentConversationId: conversation.id });
+      setWorkspaceState(nextWorkspace);
+    } catch {
+      // The conversation still exists server-side; a later bootstrap can recover it.
+    }
     return conversation.id;
   }
 
@@ -494,6 +532,7 @@ export function App() {
 
   async function handleSend(message: string) {
     setIsGenerating(true);
+    setRuntimeError(null);
     try {
       const conversationId = await ensureConversation();
       const payload = await sendConversationMessage(conversationId, message, "daily");
@@ -504,6 +543,8 @@ export function App() {
       setCurrentShoppingList(payload.shoppingList);
       setCurrentShoppingListId(payload.shoppingList?.id);
       setActionSummary(buildActionSummary("已按输入生成方案", payload.mealPlan, payload.shoppingList));
+    } catch (error) {
+      setRuntimeError(getErrorMessage(error));
     } finally {
       setIsGenerating(false);
     }
@@ -523,6 +564,7 @@ export function App() {
   async function handleSwapMeal(mealType: MealType) {
     if (!currentMealPlanId) return;
     setIsGenerating(true);
+    setRuntimeError(null);
     try {
       const payload = await regenerateMeal(currentMealPlanId, mealType, `替换${mealTypeLabels[mealType]}`);
       setCurrentMealPlan(payload.mealPlan);
@@ -533,43 +575,55 @@ export function App() {
         `已替换${mealTypeLabels[mealType]}为「${payload.mealPlan.meals.find((item) => item.mealType === mealType)?.title ?? "新的方案"}」。这次修改只影响今天的执行餐单。`,
         { mealPlanId: payload.mealPlan.id, shoppingListId: payload.shoppingListResource?.id },
       );
+    } catch (error) {
+      setRuntimeError(getErrorMessage(error));
     } finally {
       setIsGenerating(false);
     }
   }
 
   async function handleAddInventory(value: InventoryFormValue) {
-    const created = await createInventoryItem(value);
-    const nextInventory = [created, ...inventory];
-    setInventory(nextInventory);
+    setRuntimeError(null);
+    try {
+      const created = await createInventoryItem(value);
+      const nextInventory = [created, ...inventory];
+      setInventory(nextInventory);
 
-    if (planningMode === "weekly" && currentWeeklyPlanId) {
-      const nextShoppingList = await generateShoppingList("weekly_plan", currentWeeklyPlanId);
-      setCurrentShoppingList(nextShoppingList);
-      setCurrentShoppingListId(nextShoppingList.id);
-    } else if (currentMealPlanId) {
-      const nextShoppingList = await generateShoppingList("meal_plan", currentMealPlanId);
-      setCurrentShoppingList(nextShoppingList);
-      setCurrentShoppingListId(nextShoppingList.id);
+      if (planningMode === "weekly" && currentWeeklyPlanId) {
+        const nextShoppingList = await generateShoppingList("weekly_plan", currentWeeklyPlanId);
+        setCurrentShoppingList(nextShoppingList);
+        setCurrentShoppingListId(nextShoppingList.id);
+      } else if (currentMealPlanId) {
+        const nextShoppingList = await generateShoppingList("meal_plan", currentMealPlanId);
+        setCurrentShoppingList(nextShoppingList);
+        setCurrentShoppingListId(nextShoppingList.id);
+      }
+
+      setActionSummary({
+        title: "库存已更新",
+        affectedMeals: ["后续推荐"],
+        nutritionChanges: ["营养目标不变"],
+        shoppingChanges: ["购物缺口已按最新库存重算"],
+        inventoryUsage: [value.name],
+      });
+      appendLocalAssistantMessage(`已新增库存「${value.name}」，当前采购缺口会自动按最新库存重算。`);
+    } catch (error) {
+      setRuntimeError(getErrorMessage(error));
     }
-
-    setActionSummary({
-      title: "库存已更新",
-      affectedMeals: ["后续推荐"],
-      nutritionChanges: ["营养目标不变"],
-      shoppingChanges: ["购物缺口已按最新库存重算"],
-      inventoryUsage: [value.name],
-    });
-    appendLocalAssistantMessage(`已新增库存「${value.name}」，当前采购缺口会自动按最新库存重算。`);
   }
 
   async function handleToggleShopping(id: string) {
     if (!currentShoppingList) return;
     const target = currentShoppingList.items.find((item) => item.id === id);
     if (!target) return;
-    const nextShoppingList = await toggleShoppingItem(currentShoppingList.id, id, !target.checked);
-    setCurrentShoppingList(nextShoppingList);
-    setCurrentShoppingListId(nextShoppingList.id);
+    setRuntimeError(null);
+    try {
+      const nextShoppingList = await toggleShoppingItem(currentShoppingList.id, id, !target.checked);
+      setCurrentShoppingList(nextShoppingList);
+      setCurrentShoppingListId(nextShoppingList.id);
+    } catch (error) {
+      setRuntimeError(getErrorMessage(error));
+    }
   }
 
   function handleToggleWeeklyPreference(preference: string) {
@@ -582,86 +636,99 @@ export function App() {
   }
 
   async function handleGenerateWeeklyPlan() {
-    const conversationId = await ensureConversation();
-    const weeklyPlan = await createWeeklyPlan({
-      message: "本周尽量清淡，高蛋白，工作日做饭时间不要超过 30 分钟。",
-      preferenceTags: selectedWeeklyPreferences.map(mapWeeklyPreferenceTag),
-      startDate: fixedWeeklyStartDate,
-      days: 7,
-      conversationId,
-    });
-    setCurrentWeeklyPlan(weeklyPlan);
-    setCurrentWeeklyPlanId(weeklyPlan.id);
-    setSelectedWeekday(weeklyPlan.days[0]?.day ?? selectedWeekday);
-    appendLocalAssistantMessage(`已生成「${weeklyPlan.title}」，当前仍是周计划草稿；确认采用后，总览和采购会切到本周执行视图。`, {
-      weeklyPlanId: weeklyPlan.id,
-    });
+    setRuntimeError(null);
+    try {
+      const conversationId = await ensureConversation();
+      const weeklyPlan = await createWeeklyPlan({
+        message: "本周尽量清淡，高蛋白，工作日做饭时间不要超过 30 分钟。",
+        preferenceTags: selectedWeeklyPreferences.map(mapWeeklyPreferenceTag),
+        startDate: fixedWeeklyStartDate,
+        days: 7,
+        conversationId,
+      });
+      setCurrentWeeklyPlan(weeklyPlan);
+      setCurrentWeeklyPlanId(weeklyPlan.id);
+      setSelectedWeekday(weeklyPlan.days[0]?.day ?? selectedWeekday);
+      appendLocalAssistantMessage(`已生成「${weeklyPlan.title}」，当前仍是周计划草稿；确认采用后，总览和采购会切到本周执行视图。`, {
+        weeklyPlanId: weeklyPlan.id,
+      });
+    } catch (error) {
+      setRuntimeError(getErrorMessage(error));
+    }
   }
 
   async function handleAdjustWeeklyDay(dayName: string) {
     if (!currentWeeklyPlan) return;
     const targetDay = currentWeeklyPlan.days.find((day) => day.day === dayName);
     if (!targetDay?.date) return;
+    setRuntimeError(null);
+    try {
+      const weeklyPlan = await patchWeeklyPlanDay(currentWeeklyPlan.id, targetDay.date, ["dinner"]);
+      setCurrentWeeklyPlan(weeklyPlan);
 
-    const weeklyPlan = await patchWeeklyPlanDay(currentWeeklyPlan.id, targetDay.date, ["dinner"]);
-    setCurrentWeeklyPlan(weeklyPlan);
-
-    if (weeklyPlan.adopted && currentMealPlan && dayName === selectedWeekday) {
-      const refreshedDay = weeklyPlan.days.find((day) => day.day === dayName);
-      if (refreshedDay) {
-        setCurrentMealPlan((previous) =>
-          previous
-            ? {
-                ...previous,
-                meals: cloneMeals(refreshedDay.meals),
-                nutritionSummary: buildNutritionSummary(refreshedDay.meals, profile),
-                inventoryUsage: refreshedDay.inventoryFocus,
-                suggestions: weeklyPlan.insights,
-              }
-            : previous,
-        );
+      if (weeklyPlan.adopted && currentMealPlan && dayName === selectedWeekday) {
+        const refreshedDay = weeklyPlan.days.find((day) => day.day === dayName);
+        if (refreshedDay) {
+          setCurrentMealPlan((previous) =>
+            previous
+              ? {
+                  ...previous,
+                  meals: cloneMeals(refreshedDay.meals),
+                  nutritionSummary: buildNutritionSummary(refreshedDay.meals, profile),
+                  inventoryUsage: refreshedDay.inventoryFocus,
+                  suggestions: weeklyPlan.insights,
+                }
+              : previous,
+          );
+        }
       }
-    }
 
-    if (planningMode === "weekly") {
-      await refreshShoppingFromSource("weekly", currentMealPlanId, currentWeeklyPlan.id);
-    }
+      if (planningMode === "weekly") {
+        await refreshShoppingFromSource("weekly", currentMealPlanId, currentWeeklyPlan.id);
+      }
 
-    appendLocalAssistantMessage(
-      `已微调${dayName}，新的晚餐重点是「${weeklyPlan.days.find((day) => day.day === dayName)?.dinner ?? "新的方案"}」，相关采购缺口和周洞察已同步重算。`,
-      { weeklyPlanId: weeklyPlan.id },
-    );
+      appendLocalAssistantMessage(
+        `已微调${dayName}，新的晚餐重点是「${weeklyPlan.days.find((day) => day.day === dayName)?.dinner ?? "新的方案"}」，相关采购缺口和周洞察已同步重算。`,
+        { weeklyPlanId: weeklyPlan.id },
+      );
+    } catch (error) {
+      setRuntimeError(getErrorMessage(error));
+    }
   }
 
   async function handleConfirmWeeklyPlan() {
     if (!currentWeeklyPlanId || !selectedWeeklyDay?.date) return;
+    setRuntimeError(null);
+    try {
+      const result = await adoptWeeklyPlan(currentWeeklyPlanId, selectedWeeklyDay.date);
+      const [weeklyPlan, mealPlan] = await Promise.all([
+        getWeeklyPlan(result.weeklyPlanId),
+        getMealPlan(result.syncedMealPlanId),
+      ]);
+      const shoppingList = result.shoppingListId ? await getCurrentShoppingList("weekly_plan", weeklyPlan.id) : null;
 
-    const result = await adoptWeeklyPlan(currentWeeklyPlanId, selectedWeeklyDay.date);
-    const [weeklyPlan, mealPlan] = await Promise.all([
-      getWeeklyPlan(result.weeklyPlanId),
-      getMealPlan(result.syncedMealPlanId),
-    ]);
-    const shoppingList = result.shoppingListId ? await getCurrentShoppingList("weekly_plan", weeklyPlan.id) : null;
-
-    setCurrentWeeklyPlan(weeklyPlan);
-    setCurrentWeeklyPlanId(weeklyPlan.id);
-    setCurrentMealPlan(mealPlan);
-    setCurrentMealPlanId(mealPlan.id);
-    setCurrentShoppingList(shoppingList);
-    setCurrentShoppingListId(shoppingList?.id);
-    setPlanningMode("weekly");
-    setActionSummary({
-      title: "已采用本周计划",
-      affectedMeals: [selectedWeekday],
-      nutritionChanges: [`平均热量 ${weeklyInsightResult.averageCalories} kcal`, `${weeklyInsightResult.attentionCount} 天需继续微调`],
-      shoppingChanges: ["购物清单已切到本周采购", "已勾选食材状态保留"],
-      inventoryUsage: weeklyInsightResult.inventoryItems,
-    });
-    appendLocalAssistantMessage(`本周计划已确认采用，今日三餐已切换为 ${selectedWeekday} 的安排，购物清单会按整周缺口整理。`, {
-      weeklyPlanId: weeklyPlan.id,
-      mealPlanId: mealPlan.id,
-      shoppingListId: shoppingList?.id,
-    });
+      setCurrentWeeklyPlan(weeklyPlan);
+      setCurrentWeeklyPlanId(weeklyPlan.id);
+      setCurrentMealPlan(mealPlan);
+      setCurrentMealPlanId(mealPlan.id);
+      setCurrentShoppingList(shoppingList);
+      setCurrentShoppingListId(shoppingList?.id);
+      setPlanningMode("weekly");
+      setActionSummary({
+        title: "已采用本周计划",
+        affectedMeals: [selectedWeekday],
+        nutritionChanges: [`平均热量 ${weeklyInsightResult.averageCalories} kcal`, `${weeklyInsightResult.attentionCount} 天需继续微调`],
+        shoppingChanges: ["购物清单已切到本周采购", "已勾选食材状态保留"],
+        inventoryUsage: weeklyInsightResult.inventoryItems,
+      });
+      appendLocalAssistantMessage(`本周计划已确认采用，今日三餐已切换为 ${selectedWeekday} 的安排，购物清单会按整周缺口整理。`, {
+        weeklyPlanId: weeklyPlan.id,
+        mealPlanId: mealPlan.id,
+        shoppingListId: shoppingList?.id,
+      });
+    } catch (error) {
+      setRuntimeError(getErrorMessage(error));
+    }
   }
 
   function renderOverviewPage() {
@@ -751,6 +818,7 @@ export function App() {
                 <span>{planningMode === "weekly" ? "周模式" : "日模式"}</span>
                 <span>{currentShoppingList?.items.filter((item) => !item.checked).length ?? 0} 项待买</span>
                 <span>{currentMealPlan?.inventoryUsage.length ?? 0} 项库存已使用</span>
+                {currentMealPlan?.generationMeta?.source === "fallback" ? <span>规则兜底生成</span> : null}
               </div>
             </SurfaceCard>
 
@@ -1140,6 +1208,9 @@ export function App() {
       </header>
 
       <main className={styles.main}>
+        {bootstrapState === "loading" ? <StatusBanner tone="info" text="正在恢复当前工作台状态..." /> : null}
+        {bootstrapError ? <StatusBanner tone="error" text={bootstrapError} actionLabel="重试" onAction={() => window.location.reload()} /> : null}
+        {runtimeError ? <StatusBanner tone="error" text={runtimeError} /> : null}
         {renderPage()}
       </main>
     </div>
@@ -1186,6 +1257,25 @@ function MetricTile({ label, value }: { label: string; value: string }) {
       <span>{label}</span>
       <strong>{value}</strong>
     </article>
+  );
+}
+
+function StatusBanner({
+  tone,
+  text,
+  actionLabel,
+  onAction,
+}: {
+  tone: "info" | "error";
+  text: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}) {
+  return (
+    <div className={tone === "error" ? styles.errorBanner : styles.infoBanner} role={tone === "error" ? "alert" : "status"}>
+      <span>{text}</span>
+      {actionLabel && onAction ? <button type="button" onClick={onAction}>{actionLabel}</button> : null}
+    </div>
   );
 }
 

@@ -3,6 +3,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import {
   adjustWeeklyPlanDay,
   createDailyMealPlanFromMeals,
+  createWeeklyPlanFromDays,
   deriveShoppingItems,
   generateDailyMealPlan,
   generateWeeklyPlan,
@@ -10,18 +11,23 @@ import {
 } from "./planner.js";
 import { sendError, sendJson, sendNoContent } from "./responses.js";
 import {
+  createSession,
   createConversation,
   createConversationMessages,
   createMealPlan,
+  createUser,
   createWeeklyPlan,
+  listUsers,
   listConversationMessages,
   listConversations,
   listInventoryItems,
   readConversation,
   readMealPlan,
   readProfile,
+  readSessionByToken,
   readShoppingList,
   readShoppingListBySource,
+  readUserById,
   readWeeklyPlan,
   readWorkspaceState,
   replaceInventoryItems,
@@ -37,7 +43,9 @@ import type {
   MealPlanRecord,
   MealType,
   ShoppingListRecord,
+  UserRecord,
   WeeklyPlanRecord,
+  WorkspaceStateRecord,
 } from "./types.js";
 import {
   validateConversationCreate,
@@ -54,6 +62,7 @@ import {
   validateWeeklyPlanCreate,
 } from "./validators.js";
 import { createId, createRequestId, nowIso } from "./utils.js";
+import { tryGenerateDailyMealPlanWithDeepSeek, tryGenerateWeeklyPlanWithDeepSeek } from "./ai/deepseek.js";
 
 const port = Number(process.env.PORT ?? 8787);
 
@@ -81,6 +90,53 @@ function getUrl(request: IncomingMessage): URL {
   return new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
 }
 
+function parseCookies(request: IncomingMessage) {
+  const cookieHeader = request.headers.cookie ?? "";
+  return cookieHeader.split(";").reduce<Record<string, string>>((record, part) => {
+    const [rawKey, ...rawValue] = part.trim().split("=");
+    if (!rawKey) {
+      return record;
+    }
+    record[rawKey] = decodeURIComponent(rawValue.join("="));
+    return record;
+  }, {});
+}
+
+function setSessionCookie(response: ServerResponse, token: string) {
+  response.setHeader("Set-Cookie", `smartmeal_session=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000`);
+}
+
+async function resolveUserFromRequest(request: IncomingMessage): Promise<UserRecord> {
+  const cookies = parseCookies(request);
+  const sessionToken = cookies.smartmeal_session;
+  const defaultUser = (await listUsers())[0] ?? await createUser({
+    id: createId("user"),
+    displayName: "Guest",
+    createdAt: nowIso(),
+    updatedAt: nowIso(),
+  });
+
+  if (!sessionToken) {
+    return defaultUser;
+  }
+
+  const session = await readSessionByToken(sessionToken);
+  if (!session) {
+    return defaultUser;
+  }
+
+  return (await readUserById(session.userId)) ?? defaultUser;
+}
+
+async function resolveSessionFromRequest(request: IncomingMessage) {
+  const cookies = parseCookies(request);
+  const sessionToken = cookies.smartmeal_session;
+  if (!sessionToken) {
+    return undefined;
+  }
+  return readSessionByToken(sessionToken);
+}
+
 function weekdayFromDate(date: string) {
   const currentDate = new Date(`${date}T00:00:00.000Z`);
   return ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][currentDate.getUTCDay()] ?? "周一";
@@ -106,6 +162,7 @@ async function buildShoppingListFromSource(
   sourceType: "meal_plan" | "weekly_plan",
   sourceId: string,
   preserveCheckedState: boolean,
+  userId: string,
 ): Promise<ShoppingListRecord | null> {
   const inventory = await listInventoryItems();
   const currentList = await readShoppingListBySource(sourceType, sourceId);
@@ -128,6 +185,7 @@ async function buildShoppingListFromSource(
   const updatedAt = nowIso();
   const shoppingList: ShoppingListRecord = {
     id: currentList?.id ?? createId("shop"),
+    userId,
     sourceType,
     sourceId,
     items,
@@ -148,6 +206,111 @@ async function handleHealth(response: ServerResponse): Promise<void> {
       timestamp: nowIso(),
     },
   });
+}
+
+async function handleAuthGuest(request: IncomingMessage, response: ServerResponse): Promise<void> {
+  const currentSession = await resolveSessionFromRequest(request);
+  if (currentSession) {
+    const user = await readUserById(currentSession.userId);
+    setSessionCookie(response, currentSession.token);
+    sendJson(response, 200, {
+      data: {
+        id: currentSession.id,
+        userId: currentSession.userId,
+        displayName: user?.displayName ?? "Guest",
+        createdAt: currentSession.createdAt,
+        updatedAt: currentSession.updatedAt,
+      },
+    });
+    return;
+  }
+
+  const now = nowIso();
+  const existingUser = (await listUsers())[0] ?? await createUser({
+    id: createId("user"),
+    displayName: "Guest",
+    createdAt: now,
+    updatedAt: now,
+  });
+  const session = await createSession({
+    id: createId("sess"),
+    userId: existingUser.id,
+    token: createId("token"),
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  setSessionCookie(response, session.token);
+  sendJson(response, 201, {
+    data: {
+      id: session.id,
+      userId: existingUser.id,
+      displayName: existingUser.displayName,
+      createdAt: session.createdAt,
+      updatedAt: session.updatedAt,
+    },
+  });
+}
+
+async function handleGetSession(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
+  const session = await resolveSessionFromRequest(request);
+  if (!session) {
+    sendError(response, 401, requestId, "unauthorized", "Session not found");
+    return;
+  }
+
+  const user = await readUserById(session.userId);
+  if (!user) {
+    sendError(response, 401, requestId, "unauthorized", "User not found");
+    return;
+  }
+
+  sendJson(response, 200, {
+    data: {
+      id: session.id,
+      userId: session.userId,
+      displayName: user.displayName,
+      createdAt: session.createdAt,
+      updatedAt: session.updatedAt,
+    },
+  });
+}
+
+async function handleGetWorkspaceState(request: IncomingMessage, response: ServerResponse): Promise<void> {
+  const user = await resolveUserFromRequest(request);
+  const workspaceState = await readWorkspaceState();
+  sendJson(response, 200, {
+    data: {
+      ...workspaceState,
+      userId: workspaceState.userId ?? user.id,
+    },
+  });
+}
+
+async function handlePatchWorkspaceState(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
+  const body = await readJsonBody(request);
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    sendError(response, 422, requestId, "validation_error", "Request validation failed", [{ field: "body", message: "Must be a JSON object" }]);
+    return;
+  }
+
+  const user = await resolveUserFromRequest(request);
+  const currentState = await readWorkspaceState();
+  const payload = body as Partial<WorkspaceStateRecord>;
+  const nextState: WorkspaceStateRecord = {
+    ...currentState,
+    userId: user.id,
+    currentConversationId: typeof payload.currentConversationId === "string" ? payload.currentConversationId : currentState.currentConversationId,
+    currentMealPlanId: typeof payload.currentMealPlanId === "string" ? payload.currentMealPlanId : currentState.currentMealPlanId,
+    currentWeeklyPlanId: typeof payload.currentWeeklyPlanId === "string" ? payload.currentWeeklyPlanId : currentState.currentWeeklyPlanId,
+    currentShoppingListId: typeof payload.currentShoppingListId === "string" ? payload.currentShoppingListId : currentState.currentShoppingListId,
+    planningMode: payload.planningMode === "weekly" ? "weekly" : payload.planningMode === "daily" ? "daily" : currentState.planningMode,
+    selectedWeekday: typeof payload.selectedWeekday === "string" ? payload.selectedWeekday : currentState.selectedWeekday,
+    updatedAt: nowIso(),
+  };
+
+  const saved = await updateWorkspaceState(nextState);
+  sendJson(response, 200, { data: saved });
 }
 
 async function handleGetProfile(response: ServerResponse): Promise<void> {
@@ -211,7 +374,8 @@ async function handleListInventory(request: IncomingMessage, response: ServerRes
 
 async function handleCreateInventory(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
   const body = await readJsonBody(request);
-  const result = validateInventoryCreate(body, nowIso(), createId("inv"));
+  const user = await resolveUserFromRequest(request);
+  const result = validateInventoryCreate(body, nowIso(), createId("inv"), user.id);
 
   if (!result.value) {
     sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
@@ -283,9 +447,24 @@ async function handleCreateMealPlan(request: IncomingMessage, response: ServerRe
 
   const profile = await readProfile();
   const inventory = await listInventoryItems();
-  const mealPlan = generateDailyMealPlan(result.value.message, profile, inventory, [], result.value.conversationId);
+  const user = await resolveUserFromRequest(request);
+  let mealPlan: MealPlanRecord;
+  try {
+    mealPlan = (await tryGenerateDailyMealPlanWithDeepSeek({
+      message: result.value.message,
+      profile,
+      inventory,
+      previousShoppingList: [],
+      conversationId: result.value.conversationId,
+      userId: user.id,
+    })) ?? generateDailyMealPlan(result.value.message, profile, inventory, [], user.id, result.value.conversationId);
+  } catch {
+    mealPlan = generateDailyMealPlan(result.value.message, profile, inventory, [], user.id, result.value.conversationId);
+    mealPlan.generationMeta = { source: "fallback", model: "rule_planner" };
+    mealPlan.reply = `${mealPlan.reply} 本次改用基础规则生成，结果仍可继续调整。`;
+  }
   await createMealPlan(mealPlan);
-  const shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true);
+  const shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true, user.id);
   const workspaceState = await readWorkspaceState();
   await updateWorkspaceState({
     ...workspaceState,
@@ -331,7 +510,7 @@ async function handleRegenerateMeal(
   const currentList = await readShoppingListBySource("meal_plan", mealPlan.id);
   const updatedPlan = regenerateMealInPlan(mealPlan, mealType, result.value.reason, profile, inventory, currentList?.items ?? []);
   await updateMealPlan(updatedPlan);
-  const shoppingList = await buildShoppingListFromSource("meal_plan", updatedPlan.id, true);
+  const shoppingList = await buildShoppingListFromSource("meal_plan", updatedPlan.id, true, mealPlan.userId);
 
   sendJson(response, 200, {
     data: {
@@ -358,6 +537,7 @@ async function handleGenerateShoppingList(request: IncomingMessage, response: Se
     result.value.sourceType,
     result.value.sourceId,
     result.value.preserveCheckedState,
+    (await resolveUserFromRequest(request)).id,
   );
 
   if (!shoppingList) {
@@ -453,14 +633,38 @@ async function handleCreateWeeklyPlan(request: IncomingMessage, response: Server
   }
 
   const inventory = await listInventoryItems();
-  const weeklyPlan = generateWeeklyPlan(
-    result.value.message,
-    result.value.preferenceTags,
-    result.value.startDate,
-    result.value.days,
-    inventory,
-    result.value.conversationId,
-  );
+  const user = await resolveUserFromRequest(request);
+  let weeklyPlan: WeeklyPlanRecord;
+  try {
+    weeklyPlan = (await tryGenerateWeeklyPlanWithDeepSeek({
+      message: result.value.message,
+      preferenceTags: result.value.preferenceTags,
+      startDate: result.value.startDate,
+      days: result.value.days,
+      inventory,
+      userId: user.id,
+      conversationId: result.value.conversationId,
+    })) ?? generateWeeklyPlan(
+      result.value.message,
+      result.value.preferenceTags,
+      result.value.startDate,
+      result.value.days,
+      inventory,
+      user.id,
+      result.value.conversationId,
+    );
+  } catch {
+    weeklyPlan = generateWeeklyPlan(
+      result.value.message,
+      result.value.preferenceTags,
+      result.value.startDate,
+      result.value.days,
+      inventory,
+      user.id,
+      result.value.conversationId,
+    );
+    weeklyPlan.generationMeta = { source: "fallback", model: "rule_planner" };
+  }
   await createWeeklyPlan(weeklyPlan);
   const workspaceState = await readWorkspaceState();
   await updateWorkspaceState({
@@ -511,7 +715,7 @@ async function handlePatchWeeklyPlanDay(
 
   const workspaceState = await readWorkspaceState();
   if (workspaceState.currentWeeklyPlanId === updatedWeeklyPlan.id && workspaceState.planningMode === "weekly") {
-    await buildShoppingListFromSource("weekly_plan", updatedWeeklyPlan.id, true);
+    await buildShoppingListFromSource("weekly_plan", updatedWeeklyPlan.id, true, updatedWeeklyPlan.userId);
   }
 
   sendJson(response, 200, { data: updatedWeeklyPlan });
@@ -552,6 +756,7 @@ async function handleAdoptWeeklyPlan(
     profile,
     inventory,
     [],
+    weeklyPlan.userId,
     weeklyPlan.conversationId,
     `Adopt weekly plan ${weeklyPlan.id}`,
     `已采用本周计划，并把 ${selectedDay?.day ?? "今天"} 的三餐同步到今日执行。`,
@@ -566,7 +771,7 @@ async function handleAdoptWeeklyPlan(
   };
   await updateWeeklyPlan(updatedWeeklyPlan);
 
-  const shoppingList = await buildShoppingListFromSource("weekly_plan", updatedWeeklyPlan.id, true);
+  const shoppingList = await buildShoppingListFromSource("weekly_plan", updatedWeeklyPlan.id, true, updatedWeeklyPlan.userId);
   const workspaceState = await readWorkspaceState();
   await updateWorkspaceState({
     ...workspaceState,
@@ -589,7 +794,8 @@ async function handleAdoptWeeklyPlan(
 }
 
 async function handleCreateConversation(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
-  const result = validateConversationCreate(await readJsonBody(request), nowIso(), createId("conv"));
+  const user = await resolveUserFromRequest(request);
+  const result = validateConversationCreate(await readJsonBody(request), nowIso(), createId("conv"), user.id);
   if (!result.value) {
     sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
     return;
@@ -638,8 +844,10 @@ async function handleCreateConversationMessage(
   }
 
   const userCreatedAt = nowIso();
+  const user = await resolveUserFromRequest(request);
   const userMessage: ConversationMessageRecord = {
     id: createId("msg"),
+    userId: user.id,
     conversationId,
     role: "user",
     content: result.value.content,
@@ -648,19 +856,35 @@ async function handleCreateConversationMessage(
 
   const inventory = await listInventoryItems();
   const profile = await readProfile();
-  const mealPlan = result.value.triggerPlanGeneration
-    ? generateDailyMealPlan(result.value.content, profile, inventory, [], conversationId)
-    : undefined;
+  let mealPlan: MealPlanRecord | undefined;
+  if (result.value.triggerPlanGeneration) {
+    try {
+      mealPlan = (await tryGenerateDailyMealPlanWithDeepSeek({
+        message: result.value.content,
+        profile,
+        inventory,
+        previousShoppingList: [],
+        conversationId,
+        userId: user.id,
+        conversationMessages: await listConversationMessages(conversationId),
+      })) ?? generateDailyMealPlan(result.value.content, profile, inventory, [], user.id, conversationId);
+    } catch {
+      mealPlan = generateDailyMealPlan(result.value.content, profile, inventory, [], user.id, conversationId);
+      mealPlan.generationMeta = { source: "fallback", model: "rule_planner" };
+      mealPlan.reply = `${mealPlan.reply} 本次改用基础规则生成，结果仍可继续调整。`;
+    }
+  }
 
   let shoppingList: ShoppingListRecord | null = null;
   if (mealPlan) {
     await createMealPlan(mealPlan);
-    shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true);
+    shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true, user.id);
   }
 
   const assistantCreatedAt = nowIso();
   const assistantMessage: ConversationMessageRecord = {
     id: createId("msg"),
+    userId: user.id,
     conversationId,
     role: "assistant",
     content: mealPlan?.reply ?? "我已经记录这条偏好，稍后可以继续生成餐单。",
@@ -699,7 +923,8 @@ async function handleCreateConversationMessage(
 const server = createServer(async (request, response) => {
   const requestId = createRequestId();
   response.setHeader("X-Request-Id", requestId);
-  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader("Access-Control-Allow-Origin", request.headers.origin ?? "*");
+  response.setHeader("Access-Control-Allow-Credentials", "true");
   response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   response.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
 
@@ -715,6 +940,27 @@ const server = createServer(async (request, response) => {
     if (request.method === "GET" && pathname === "/api/v1/health") {
       await handleHealth(response);
       return;
+    }
+
+    if (pathname === "/api/v1/auth/guest" && request.method === "POST") {
+      await handleAuthGuest(request, response);
+      return;
+    }
+
+    if (pathname === "/api/v1/session" && request.method === "GET") {
+      await handleGetSession(request, response, requestId);
+      return;
+    }
+
+    if (pathname === "/api/v1/workspace-state") {
+      if (request.method === "GET") {
+        await handleGetWorkspaceState(request, response);
+        return;
+      }
+      if (request.method === "PATCH") {
+        await handlePatchWorkspaceState(request, response, requestId);
+        return;
+      }
     }
 
     if (pathname === "/api/v1/profile") {
