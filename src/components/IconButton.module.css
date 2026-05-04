@@ -1,20 +1,17 @@
 .button {
   align-items: center;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 10px;
   cursor: pointer;
   display: inline-flex;
   font: inherit;
+  font-size: 13px;
   font-weight: 700;
   gap: 8px;
   justify-content: center;
-  min-height: 40px;
+  min-height: 38px;
   padding: 9px 14px;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
-}
-
-.button:hover {
-  transform: translateY(-1px);
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
 }
 
 .button:focus-visible {
@@ -23,13 +20,13 @@
 }
 
 .primary {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: linear-gradient(135deg, #1f8c4e, #16753f);
+  border-color: #1f8c4e;
   color: white;
 }
 
 .primary:hover {
-  background: var(--primary-dark);
+  background: linear-gradient(135deg, #1b7f47, #146938);
 }
 
 .secondary {
@@ -38,8 +35,8 @@
 }
 
 .secondary:hover {
-  border-color: rgba(17, 130, 59, 0.55);
-  background: var(--green-soft);
+  background: #edf8ef;
+  border-color: rgba(31, 140, 78, 0.32);
 }
 
 .ghost {
@@ -49,8 +46,8 @@
 }
 
 .ghost:hover {
+  background: #f5f7f3;
   color: var(--primary);
-  background: var(--green-soft);
 }
 
 .icon {

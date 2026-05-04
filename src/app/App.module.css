@@ -1,58 +1,67 @@
 .app {
   display: grid;
-  gap: 22px;
+  gap: 18px;
   margin: 0 auto;
-  max-width: 1440px;
-  padding: 26px;
+  max-width: 1600px;
+  padding: 10px 18px 24px;
 }
 
 .header {
   align-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(224, 216, 201, 0.9);
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(83, 68, 44, 0.07);
   display: grid;
-  gap: 16px 22px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 12px 16px;
+  position: sticky;
+  top: 8px;
+  z-index: 10;
 }
 
 .brand {
   align-items: center;
-  display: flex;
-  gap: 14px;
-  min-width: 0;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 10px;
+  padding: 0;
 }
 
 .brand > span {
-  background: var(--primary);
-  border-radius: 14px;
+  align-items: center;
+  background: linear-gradient(135deg, #1f8c4e, #16753f);
+  border-radius: 10px;
   color: white;
-  display: grid;
-  flex: 0 0 50px;
-  height: 50px;
-  place-items: center;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
 }
 
-.brand h1 {
-  font-size: clamp(30px, 2.2vw, 42px);
+.brand strong {
+  font-size: 26px;
+  font-weight: 800;
   line-height: 1;
-  margin: 0 0 8px;
-  white-space: nowrap;
 }
 
-.brand p {
-  color: var(--muted);
-  margin: 0;
+.brand small {
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 4px;
 }
 
 .nav {
+  align-items: center;
   display: flex;
-  flex-wrap: nowrap;
-  gap: 10px;
-  grid-column: 1 / -1;
-  grid-row: 2;
-  justify-content: flex-start;
-  max-width: 100%;
+  gap: 24px;
+  justify-content: center;
   min-width: 0;
   overflow-x: auto;
-  padding-bottom: 2px;
   scrollbar-width: none;
   white-space: nowrap;
 }
@@ -62,730 +71,820 @@
 }
 
 .nav button {
-  align-items: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--ink);
+  background: transparent;
+  border: 0;
+  color: #5f605a;
   cursor: pointer;
-  display: inline-flex;
   flex: 0 0 auto;
   font: inherit;
   font-size: 14px;
-  font-weight: 800;
-  gap: 8px;
-  min-height: 46px;
-  padding: 0 14px;
-  white-space: nowrap;
+  font-weight: 700;
+  min-height: 28px;
+  padding: 4px 0;
+  position: relative;
 }
 
-.nav button:hover,
+.nav button::after {
+  background: var(--primary);
+  border-radius: 999px;
+  bottom: -10px;
+  content: "";
+  height: 3px;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  transition: opacity 160ms ease;
+  width: 100%;
+}
+
 .nav .activeNav {
-  background: var(--green-soft);
-  border-color: rgba(17, 130, 59, 0.36);
   color: var(--primary);
 }
 
-.nav svg {
-  color: var(--primary);
+.nav .activeNav::after {
+  opacity: 1;
 }
 
-.cta {
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: end;
-  min-height: 54px;
-  padding-inline: 22px;
-  white-space: nowrap;
+.headerActions {
+  align-items: center;
+  display: inline-flex;
+  gap: 10px;
+}
+
+.headerCta {
+  background: linear-gradient(135deg, #1f8c4e, #16753f);
+  border: 1px solid #1f8c4e;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  min-height: 34px;
+  padding: 0 14px;
+}
+
+.utilityButton {
+  align-items: center;
+  background: white;
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 999px;
+  color: #464740;
+  cursor: pointer;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
 }
 
 .main {
   display: grid;
+}
+
+.pageFrame {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 218, 204, 0.95);
+  border-radius: 22px;
+  box-shadow: 0 20px 42px rgba(84, 71, 47, 0.08);
+  display: grid;
   gap: 18px;
+  padding: 18px;
 }
 
-.pageHeader {
-  align-items: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(255, 250, 240, 0.82));
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  display: flex;
-  gap: 16px;
-  justify-content: space-between;
-  padding: 18px 20px;
-}
-
-.pageHeader span {
-  color: var(--primary);
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.pageHeader h2 {
-  font-size: 26px;
-  margin: 4px 0;
-}
-
-.pageHeader p {
-  color: var(--muted);
-  margin: 0;
-}
-
-.statusPill {
-  align-items: center;
-  background: var(--amber-soft);
-  border: 1px solid #f1dfaa;
-  border-radius: 999px;
-  color: #7b5814;
-  display: inline-flex;
-  flex: 0 0 auto;
-  font-weight: 900;
+.pageTitle {
+  display: grid;
   gap: 6px;
-  padding: 8px 12px;
 }
 
-.chatPage {
-  align-items: start;
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(480px, 0.95fr) minmax(320px, 0.65fr);
-}
-
-.chatWorkspace {
-  align-items: start;
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1fr) minmax(330px, 0.42fr);
-}
-
-.chatAside {
-  display: grid;
-  gap: 14px;
-  position: sticky;
-  top: 18px;
-}
-
-.nextActions {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow);
-  display: grid;
-  gap: 10px;
-  padding: 16px;
-}
-
-.nextActions h2 {
-  font-size: 18px;
-  margin: 0 0 4px;
-}
-
-.nextActions button {
-  align-items: center;
-  background: #fffdf8;
-  border: 1px solid #eadfc9;
-  border-radius: var(--radius-sm);
-  color: var(--tomato);
-  cursor: pointer;
-  display: flex;
-  font: inherit;
-  font-weight: 900;
-  justify-content: space-between;
-  min-height: 42px;
-  padding: 0 12px;
-}
-
-.overviewPage {
-  display: grid;
-  gap: 18px;
-}
-
-.overviewHero {
-  align-items: center;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 247, 223, 0.86)),
-    radial-gradient(circle at 92% 12%, rgba(217, 91, 67, 0.12), transparent 26%);
-  border: 1px solid #eadfc9;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow);
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  padding: 22px;
-}
-
-.overviewHero span,
-.previewHeader span {
-  color: var(--tomato);
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.overviewHero h2 {
-  font-size: 30px;
-  margin: 4px 0 8px;
-}
-
-.overviewHero p {
-  color: var(--muted);
-  line-height: 1.6;
-  margin: 0;
-}
-
-.heroActions {
-  display: flex;
-  gap: 10px;
-}
-
-.heroActions button,
-.previewHeader button {
-  align-items: center;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  display: inline-flex;
-  font: inherit;
-  font-weight: 900;
-  gap: 7px;
-  justify-content: center;
-  min-height: 42px;
-  padding: 0 14px;
-}
-
-.heroActions button:first-child {
-  background: var(--primary);
-  border: 1px solid var(--primary);
-  color: white;
-}
-
-.heroActions button:last-child,
-.previewHeader button {
-  background: white;
-  border: 1px solid #eadfc9;
-  color: var(--tomato);
-}
-
-.overviewMetrics {
-  display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.overviewGrid {
-  align-items: start;
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.45fr);
-}
-
-.todayPreview {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow);
-  display: grid;
-  gap: 12px;
-  padding: 16px;
-}
-
-.previewHeader {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-}
-
-.todayPreview article {
-  align-items: center;
-  background: #fffef9;
-  border: 1px solid #eadfc9;
-  border-radius: var(--radius-sm);
-  display: grid;
-  gap: 12px;
-  grid-template-columns: 86px minmax(0, 1fr);
-  padding: 10px;
-}
-
-.todayPreview img {
-  aspect-ratio: 1;
-  border-radius: var(--radius-xs);
-  object-fit: cover;
-  width: 86px;
-}
-
-.todayPreview strong {
-  color: var(--ink);
-  display: block;
-  font-size: 16px;
-}
-
-.todayPreview p {
-  color: var(--muted);
-  margin: 4px 0 0;
-}
-
-.overviewSide {
-  display: grid;
-}
-
-.homeSummary,
-.sideStack {
-  display: grid;
-  gap: 14px;
-}
-
-.summaryCard,
-.insightPanel,
-.weeklyPage {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow);
-  padding: 16px;
-}
-
-.summaryCard {
-  background: linear-gradient(180deg, #ffffff, #fffdf8);
-  border-color: #e6ddd0;
-  display: grid;
-  gap: 10px;
-}
-
-.summaryCard span {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.summaryCard strong {
-  color: var(--ink);
-  font-size: 30px;
-  letter-spacing: 0;
-  line-height: 1.1;
-}
-
-.summaryCard p {
-  color: var(--muted);
-  line-height: 1.55;
-  margin: 0;
-}
-
-.weeklyHero button {
-  align-items: center;
-  background: var(--primary);
-  border: 1px solid var(--primary);
-  border-radius: var(--radius-sm);
-  color: white;
-  cursor: pointer;
-  display: inline-flex;
-  font: inherit;
-  font-weight: 900;
-  gap: 8px;
-  justify-content: center;
-  min-height: 42px;
-  padding: 0 14px;
-}
-
-.summaryCard button {
-  align-items: center;
-  background: #fffdf8;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--primary);
-  cursor: pointer;
-  display: inline-flex;
-  font: inherit;
-  font-weight: 900;
-  gap: 8px;
-  justify-content: center;
-  min-height: 42px;
-  padding: 0 14px;
-}
-
-.summaryCard button:hover {
-  background: var(--green-soft);
-  border-color: rgba(17, 130, 59, 0.24);
-}
-
-.twoColumnPage {
-  align-items: start;
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(520px, 1fr) minmax(320px, 0.55fr);
-}
-
-.singlePage {
-  max-width: 920px;
-  width: 100%;
-}
-
-.insightPanel {
-  display: grid;
-  gap: 14px;
-}
-
-.insightPanel h2 {
-  align-items: center;
-  display: inline-flex;
-  gap: 8px;
-  margin: 0;
-}
-
-.insightPanel div {
-  background: var(--surface-muted);
-  border: 1px solid #efe5d1;
-  border-radius: var(--radius-sm);
-  display: grid;
-  gap: 5px;
-  padding: 12px;
-}
-
-.insightPanel span {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.insightPanel strong {
-  color: var(--tomato);
-  font-size: 22px;
-}
-
-.insightPanel p {
-  color: var(--muted);
-  line-height: 1.55;
-  margin: 0;
-}
-
-.weeklyPage {
-  display: grid;
-  gap: 16px;
-}
-
-.weeklyWorkspace {
-  align-items: start;
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.38fr);
-}
-
-.weeklyMain {
-  display: grid;
-  gap: 16px;
-}
-
-.weeklyHero {
-  align-items: center;
-  display: grid;
-  gap: 14px;
-  grid-template-columns: 40px minmax(0, 1fr) auto;
-}
-
-.weeklyHeroActions {
-  display: flex;
-  gap: 10px;
-}
-
-.secondaryAction {
-  background: #fffdf8;
-  border-color: #e5d9c7;
-  color: var(--primary);
-}
-
-.weekStep {
-  background: var(--primary);
-  border-radius: 9px;
-  color: white;
-  display: inline-grid;
-  height: 40px;
-  place-items: center;
-  width: 40px;
-}
-
-.weeklyHero h2 {
-  margin: 0 0 4px;
-}
-
-.weeklyHero p {
-  color: var(--muted);
-  margin: 0;
-}
-
-.weeklyControls {
-  background: linear-gradient(180deg, #ffffff, #fffbf3);
-  border: 1px solid #eadfc9;
-  border-radius: var(--radius-md);
-  display: grid;
-  gap: 14px;
-  padding: 16px;
-}
-
-.preferenceHeader {
-  align-items: start;
-  display: flex;
-  gap: 12px;
-  justify-content: space-between;
-}
-
-.preferenceHeader span {
-  color: var(--tomato);
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.preferenceHeader h3 {
-  margin: 4px 0 0;
-}
-
-.preferenceMeta {
-  align-items: center;
-  background: #fff6e3;
-  border: 1px solid #efdfbc;
-  border-radius: 999px;
-  color: #8a6225;
-  display: inline-flex;
-  flex: 0 0 auto;
-  font-size: 13px;
+.pageTitle h2 {
+  font-size: 38px;
   font-weight: 800;
-  gap: 6px;
-  min-height: 36px;
-  padding: 0 12px;
+  letter-spacing: 0;
+  line-height: 1.06;
+  margin: 0;
 }
 
-.preferenceChips {
+.pageTitle p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.chatGrid {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.72fr) minmax(260px, 0.66fr);
+}
+
+.chatRail,
+.sideStack,
+.shoppingAside,
+.shoppingMain {
+  display: grid;
+  gap: 16px;
+}
+
+.bottomShortcutBar {
+  align-items: center;
+  background: linear-gradient(180deg, #fffefb, #fbf7ef);
+  border: 1px solid rgba(230, 221, 207, 0.96);
+  border-radius: 18px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 14px 18px;
+}
+
+.bottomShortcutBar > span {
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.shortcutButtons {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.preferenceChips button {
+.shortcutButtons button {
   background: white;
-  border: 1px solid #eadfc9;
+  border: 1px solid rgba(225, 217, 200, 0.95);
   border-radius: 999px;
-  color: var(--ink);
+  color: #46614d;
   cursor: pointer;
   font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  min-height: 34px;
+  padding: 0 14px;
+}
+
+.surfaceCard {
+  background: linear-gradient(180deg, #fffefb, #fbf7ef);
+  border: 1px solid rgba(230, 221, 207, 0.96);
+  border-radius: 18px;
+  box-shadow: 0 12px 26px rgba(92, 77, 48, 0.05);
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.surfaceHeader {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.surfaceHeader span {
+  color: #4f5049;
   font-size: 14px;
   font-weight: 800;
+}
+
+.surfaceHeader strong {
+  color: var(--primary);
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.miniMealList {
+  display: grid;
+  gap: 12px;
+}
+
+.miniMealRow {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+}
+
+.miniMealRow img {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  width: 54px;
+}
+
+.miniMealRow span {
+  color: #6d6e67;
+  display: block;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.miniMealRow strong {
+  color: var(--ink);
+  display: block;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.miniMealRow em {
+  color: #6d6e67;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.compactProgressList {
+  display: grid;
+  gap: 10px;
+}
+
+.compactProgressRow {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(120px, 0.9fr) minmax(0, 1fr) auto;
+}
+
+.compactProgressRow span,
+.metricTile span {
+  color: #6d6e67;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.compactProgressRow small {
+  color: var(--ink);
+  display: block;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.progressTrack {
+  background: #e4ebdf;
+  border-radius: 999px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progressTrack i {
+  background: linear-gradient(90deg, #2f8f58, #59a96f);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
+
+.compactProgressRow em {
+  color: #6d6e67;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.inlineAction,
+.primaryBlockAction,
+.primaryMiniAction,
+.weeklyActions button {
+  align-items: center;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: center;
   min-height: 38px;
   padding: 0 14px;
 }
 
-.preferenceChips .activePreference {
-  background: var(--green-soft);
-  border-color: rgba(17, 130, 59, 0.3);
+.inlineAction {
+  background: white;
+  border: 1px solid rgba(225, 217, 200, 0.95);
   color: var(--primary);
 }
 
-.weeklyMetrics {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.primaryBlockAction,
+.primaryMiniAction,
+.weeklyActions button:first-child {
+  background: linear-gradient(135deg, #1f8c4e, #16753f);
+  border: 1px solid #1f8c4e;
+  color: white;
 }
 
-.weeklyMetrics article {
-  background: #fffef9;
-  border: 1px solid #efe5d1;
-  border-radius: var(--radius-sm);
-  display: grid;
-  gap: 6px;
-  padding: 12px;
+.primaryBlockAction {
+  width: 100%;
 }
 
-.weeklyMetrics span,
-.weekCardMeta span,
-.weekCardNote strong {
+.cardDetail {
   color: var(--muted);
   font-size: 13px;
-  font-weight: 900;
-}
-
-.weeklyMetrics strong {
-  color: var(--ink);
-  font-size: 24px;
-  line-height: 1.1;
-}
-
-.weeklyMetrics p {
-  color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.65;
   margin: 0;
 }
 
-.weekCards {
+.contentSplit {
+  align-items: start;
   display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.7fr);
 }
 
-.weekCard {
-  background: linear-gradient(180deg, #ffffff, var(--surface-muted));
-  border: 1px solid #efe5d1;
-  border-radius: var(--radius-md);
+.weeklyBoard {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 228px minmax(0, 1fr);
+}
+
+.weeklySidebar {
+  display: grid;
+}
+
+.preferenceList {
+  display: grid;
+  gap: 10px;
+}
+
+.preferenceList button {
+  align-items: center;
+  background: white;
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 12px;
+  color: #4d4e48;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 8px;
+  justify-content: flex-start;
+  min-height: 38px;
+  padding: 0 12px;
+}
+
+.preferenceList .preferenceActive {
+  background: #edf8ef;
+  border-color: rgba(31, 140, 78, 0.35);
+  color: var(--primary);
+}
+
+.weeklyMainBoard {
+  display: grid;
+  gap: 16px;
+}
+
+.weeklyTopbar {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.weekRange strong {
+  color: var(--ink);
+  display: block;
+  font-size: 22px;
+}
+
+.weekRange span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.weeklyActions {
+  display: inline-flex;
+  gap: 10px;
+}
+
+.weekPlanner {
+  background: linear-gradient(180deg, #fffefb, #fbf7ef);
+  border: 1px solid rgba(230, 221, 207, 0.96);
+  border-radius: 18px;
   display: grid;
   gap: 12px;
   padding: 14px;
 }
 
-.weekCard header {
+.weekPlannerHeader {
+  align-items: stretch;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 76px repeat(7, minmax(0, 1fr));
+}
+
+.weekPlannerHeader > span {
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  padding-top: 8px;
+}
+
+.dayPill,
+.dayPillActive {
+  background: white;
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 14px;
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+  min-height: 58px;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.dayPill strong,
+.dayPillActive strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.dayPill small,
+.dayPillActive small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.dayPillActive {
+  border-color: rgba(31, 140, 78, 0.38);
+  box-shadow: 0 10px 22px rgba(31, 140, 78, 0.08);
+}
+
+.weekPlannerRow {
+  align-items: stretch;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 76px repeat(7, minmax(0, 1fr));
+}
+
+.mealAxisLabel {
+  align-items: center;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.weekMealCell {
+  align-items: center;
+  background: white;
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 16px;
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  min-height: 118px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.weekMealCell img {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  object-fit: cover;
+  width: 54px;
+}
+
+.weekMealCell strong {
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.weeklyFooterCards {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+}
+
+.footerMetricGrid,
+.metricStrip {
+  display: grid;
+  gap: 12px;
+}
+
+.footerMetricGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.metricStrip {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.metricTile {
+  background: #fffefb;
+  border: 1px solid rgba(230, 221, 207, 0.96);
+  border-radius: 14px;
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+
+.metricTile strong {
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.nutritionDashboard {
+  display: grid;
+  gap: 16px;
+}
+
+.nutritionTopbar {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.filterPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filterPills button,
+.dateRange,
+.asideActions button {
+  background: white;
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 10px;
+  color: #585953;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  min-height: 38px;
+  padding: 0 14px;
+}
+
+.filterPills .filterActive {
+  color: var(--primary);
+}
+
+.nutritionCharts,
+.nutritionBottom,
+.shoppingLayout {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+}
+
+.nutritionCharts {
+  grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.9fr);
+}
+
+.nutritionBottom {
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+}
+
+.chartCard {
+  display: grid;
+  gap: 12px;
+}
+
+.chartCard svg {
+  height: auto;
+  width: 100%;
+}
+
+.chartTargetLine {
+  stroke: #f0a650;
+  stroke-dasharray: 7 7;
+  stroke-width: 2;
+}
+
+.chartArea {
+  fill: url(#chartFill);
+}
+
+.chartLine {
+  fill: none;
+  stroke: #2f8f58;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.chartLegend {
+  display: flex;
+  gap: 14px;
+}
+
+.chartLegend span,
+.donutLegend span {
+  align-items: center;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 6px;
+}
+
+.chartLegend i,
+.donutLegend i {
+  border-radius: 999px;
+  display: inline-block;
+  height: 8px;
+  width: 20px;
+}
+
+.actualLegend {
+  background: #2f8f58;
+}
+
+.targetLegend {
+  background: #f0a650;
+}
+
+.donutWrap {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 180px minmax(0, 1fr);
+}
+
+.donutChart {
+  height: 180px;
+  width: 180px;
+}
+
+.donutBase {
+  fill: none;
+  stroke: #ebebdf;
+  stroke-width: 24;
+}
+
+.donutLegend {
+  display: grid;
+  gap: 12px;
+}
+
+.donutLegend div {
   align-items: center;
   display: flex;
   justify-content: space-between;
 }
 
-.weekCard header strong {
-  font-size: 18px;
-}
-
-.weekCard header span {
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 900;
-  padding: 4px 8px;
-}
-
-.balanced {
-  background: var(--green-soft);
-  color: var(--primary);
-}
-
-.light {
-  background: var(--amber-soft);
-  color: #7b5814;
-}
-
-.needs_attention {
-  background: var(--tomato-soft);
-  color: var(--tomato);
-}
-
-.weekCard p {
-  align-items: center;
-  color: var(--muted);
-  display: inline-flex;
-  font-size: 13px;
-  gap: 6px;
-  margin: 0;
-}
-
-.weekCard ul {
-  display: grid;
-  gap: 8px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.weekCard li {
+.donutLegend strong {
   color: var(--ink);
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 14px;
 }
 
-.weekCard li span {
-  background: white;
-  border: 1px solid #eadfc9;
-  border-radius: 999px;
-  color: var(--tomato);
-  display: inline-grid;
-  font-size: 12px;
-  font-weight: 900;
-  height: 22px;
-  margin-right: 6px;
-  place-items: center;
-  width: 22px;
+.shoppingLayout {
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.72fr);
 }
 
-.weekCardNote {
-  background: #fff7e8;
-  border: 1px solid #f0dfbc;
-  border-radius: var(--radius-sm);
+.shoppingStats {
   display: grid;
-  gap: 6px;
-  padding: 10px;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.weekCardNote p,
-.weekCardMeta p {
-  color: var(--ink);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.weekCardMeta {
-  display: grid;
+.asideActions {
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
-.weekCardMeta div {
-  border-top: 1px dashed #e5d7c1;
-  display: grid;
-  gap: 4px;
-  padding-top: 10px;
-}
-
-.adjustDayButton {
+.asideActions button {
   align-items: center;
-  background: white;
-  border: 1px solid #eadfc9;
-  border-radius: var(--radius-sm);
-  color: var(--tomato);
   cursor: pointer;
   display: inline-flex;
-  font: inherit;
-  font-weight: 900;
   gap: 8px;
   justify-content: center;
-  min-height: 40px;
-  padding: 0 12px;
 }
 
-.weeklyAside {
+.suggestionList {
+  color: var(--muted);
   display: grid;
-  gap: 14px;
-  position: sticky;
-  top: 18px;
+  gap: 10px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.suggestionList li {
+  line-height: 1.55;
+}
+
+@media (max-width: 1380px) {
+  .chatGrid {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.72fr);
+  }
+
+  .chatGrid > :last-child {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .weeklyBoard,
+  .nutritionBottom,
+  .shoppingLayout,
+  .contentSplit {
+    grid-template-columns: 1fr;
+  }
+
+  .metricStrip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 1180px) {
+  .app {
+    padding: 12px;
+  }
+
   .header {
     grid-template-columns: 1fr;
+    justify-items: start;
   }
 
   .nav {
     justify-content: flex-start;
   }
 
-  .cta {
-    grid-column: auto;
-    grid-row: auto;
-    justify-self: start;
+  .headerActions {
+    width: 100%;
   }
 
-  .chatPage,
-  .chatWorkspace,
-  .twoColumnPage,
-  .overviewGrid,
-  .weeklyWorkspace {
+  .pageTitle h2 {
+    font-size: 30px;
+  }
+
+  .chatGrid,
+  .weeklyFooterCards,
+  .nutritionCharts,
+  .metricStrip,
+  .shoppingStats,
+  .footerMetricGrid {
     grid-template-columns: 1fr;
   }
 
-  .chatAside,
-  .weeklyAside {
-    position: static;
-  }
-
-  .weekCards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .weeklyMetrics {
+  .chatGrid > :last-child {
     grid-template-columns: 1fr;
   }
 
-  .overviewMetrics {
+  .weekPlannerHeader,
+  .weekPlannerRow {
+    min-width: 980px;
+  }
+
+  .weekPlanner {
+    overflow-x: auto;
+  }
+
+  .bottomShortcutBar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .brand strong {
+    font-size: 22px;
+  }
+
+  .nav {
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    white-space: normal;
+  }
+
+  .nav button::after {
+    bottom: -4px;
+  }
+
+  .headerActions {
+    flex-wrap: wrap;
+  }
+
+  .pageTitle h2 {
+    font-size: 24px;
+  }
+
+  .pageFrame {
+    padding: 14px;
+  }
+
+  .surfaceHeader {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .surfaceHeader strong {
+    font-size: 28px;
+  }
+
+  .donutWrap {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .metricStrip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .overviewHero {
+  .shoppingStats {
     grid-template-columns: 1fr;
   }
 }

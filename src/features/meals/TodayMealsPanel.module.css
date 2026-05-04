@@ -1,8 +1,8 @@
 .panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow);
+  background: linear-gradient(180deg, #fffefb, #fbf7ef);
+  border: 1px solid rgba(230, 221, 207, 0.96);
+  border-radius: 18px;
+  box-shadow: 0 14px 30px rgba(89, 74, 46, 0.05);
   display: grid;
   gap: 16px;
   padding: 16px;
@@ -15,26 +15,37 @@
 }
 
 .step {
-  background: linear-gradient(135deg, var(--tomato), #e18a4b);
-  border-radius: 9px;
-  box-shadow: 0 10px 18px rgba(17, 130, 59, 0.18);
+  background: linear-gradient(135deg, #ef9f45, #e97d34);
+  border-radius: 12px;
+  box-shadow: 0 10px 22px rgba(239, 159, 69, 0.22);
   color: white;
   display: inline-grid;
-  flex: 0 0 34px;
-  height: 34px;
+  flex: 0 0 40px;
+  height: 40px;
   place-items: center;
-  width: 34px;
+  width: 40px;
 }
 
 .sectionHeader h2 {
-  font-size: 20px;
+  font-size: 28px;
   margin: 0 0 4px;
 }
 
 .sectionHeader p {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   margin: 0;
+}
+
+.contextNote {
+  background: #fff8eb;
+  border: 1px solid #efdfbc;
+  border-radius: 14px;
+  color: #8a6225;
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 0;
+  padding: 10px 12px;
 }
 
 .mealList {
@@ -43,121 +54,138 @@
 }
 
 .mealCard {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 18px;
   padding: 14px;
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .expanded {
-  border-color: rgba(217, 91, 67, 0.45);
-  box-shadow: 0 14px 28px rgba(217, 91, 67, 0.1);
+  border-color: rgba(31, 140, 78, 0.34);
+  box-shadow: 0 14px 28px rgba(31, 140, 78, 0.08);
 }
 
 .mealHeader {
   align-items: start;
   display: grid;
-  gap: 12px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  grid-template-columns: 118px minmax(0, 1fr) auto;
+}
+
+.previewImage {
+  aspect-ratio: 1;
+  border-radius: 18px;
+  object-fit: cover;
+  width: 118px;
+}
+
+.mealIntro {
+  display: grid;
+  gap: 6px;
 }
 
 .mealType {
   align-items: center;
-  color: var(--primary);
+  color: #6d6e67;
   display: inline-flex;
-  font-weight: 900;
+  font-size: 13px;
+  font-weight: 800;
   gap: 6px;
-  margin-bottom: 6px;
 }
 
 .mealHeader h3 {
-  font-size: 18px;
-  margin: 0 0 4px;
+  font-size: 30px;
+  line-height: 1.08;
+  margin: 0;
 }
 
 .mealHeader p {
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
 }
 
-.expandButton {
+.metaLine {
   align-items: center;
-  background: transparent;
-  border: 0;
-  color: var(--muted);
-  cursor: pointer;
-  display: inline-flex;
-  gap: 6px;
-  padding: 0;
-}
-
-.expandButton strong {
-  color: var(--ink);
-  font-size: 16px;
-}
-
-.detail {
-  border-top: 1px solid var(--border);
-  display: grid;
-  gap: 14px;
-  grid-template-columns: minmax(220px, 0.62fr) minmax(0, 1fr);
-  margin-top: 14px;
-  padding-top: 14px;
-}
-
-.detail img {
-  aspect-ratio: 1.15;
-  border-radius: var(--radius-sm);
-  height: 100%;
-  object-fit: cover;
-  width: 100%;
-}
-
-.detailContent {
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .metaLine span {
   align-items: center;
-  color: var(--muted);
+  color: #5d5e57;
   display: inline-flex;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 700;
   gap: 5px;
+}
+
+.expandButton {
+  align-items: center;
+  align-self: start;
+  background: transparent;
+  border: 0;
+  color: #5f6059;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 6px;
+  padding: 4px 0 0;
+}
+
+.expandButton strong {
+  color: var(--ink);
+  font-size: 20px;
+}
+
+.detail {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  padding-left: 132px;
+}
+
+.detailContent {
+  display: grid;
+  gap: 12px;
 }
 
 .nutritionGrid {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .nutritionGrid span {
-  background: var(--surface-muted);
-  border: 1px solid #efe5d1;
-  border-radius: 999px;
-  color: var(--ink);
+  background: #fffefb;
+  border: 1px solid rgba(231, 223, 209, 0.96);
+  border-radius: 12px;
+  color: #5d5e57;
   display: flex;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 700;
   justify-content: space-between;
   padding: 8px 10px;
 }
 
 .nutritionGrid strong {
-  color: var(--tomato);
+  color: var(--primary);
 }
 
 .tip {
-  background: var(--amber-soft);
-  border: 1px solid #f1dfaa;
-  border-radius: var(--radius-xs);
-  color: #7b5814;
+  background: #eef8ef;
+  border: 1px solid rgba(31, 140, 78, 0.2);
+  border-radius: 12px;
+  color: #376746;
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
-  padding: 9px 10px;
+  padding: 10px 12px;
 }
 
 .ingredients {
@@ -167,17 +195,17 @@
 }
 
 .ingredients span {
-  background: #fffef9;
-  border: 1px solid var(--border);
+  background: white;
+  border: 1px solid rgba(225, 217, 200, 0.95);
   border-radius: 999px;
-  color: var(--muted);
+  color: #5f6059;
   font-size: 12px;
-  padding: 5px 9px;
+  padding: 6px 10px;
 }
 
 .ingredients .inventoryTag {
-  background: #eefaf1;
-  border-color: rgba(17, 130, 59, 0.25);
+  background: #edf8ef;
+  border-color: rgba(31, 140, 78, 0.28);
   color: var(--primary);
   font-weight: 800;
 }
@@ -188,8 +216,48 @@
   gap: 10px;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 980px) {
+  .mealHeader {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+
+  .expandButton {
+    grid-column: 2;
+    justify-self: end;
+  }
+
   .detail {
+    padding-left: 0;
+  }
+
+  .nutritionGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .mealHeader {
+    grid-template-columns: 1fr;
+  }
+
+  .previewImage {
+    width: 100%;
+  }
+
+  .expandButton {
+    grid-column: auto;
+    justify-self: start;
+  }
+
+  .sectionHeader h2 {
+    font-size: 24px;
+  }
+
+  .mealHeader h3 {
+    font-size: 24px;
+  }
+
+  .nutritionGrid {
     grid-template-columns: 1fr;
   }
 }

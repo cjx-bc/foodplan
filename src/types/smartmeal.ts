@@ -67,6 +67,13 @@ export type ShoppingListItem = {
   reason: string;
 };
 
+export type PlanningMode = "daily" | "weekly";
+
+export type DerivedShoppingListItem = ShoppingListItem & {
+  source: PlanningMode;
+  stableKey: string;
+};
+
 export type NutritionSummary = {
   actual: NutritionFacts;
   target: NutritionFacts;
@@ -100,6 +107,7 @@ export type AiActionSummary = {
 
 export type WeeklyPlanDay = {
   day: string;
+  meals: MealRecommendation[];
   breakfast: string;
   lunch: string;
   dinner: string;

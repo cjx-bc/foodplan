@@ -7,10 +7,11 @@ import styles from "./TodayMealsPanel.module.css";
 
 type TodayMealsPanelProps = {
   meals: MealRecommendation[];
+  contextNote?: string;
   onSwapMeal: (mealType: MealType) => void;
 };
 
-export function TodayMealsPanel({ meals, onSwapMeal }: TodayMealsPanelProps) {
+export function TodayMealsPanel({ meals, contextNote, onSwapMeal }: TodayMealsPanelProps) {
   const [expanded, setExpanded] = useState<MealType>("lunch");
 
   return (
@@ -23,6 +24,8 @@ export function TodayMealsPanel({ meals, onSwapMeal }: TodayMealsPanelProps) {
         </div>
       </div>
 
+      {contextNote ? <p className={styles.contextNote}>{contextNote}</p> : null}
+
       <div className={styles.mealList}>
         {meals.map((meal) => {
           const isExpanded = expanded === meal.mealType;
@@ -30,13 +33,21 @@ export function TodayMealsPanel({ meals, onSwapMeal }: TodayMealsPanelProps) {
           return (
             <article key={meal.id} className={`${styles.mealCard} ${isExpanded ? styles.expanded : ""}`}>
               <header className={styles.mealHeader}>
-                <div>
+                <img className={styles.previewImage} src={meal.imageUrl} alt={meal.title} />
+                <div className={styles.mealIntro}>
                   <span className={styles.mealType}>
                     <Utensils size={18} />
                     {mealTypeLabels[meal.mealType]}
                   </span>
                   <h3>{meal.title}</h3>
                   <p>{meal.description}</p>
+                  <div className={styles.metaLine}>
+                    <span>
+                      <Clock size={15} />
+                      {meal.cookTimeMinutes} 分钟
+                    </span>
+                    <span>{meal.nutrition.calories} kcal</span>
+                  </div>
                 </div>
                 <button
                   className={styles.expandButton}
@@ -51,14 +62,7 @@ export function TodayMealsPanel({ meals, onSwapMeal }: TodayMealsPanelProps) {
 
               {isExpanded ? (
                 <div className={styles.detail}>
-                  <img src={meal.imageUrl} alt={meal.title} />
                   <div className={styles.detailContent}>
-                    <div className={styles.metaLine}>
-                      <span>
-                        <Clock size={15} />
-                        约 {meal.cookTimeMinutes} 分钟
-                      </span>
-                    </div>
                     <div className={styles.nutritionGrid}>
                       <span>蛋白质 <strong>{meal.nutrition.protein}g</strong></span>
                       <span>碳水 <strong>{meal.nutrition.carbs}g</strong></span>

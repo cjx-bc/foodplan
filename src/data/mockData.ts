@@ -4,6 +4,7 @@ import type {
   MealRecommendation,
   ShoppingListItem,
   UserProfile,
+  WeeklyPlanDay,
   WeeklyPlanPreset,
 } from "../types/smartmeal";
 
@@ -140,6 +141,150 @@ export const initialMessages: ChatMessage[] = [
   },
 ];
 
+function cloneMeal(meal: MealRecommendation, overrides?: Partial<MealRecommendation>): MealRecommendation {
+  return {
+    ...meal,
+    ...overrides,
+    nutrition: overrides?.nutrition ? { ...overrides.nutrition } : { ...meal.nutrition },
+    ingredients: overrides?.ingredients ? overrides.ingredients.map((item) => ({ ...item })) : meal.ingredients.map((item) => ({ ...item })),
+    steps: overrides?.steps ? [...overrides.steps] : [...meal.steps],
+  };
+}
+
+const mealCatalog = {
+  oatmealEgg: cloneMeal(initialMeals[0]),
+  tomatoChickenRice: cloneMeal(initialMeals[1]),
+  tomatoTofuSoup: cloneMeal(initialMeals[2]),
+  veggieEggWrap: cloneMeal(mealAlternatives.breakfast[0]),
+  shrimpBuckwheat: cloneMeal(mealAlternatives.lunch[0]),
+  tomatoEggOat: cloneMeal(mealAlternatives.dinner[0]),
+  milkBananaOat: cloneMeal(initialMeals[0], {
+    id: "meal_breakfast_3",
+    title: "牛奶香蕉燕麦杯",
+    description: "用牛奶和香蕉做快手早餐，适合工作日清淡开场。",
+    nutrition: { calories: 338, protein: 18, carbs: 50, fat: 8, fiber: 6 },
+    ingredients: [
+      { name: "燕麦", amount: "45 g", fromInventory: false, optional: false },
+      { name: "牛奶", amount: "250 ml", fromInventory: true, optional: false },
+      { name: "香蕉", amount: "1 根", fromInventory: false, optional: false },
+    ],
+    aiTip: "优先消耗牛奶，早餐热量保持轻盈。",
+  }),
+  boiledEggCorn: cloneMeal(initialMeals[0], {
+    id: "meal_breakfast_4",
+    title: "水煮蛋 + 玉米杯",
+    description: "更朴素的早餐组合，适合周内压一压总热量。",
+    nutrition: { calories: 310, protein: 17, carbs: 34, fat: 10, fiber: 5 },
+    ingredients: [
+      { name: "鸡蛋", amount: "2 个", fromInventory: true, optional: false },
+      { name: "玉米", amount: "1 根", fromInventory: false, optional: false },
+    ],
+    aiTip: "蛋白和主食简单清楚，适合丰盛午餐前搭配。",
+  }),
+  yogurtNuts: cloneMeal(initialMeals[0], {
+    id: "meal_breakfast_5",
+    title: "酸奶坚果杯",
+    description: "周五稍微放宽一点，但仍然控制总量。",
+    nutrition: { calories: 360, protein: 16, carbs: 28, fat: 15, fiber: 5 },
+    ingredients: [
+      { name: "酸奶", amount: "1 杯", fromInventory: false, optional: false },
+      { name: "坚果", amount: "20 g", fromInventory: false, optional: false },
+      { name: "水果", amount: "1 份", fromInventory: false, optional: true },
+    ],
+    aiTip: "周末前的早餐可以稍微丰富，但不必过量。",
+  }),
+  chickenSaladRice: cloneMeal(initialMeals[1], {
+    id: "meal_lunch_3",
+    title: "鸡肉沙拉饭",
+    description: "鸡肉保留蛋白质，蔬菜让午餐更清爽。",
+    nutrition: { calories: 540, protein: 35, carbs: 55, fat: 14, fiber: 7 },
+    ingredients: [
+      { name: "鸡胸肉", amount: "150 g", fromInventory: true, optional: false },
+      { name: "生菜", amount: "150 g", fromInventory: false, optional: false },
+      { name: "糙米饭", amount: "1 碗", fromInventory: false, optional: false },
+      { name: "番茄", amount: "1 个", fromInventory: true, optional: true },
+    ],
+    aiTip: "适合中周保持清爽，蛋白也不低。",
+  }),
+  beefVegRice: cloneMeal(initialMeals[1], {
+    id: "meal_lunch_4",
+    title: "牛肉时蔬饭",
+    description: "热量稍高的午餐，用来平衡工作日体力消耗。",
+    nutrition: { calories: 640, protein: 38, carbs: 63, fat: 20, fiber: 6 },
+    ingredients: [
+      { name: "牛肉", amount: "160 g", fromInventory: false, optional: false },
+      { name: "时蔬", amount: "200 g", fromInventory: false, optional: false },
+      { name: "米饭", amount: "1 碗", fromInventory: false, optional: false },
+    ],
+    aiTip: "适合放在较忙的一天，但晚餐最好回轻一些。",
+  }),
+  tomatoBeefNoodles: cloneMeal(initialMeals[1], {
+    id: "meal_lunch_5",
+    title: "番茄牛肉面",
+    description: "周五给一点满足感，同时保留番茄的清爽。",
+    nutrition: { calories: 610, protein: 34, carbs: 66, fat: 18, fiber: 6 },
+    ingredients: [
+      { name: "番茄", amount: "2 个", fromInventory: true, optional: false },
+      { name: "牛肉", amount: "130 g", fromInventory: false, optional: false },
+      { name: "挂面", amount: "1 份", fromInventory: false, optional: false },
+    ],
+    aiTip: "周五可以略丰盛，但整体节奏仍然可控。",
+  }),
+  veggieTofu: cloneMeal(initialMeals[2], {
+    id: "meal_dinner_3",
+    title: "清炒时蔬豆腐",
+    description: "蔬菜和豆腐为主，脂肪较低的周中晚餐。",
+    nutrition: { calories: 398, protein: 21, carbs: 28, fat: 14, fiber: 7 },
+    ingredients: [
+      { name: "豆腐", amount: "220 g", fromInventory: false, optional: false },
+      { name: "时蔬", amount: "300 g", fromInventory: false, optional: false },
+      { name: "西兰花", amount: "半颗", fromInventory: true, optional: true },
+    ],
+    aiTip: "用豆腐顶住蛋白质，晚餐仍保持轻。",
+  }),
+  tofuGreensSoup: cloneMeal(initialMeals[2], {
+    id: "meal_dinner_4",
+    title: "豆腐青菜汤",
+    description: "把晚餐压轻一点，给整体周节奏回平。",
+    nutrition: { calories: 360, protein: 19, carbs: 22, fat: 13, fiber: 5 },
+    ingredients: [
+      { name: "豆腐", amount: "180 g", fromInventory: false, optional: false },
+      { name: "青菜", amount: "250 g", fromInventory: false, optional: false },
+    ],
+    aiTip: "适合放在热量偏高的一天晚上做调平。",
+  }),
+  steamedFishVeg: cloneMeal(initialMeals[2], {
+    id: "meal_dinner_5",
+    title: "清蒸鱼 + 时蔬",
+    description: "把鱼类放在周末前，补一点优质蛋白。",
+    nutrition: { calories: 455, protein: 31, carbs: 18, fat: 16, fiber: 5 },
+    ingredients: [
+      { name: "鱼片", amount: "180 g", fromInventory: false, optional: false },
+      { name: "时蔬", amount: "250 g", fromInventory: false, optional: false },
+    ],
+    aiTip: "鱼类提升蛋白质量，晚餐仍然不过重。",
+  }),
+} as const;
+
+function buildWeeklyDay(day: string, meals: [MealRecommendation, MealRecommendation, MealRecommendation], status: WeeklyPlanDay["status"], note: string): WeeklyPlanDay {
+  const inventoryFocus = Array.from(new Set(meals.flatMap((meal) => meal.ingredients.filter((item) => item.fromInventory).map((item) => item.name))));
+  const shoppingGap = Array.from(new Set(meals.flatMap((meal) => meal.ingredients.filter((item) => !item.fromInventory).map((item) => item.name))));
+  const calories = meals.reduce((total, meal) => total + meal.nutrition.calories, 0);
+
+  return {
+    day,
+    meals: meals.map((meal) => cloneMeal(meal)),
+    breakfast: meals[0].title,
+    lunch: meals[1].title,
+    dinner: meals[2].title,
+    calories,
+    status,
+    note,
+    inventoryFocus,
+    shoppingGap,
+  };
+}
+
 export const weeklyPreferenceOptions = [
   "清淡饮食",
   "高蛋白",
@@ -155,11 +300,11 @@ export const weeklyPlanPresets: WeeklyPlanPreset[] = [
     description: "优先消耗鸡蛋、番茄、西兰花和牛奶，工作日保持稳定热量。",
     tags: ["清淡饮食", "库存优先"],
     days: [
-      { day: "周一", breakfast: "燕麦水果杯", lunch: "番茄鸡胸肉饭", dinner: "番茄豆腐汤", calories: 1850, status: "balanced", note: "先消耗番茄和牛奶，开周保持清淡。", inventoryFocus: ["番茄", "牛奶"], shoppingGap: ["豆腐"] },
-      { day: "周二", breakfast: "全麦蛋卷", lunch: "虾仁荞麦面", dinner: "清炒时蔬豆腐", calories: 1780, status: "light", note: "午餐减油，给周中留出热量空间。", inventoryFocus: ["鸡蛋", "西兰花"], shoppingGap: ["虾仁"] },
-      { day: "周三", breakfast: "牛奶香蕉燕麦", lunch: "鸡肉沙拉饭", dinner: "鸡蛋番茄粥", calories: 1810, status: "balanced", note: "用库存鸡蛋做晚餐，减少额外采购。", inventoryFocus: ["牛奶", "鸡蛋", "番茄"], shoppingGap: ["生菜"] },
-      { day: "周四", breakfast: "水煮蛋 + 玉米", lunch: "牛肉时蔬饭", dinner: "豆腐青菜汤", calories: 1920, status: "needs_attention", note: "周四偏丰盛，建议晚餐控制主食。", inventoryFocus: ["鸡蛋"], shoppingGap: ["牛肉", "青菜"] },
-      { day: "周五", breakfast: "酸奶坚果杯", lunch: "番茄牛肉面", dinner: "清蒸鱼 + 时蔬", calories: 1880, status: "balanced", note: "周五适度放宽，但总热量仍可控。", inventoryFocus: ["番茄"], shoppingGap: ["鱼片", "酸奶"] },
+      buildWeeklyDay("周一", [mealCatalog.oatmealEgg, mealCatalog.tomatoChickenRice, mealCatalog.tomatoTofuSoup], "balanced", "先消耗番茄和牛奶，开周保持清淡。"),
+      buildWeeklyDay("周二", [mealCatalog.veggieEggWrap, mealCatalog.shrimpBuckwheat, mealCatalog.veggieTofu], "light", "午餐减油，给周中留出热量空间。"),
+      buildWeeklyDay("周三", [mealCatalog.milkBananaOat, mealCatalog.chickenSaladRice, mealCatalog.tomatoEggOat], "balanced", "用库存鸡蛋做晚餐，减少额外采购。"),
+      buildWeeklyDay("周四", [mealCatalog.boiledEggCorn, mealCatalog.beefVegRice, mealCatalog.tofuGreensSoup], "needs_attention", "周四偏丰盛，建议晚餐控制主食。"),
+      buildWeeklyDay("周五", [mealCatalog.yogurtNuts, mealCatalog.tomatoBeefNoodles, mealCatalog.steamedFishVeg], "balanced", "周五适度放宽，但总热量仍可控。"),
     ],
   },
   {
@@ -168,11 +313,11 @@ export const weeklyPlanPresets: WeeklyPlanPreset[] = [
     description: "把蛋白质达标放在优先级前面，三餐更强调鸡蛋、鸡胸肉和鱼虾。",
     tags: ["高蛋白", "低脂减油"],
     days: [
-      { day: "周一", breakfast: "鸡蛋蔬菜卷", lunch: "鸡胸肉藜麦饭", dinner: "虾仁豆腐汤", calories: 1910, status: "balanced", note: "训练日版本，早餐和午餐蛋白质拉高。", inventoryFocus: ["鸡蛋", "鸡胸肉"], shoppingGap: ["藜麦", "虾仁"] },
-      { day: "周二", breakfast: "无糖酸奶坚果杯", lunch: "三文鱼杂粮饭", dinner: "清炒芦笋鸡蛋", calories: 1860, status: "balanced", note: "鱼类安排在周二，提升脂肪质量。", inventoryFocus: ["鸡蛋"], shoppingGap: ["三文鱼", "芦笋"] },
-      { day: "周三", breakfast: "牛奶燕麦 + 水煮蛋", lunch: "番茄牛肉意面", dinner: "鸡丝蔬菜汤", calories: 1890, status: "balanced", note: "中周蛋白继续保持，避免下午乏力。", inventoryFocus: ["牛奶", "鸡蛋", "番茄"], shoppingGap: ["牛肉", "意面"] },
-      { day: "周四", breakfast: "豆浆蛋饼", lunch: "虾仁西兰花饭", dinner: "香煎豆腐时蔬", calories: 1760, status: "light", note: "周四做轻一点，给周五留弹性。", inventoryFocus: ["西兰花"], shoppingGap: ["虾仁", "豆浆"] },
-      { day: "周五", breakfast: "高蛋白奶昔", lunch: "鸡胸肉全麦卷", dinner: "番茄鱼片锅", calories: 1940, status: "needs_attention", note: "周五蛋白充足，但晚餐盐分要控。", inventoryFocus: ["番茄", "鸡胸肉"], shoppingGap: ["鱼片", "全麦饼"] },
+      buildWeeklyDay("周一", [mealCatalog.veggieEggWrap, mealCatalog.tomatoChickenRice, mealCatalog.tomatoTofuSoup], "balanced", "训练日版本，早餐和午餐蛋白质拉高。"),
+      buildWeeklyDay("周二", [mealCatalog.yogurtNuts, mealCatalog.shrimpBuckwheat, mealCatalog.steamedFishVeg], "balanced", "鱼类安排在周二，提升脂肪质量。"),
+      buildWeeklyDay("周三", [mealCatalog.oatmealEgg, mealCatalog.tomatoBeefNoodles, mealCatalog.tomatoEggOat], "balanced", "中周蛋白继续保持，避免下午乏力。"),
+      buildWeeklyDay("周四", [mealCatalog.milkBananaOat, mealCatalog.chickenSaladRice, mealCatalog.veggieTofu], "light", "周四做轻一点，给周五留弹性。"),
+      buildWeeklyDay("周五", [mealCatalog.boiledEggCorn, mealCatalog.beefVegRice, mealCatalog.steamedFishVeg], "needs_attention", "周五蛋白充足，但晚餐盐分要控。"),
     ],
   },
   {
@@ -181,11 +326,11 @@ export const weeklyPlanPresets: WeeklyPlanPreset[] = [
     description: "控制热量和盐油，适合工作繁忙、希望饮食更轻的时候。",
     tags: ["清淡饮食", "控糖控盐", "低脂减油"],
     days: [
-      { day: "周一", breakfast: "牛奶燕麦杯", lunch: "清蒸鸡肉蔬菜饭", dinner: "番茄菌菇汤", calories: 1720, status: "light", note: "周一先压热量，帮助恢复节奏。", inventoryFocus: ["牛奶", "番茄"], shoppingGap: ["菌菇"] },
-      { day: "周二", breakfast: "水煮蛋 + 苹果", lunch: "豆腐杂蔬盖饭", dinner: "南瓜小米粥", calories: 1680, status: "light", note: "晚餐更温和，适合压力较大的工作日。", inventoryFocus: ["鸡蛋"], shoppingGap: ["南瓜", "小米"] },
-      { day: "周三", breakfast: "酸奶水果碗", lunch: "番茄鸡蛋荞麦面", dinner: "清炒西兰花豆腐", calories: 1740, status: "balanced", note: "利用库存番茄和西兰花，减少浪费。", inventoryFocus: ["番茄", "西兰花"], shoppingGap: ["荞麦面", "酸奶"] },
-      { day: "周四", breakfast: "玉米鸡蛋杯", lunch: "鸡胸肉青菜粥", dinner: "凉拌豆腐 + 时蔬", calories: 1700, status: "light", note: "周四继续低负担，便于坚持。", inventoryFocus: ["鸡蛋", "鸡胸肉"], shoppingGap: ["青菜"] },
-      { day: "周五", breakfast: "无糖豆浆燕麦", lunch: "清汤牛肉粉", dinner: "番茄鱼片汤", calories: 1830, status: "balanced", note: "周五稍微回升热量，避免过度饥饿。", inventoryFocus: ["番茄"], shoppingGap: ["牛肉", "鱼片"] },
+      buildWeeklyDay("周一", [mealCatalog.milkBananaOat, mealCatalog.chickenSaladRice, mealCatalog.tomatoTofuSoup], "light", "周一先压热量，帮助恢复节奏。"),
+      buildWeeklyDay("周二", [mealCatalog.boiledEggCorn, mealCatalog.tomatoChickenRice, mealCatalog.tofuGreensSoup], "light", "晚餐更温和，适合压力较大的工作日。"),
+      buildWeeklyDay("周三", [mealCatalog.oatmealEgg, mealCatalog.shrimpBuckwheat, mealCatalog.veggieTofu], "balanced", "利用库存番茄和西兰花，减少浪费。"),
+      buildWeeklyDay("周四", [mealCatalog.veggieEggWrap, mealCatalog.chickenSaladRice, mealCatalog.tomatoEggOat], "light", "周四继续低负担，便于坚持。"),
+      buildWeeklyDay("周五", [mealCatalog.milkBananaOat, mealCatalog.tomatoBeefNoodles, mealCatalog.tomatoTofuSoup], "balanced", "周五稍微回升热量，避免过度饥饿。"),
     ],
   },
 ];

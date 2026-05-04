@@ -1,15 +1,16 @@
 import { Check, ChevronDown, ChevronRight, PartyPopper, ShoppingCart } from "lucide-react";
 import { useState } from "react";
-import type { ShoppingListItem } from "../../types/smartmeal";
+import type { DerivedShoppingListItem } from "../../types/smartmeal";
 import { categoryLabels } from "../../utils/labels";
 import styles from "./ShoppingListPanel.module.css";
 
 type ShoppingListPanelProps = {
-  items: ShoppingListItem[];
+  items: DerivedShoppingListItem[];
+  modeLabel: string;
   onToggle: (id: string) => void;
 };
 
-export function ShoppingListPanel({ items, onToggle }: ShoppingListPanelProps) {
+export function ShoppingListPanel({ items, modeLabel, onToggle }: ShoppingListPanelProps) {
   const categories = Array.from(new Set(items.map((item) => item.category)));
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const remainingCount = items.filter((item) => !item.checked).length;
@@ -33,7 +34,7 @@ export function ShoppingListPanel({ items, onToggle }: ShoppingListPanelProps) {
           <ShoppingCart size={19} />
           购物清单
         </span>
-        <strong>{remainingCount === 0 ? "全部完成" : `${remainingCount} 项待买`}</strong>
+        <strong>{modeLabel} · {remainingCount === 0 ? "全部完成" : `${remainingCount} 项待买`}</strong>
       </div>
 
       {remainingCount === 0 ? (

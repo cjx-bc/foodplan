@@ -7,9 +7,10 @@ import styles from "./NutritionPanel.module.css";
 type NutritionPanelProps = {
   summary: NutritionSummary;
   suggestions: string[];
+  contextNote?: string;
 };
 
-export function NutritionPanel({ summary, suggestions }: NutritionPanelProps) {
+export function NutritionPanel({ summary, suggestions, contextNote }: NutritionPanelProps) {
   return (
     <section className={styles.panel} aria-label="今日营养概览">
       <div className={styles.header}>
@@ -19,6 +20,8 @@ export function NutritionPanel({ summary, suggestions }: NutritionPanelProps) {
         </span>
         <strong>{summary.score} 分</strong>
       </div>
+
+      {contextNote ? <p className={styles.contextNote}>{contextNote}</p> : null}
 
       <div className={styles.delta}>
         <div>
