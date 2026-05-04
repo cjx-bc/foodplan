@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "dev:server": "tsx watch server/index.ts",
     "build": "tsc -b && vite build",
+    "build:server": "tsc -p tsconfig.server.json",
+    "start:server": "node server-dist/index.js",
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
@@ -17,7 +20,9 @@
     "lucide-react": "^0.561.0"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "tsx": "^4.20.6"
   }
 }

@@ -1,0 +1,88 @@
+{
+  "profile": {
+    "id": "profile_001",
+    "name": "家庭饮食计划",
+    "dailyCalorieTarget": 1900,
+    "proteinTarget": 95,
+    "carbsTarget": 250,
+    "fatTarget": 65,
+    "fiberTarget": 25,
+    "tastePreferences": [
+      "清淡",
+      "家常",
+      "高蛋白"
+    ],
+    "dietaryRestrictions": [
+      "少油",
+      "少盐"
+    ],
+    "createdAt": "2026-05-04T00:00:00.000Z",
+    "updatedAt": "2026-05-04T00:00:00.000Z"
+  },
+  "inventoryItems": [
+    {
+      "id": "inv_001",
+      "name": "鸡蛋",
+      "category": "meat_egg",
+      "quantity": "8 个",
+      "quantityValue": 8,
+      "quantityUnit": "piece",
+      "expireDate": "2026-05-09",
+      "status": "fresh",
+      "createdAt": "2026-05-04T00:00:00.000Z",
+      "updatedAt": "2026-05-04T00:00:00.000Z"
+    },
+    {
+      "id": "inv_002",
+      "name": "番茄",
+      "category": "vegetable",
+      "quantity": "4 个",
+      "quantityValue": 4,
+      "quantityUnit": "piece",
+      "expireDate": "2026-05-06",
+      "status": "expiring_soon",
+      "createdAt": "2026-05-04T00:00:00.000Z",
+      "updatedAt": "2026-05-04T00:00:00.000Z"
+    },
+    {
+      "id": "inv_003",
+      "name": "西兰花",
+      "category": "vegetable",
+      "quantity": "1 颗",
+      "quantityValue": 1,
+      "quantityUnit": "piece",
+      "expireDate": "2026-05-07",
+      "status": "expiring_soon",
+      "createdAt": "2026-05-04T00:00:00.000Z",
+      "updatedAt": "2026-05-04T00:00:00.000Z"
+    },
+    {
+      "id": "inv_004",
+      "name": "鸡胸肉",
+      "category": "meat_egg",
+      "quantity": "300 g",
+      "quantityValue": 300,
+      "quantityUnit": "g",
+      "expireDate": "2026-05-08",
+      "status": "fresh",
+      "createdAt": "2026-05-04T00:00:00.000Z",
+      "updatedAt": "2026-05-04T00:00:00.000Z"
+    },
+    {
+      "id": "inv_005",
+      "name": "牛奶",
+      "category": "dairy",
+      "quantity": "1 盒",
+      "quantityValue": 1,
+      "quantityUnit": "box",
+      "expireDate": "2026-05-05",
+      "status": "expiring_soon",
+      "createdAt": "2026-05-04T00:00:00.000Z",
+      "updatedAt": "2026-05-04T00:00:00.000Z"
+    }
+  ],
+  "mealPlans": [],
+  "shoppingLists": [],
+  "conversations": [],
+  "conversationMessages": []
+}

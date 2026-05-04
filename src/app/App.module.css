@@ -178,6 +178,35 @@
   grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.72fr) minmax(260px, 0.66fr);
 }
 
+.chatWorkflowCard {
+  align-items: center;
+  background: linear-gradient(180deg, #fffefb, #fbf7ef);
+  border: 1px solid rgba(230, 221, 207, 0.96);
+  border-radius: 18px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 16px 18px;
+}
+
+.chatWorkflowHeader {
+  display: grid;
+  gap: 6px;
+}
+
+.chatWorkflowHeader strong {
+  color: var(--ink);
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.chatWorkflowActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 .chatRail,
 .sideStack,
 .shoppingAside,
@@ -343,6 +372,7 @@
 .inlineAction,
 .primaryBlockAction,
 .primaryMiniAction,
+.secondaryAction,
 .weeklyActions button {
   align-items: center;
   border-radius: 10px;
@@ -363,9 +393,15 @@
   color: var(--primary);
 }
 
+.secondaryAction {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(191, 210, 197, 0.92);
+  color: #2a6c46;
+}
+
 .primaryBlockAction,
 .primaryMiniAction,
-.weeklyActions button:first-child {
+.weeklyActions button:first-child:not(.secondaryAction) {
   background: linear-gradient(135deg, #1f8c4e, #16753f);
   border: 1px solid #1f8c4e;
   color: white;
@@ -389,6 +425,170 @@
   grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.7fr);
 }
 
+.overviewHero,
+.overviewGrid,
+.overviewSplit,
+.overviewMetricGrid {
+  display: grid;
+  gap: 16px;
+}
+
+.overviewHero {
+  align-items: stretch;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.68fr);
+}
+
+.overviewHeroMain,
+.overviewHeroSide {
+  background: linear-gradient(180deg, #fffefb, #fbf7ef);
+  border: 1px solid rgba(230, 221, 207, 0.96);
+  border-radius: 20px;
+  box-shadow: 0 12px 26px rgba(92, 77, 48, 0.05);
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.heroEyebrow {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.overviewHeroMain h3 {
+  color: var(--ink);
+  font-size: 42px;
+  line-height: 1.06;
+  margin: 0;
+}
+
+.overviewHeroMain p,
+.overviewHeroSide p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.overviewActionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.overviewFlowStrip {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.overviewFlowStrip button {
+  align-items: start;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  text-align: left;
+}
+
+.overviewFlowStrip strong {
+  align-items: center;
+  background: rgba(31, 140, 78, 0.1);
+  border-radius: 999px;
+  color: var(--primary);
+  display: inline-flex;
+  font-size: 12px;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+.overviewFlowStrip span {
+  color: #5f605a;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.modeBadge {
+  align-items: start;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 16px;
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+}
+
+.modeBadge span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.modeBadge strong {
+  color: var(--ink);
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.modeActionStack,
+.actionStack {
+  display: grid;
+  gap: 10px;
+}
+
+.overviewMetricGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.overviewGrid {
+  align-items: start;
+  grid-template-columns: minmax(0, 1.24fr) minmax(320px, 0.76fr);
+}
+
+.overviewMainColumn,
+.overviewSideColumn {
+  display: grid;
+  gap: 16px;
+}
+
+.overviewSplit {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.summaryPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.summaryPills span {
+  background: white;
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 999px;
+  color: #5a5b54;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  min-height: 30px;
+  padding: 0 12px;
+  align-items: center;
+}
+
+.insightList {
+  color: var(--muted);
+  display: grid;
+  gap: 10px;
+  line-height: 1.6;
+  margin: 0;
+  padding-left: 18px;
+}
+
 .weeklyBoard {
   align-items: start;
   display: grid;
@@ -398,6 +598,34 @@
 
 .weeklySidebar {
   display: grid;
+}
+
+.preferenceHint {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(226, 218, 204, 0.92);
+  border-radius: 14px;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+}
+
+.preferenceHint span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.preferenceHint strong {
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.preferenceHint p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+  margin: 0;
 }
 
 .preferenceList {
@@ -446,6 +674,16 @@
   font-size: 22px;
 }
 
+.weekRange small {
+  color: var(--primary);
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
 .weekRange span {
   color: var(--muted);
   font-size: 13px;
@@ -454,6 +692,12 @@
 .weeklyActions {
   display: inline-flex;
   gap: 10px;
+}
+
+.weeklyDigestGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .weekPlanner {
@@ -539,6 +783,11 @@
   text-align: center;
 }
 
+.weekMealCellActive {
+  border-color: rgba(31, 140, 78, 0.42);
+  box-shadow: 0 12px 24px rgba(31, 140, 78, 0.1);
+}
+
 .weekMealCell img {
   aspect-ratio: 1;
   border-radius: 50%;
@@ -552,10 +801,16 @@
   line-height: 1.35;
 }
 
+.weekMealCell span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .weeklyFooterCards {
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .footerMetricGrid,
@@ -590,6 +845,37 @@
 .nutritionDashboard {
   display: grid;
   gap: 16px;
+}
+
+.nutritionHero {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.28fr) minmax(280px, 0.72fr);
+}
+
+.nutritionHeroMain,
+.nutritionHeroSide {
+  background: linear-gradient(180deg, #fffefb, #fbf7ef);
+  border: 1px solid rgba(230, 221, 207, 0.96);
+  border-radius: 20px;
+  box-shadow: 0 12px 26px rgba(92, 77, 48, 0.05);
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.nutritionHeroMain h3 {
+  color: var(--ink);
+  font-size: 34px;
+  line-height: 1.12;
+  margin: 0;
+}
+
+.nutritionHeroMain p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
 }
 
 .nutritionTopbar {
@@ -639,9 +925,33 @@
   grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
 }
 
+.nutritionInsights {
+  display: grid;
+  gap: 16px;
+}
+
 .chartCard {
   display: grid;
   gap: 12px;
+}
+
+.chartStatRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chartStatRow span {
+  align-items: center;
+  background: white;
+  border: 1px solid rgba(225, 217, 200, 0.95);
+  border-radius: 999px;
+  color: #5a5b54;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  min-height: 30px;
+  padding: 0 12px;
 }
 
 .chartCard svg {
@@ -778,7 +1088,11 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .chatWorkflowCard,
   .weeklyBoard,
+  .overviewHero,
+  .overviewGrid,
+  .nutritionHero,
   .nutritionBottom,
   .shoppingLayout,
   .contentSplit {
@@ -813,6 +1127,10 @@
   }
 
   .chatGrid,
+  .overviewMetricGrid,
+  .overviewSplit,
+  .overviewFlowStrip,
+  .weeklyDigestGrid,
   .weeklyFooterCards,
   .nutritionCharts,
   .metricStrip,
@@ -840,14 +1158,39 @@
 }
 
 @media (max-width: 720px) {
+  .app {
+    gap: 12px;
+    padding: 8px 8px 16px;
+  }
+
+  .header {
+    gap: 10px;
+    padding: 10px 12px;
+    top: 4px;
+  }
+
+  .brand {
+    gap: 8px;
+  }
+
+  .brand > span {
+    height: 24px;
+    width: 24px;
+  }
+
   .brand strong {
-    font-size: 22px;
+    font-size: 20px;
+  }
+
+  .brand small {
+    display: none;
   }
 
   .nav {
-    flex-wrap: wrap;
-    gap: 12px 16px;
-    white-space: normal;
+    flex-wrap: nowrap;
+    gap: 10px 14px;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 
   .nav button::after {
@@ -855,15 +1198,59 @@
   }
 
   .headerActions {
-    flex-wrap: wrap;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    width: 100%;
+  }
+
+  .headerCta {
+    font-size: 12px;
+    min-height: 32px;
+    padding: 0 12px;
+  }
+
+  .utilityButton {
+    height: 32px;
+    width: 32px;
   }
 
   .pageTitle h2 {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  .pageTitle p {
+    font-size: 13px;
+    line-height: 1.45;
   }
 
   .pageFrame {
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .overviewHeroMain,
+  .overviewHeroSide,
+  .nutritionHeroMain,
+  .nutritionHeroSide,
+  .chatWorkflowCard {
+    gap: 10px;
     padding: 14px;
+  }
+
+  .overviewHeroMain h3 {
+    font-size: 28px;
+  }
+
+  .nutritionHeroMain h3,
+  .chatWorkflowHeader strong {
+    font-size: 24px;
+  }
+
+  .overviewMetricGrid,
+  .weeklyDigestGrid,
+  .metricStrip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .surfaceHeader {
@@ -880,11 +1267,54 @@
     justify-items: center;
   }
 
-  .metricStrip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .shoppingStats {
     grid-template-columns: 1fr;
+  }
+
+  .bottomShortcutBar {
+    padding: 12px 14px;
+  }
+
+  .shortcutButtons button,
+  .filterPills button,
+  .dateRange,
+  .asideActions button {
+    font-size: 12px;
+    min-height: 32px;
+    padding: 0 12px;
+  }
+
+  .chartStatRow span,
+  .summaryPills span {
+    font-size: 11px;
+    min-height: 28px;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .overviewMetricGrid,
+  .weeklyDigestGrid,
+  .metricStrip,
+  .overviewFlowStrip {
+    grid-template-columns: 1fr;
+  }
+
+  .pageTitle h2 {
+    font-size: 20px;
+  }
+
+  .overviewHeroMain h3,
+  .nutritionHeroMain h3,
+  .chatWorkflowHeader strong {
+    font-size: 22px;
+  }
+
+  .header {
+    border-radius: 14px;
+  }
+
+  .pageFrame {
+    border-radius: 18px;
   }
 }

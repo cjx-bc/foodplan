@@ -2,7 +2,7 @@
 
 SmartMeal 是一个面向家庭饮食管理场景的 Web 端 MVP 原型。项目围绕一个可演示闭环展开：用户通过 AI 对话表达饮食需求，系统结合库存和营养目标，生成今日三餐、营养反馈、每周计划和购物清单。
 
-当前仓库提供的是前端原型版本，重点验证信息架构、核心交互和演示流程，还没有接入后端 API、真实 AI 模型或持久化存储。
+当前仓库已经包含前端原型和一套 MVP 阶段后端骨架。前端继续负责信息架构和演示流程；后端已提供 `health`、`profile`、`inventory-items` API、本地 JSON 存储和 TypeScript 构建能力，但还没有接入真实 AI 模型或完整业务持久化。
 
 ![SmartMeal MVP 示意图](docs/mvp.png)
 
@@ -23,12 +23,13 @@ SmartMeal 是一个面向家庭饮食管理场景的 Web 端 MVP 原型。项目
 - 库存管理：支持手动新增库存、临期状态展示和库存概览
 - 每周计划：支持偏好切换、生成本周计划、单日微调和确认采用
 - 购物清单：按分类展示采购项，并支持勾选已购买
+- 后端骨架：已提供 `health`、`profile`、`inventory-items`、`meal-plans`、`shopping-lists`、`conversations` 六类基础 API
 
 ### 暂未实现
 
-- 后端 API
+- weekly-plan API 实现
 - 真实 AI 结构化生成
-- 持久化存储
+- 数据库持久化存储
 - 购物清单下载或打印
 - 库存图片识别
 
@@ -85,12 +86,21 @@ npm run build
 npm run preview
 ```
 
+### 5. 启动后端开发服务
+
+```powershell
+npm run dev:server
+```
+
+默认监听 `http://localhost:8787`。
+
 ## 目录结构
 
 ```text
 .
 ├── AGENTS.md
 ├── docs
+├── server
 ├── artifacts
 ├── src
 │   ├── app
@@ -131,6 +141,8 @@ npm run preview
 - `docs/prd.txt`：产品需求文档
 - `docs/smartmeal-mvp-dev-breakdown.md`：MVP 范围、数据模型和 API 草案
 - `docs/smartmeal-mvp-task-list.md`：前后端与 QA 任务拆分
+- `docs/smartmeal-backend-api-contract.md`：正式后端 API 合约
+- `docs/smartmeal-core-data-model.md`：正式核心数据模型
 - `docs/mvp.png`：原型示意图
 
 ## 当前状态
@@ -138,14 +150,14 @@ npm run preview
 | 范围 | 进度 | 说明 |
 | --- | ---: | --- |
 | 前端 MVP 演示闭环 | 96% | 已具备总览、对话、三餐、库存、营养、购物清单和每周计划演示能力 |
-| 整体 MVP | 54% | 后端、真实 AI、持久化和 API 合约仍未落地 |
+| 整体 MVP | 78% | 后端 API 合约、核心数据模型以及日计划/购物/会话主链路服务已落地；仍缺 weekly-plan、真实 AI 和数据库层 |
 
 ## 下一步
 
-1. 设计并实现后端 API 合约
-2. 用真实数据层替换本地 mock 数据
-3. 接入结构化 AI 输出和 schema 校验
-4. 增加失败降级和持久化能力
+1. 按 `docs/smartmeal-backend-api-contract.md` 继续实现后端接口
+2. 继续实现 `weekly-plan` 与 adopt 同步逻辑
+3. 把当前规则生成升级为真实 AI 结构化输出、schema 校验和 fallback
+4. 把本地 JSON 存储升级为数据库持久化，并增加认证联调能力
 
 ## 验证说明
 
