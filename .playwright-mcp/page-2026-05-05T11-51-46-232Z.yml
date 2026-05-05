@@ -1,0 +1,94 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - button "SmartMeal 助手 MVP" [ref=e5] [cursor=pointer]:
+      - img [ref=e7]
+      - strong [ref=e10]: SmartMeal 助手 MVP
+    - navigation "主导航" [ref=e11]:
+      - button "总览" [ref=e12] [cursor=pointer]
+      - button "AI 对话" [ref=e13] [cursor=pointer]
+      - button "今日三餐" [ref=e14] [cursor=pointer]
+      - button "库存管理" [ref=e15] [cursor=pointer]
+      - button "每周计划" [ref=e16] [cursor=pointer]
+      - button "营养统计" [ref=e17] [cursor=pointer]
+      - button "购物清单" [ref=e18] [cursor=pointer]
+    - generic [ref=e19]:
+      - button "立即和 AI 聊聊" [ref=e20] [cursor=pointer]
+      - button "消息提醒" [ref=e21] [cursor=pointer]:
+        - img [ref=e22]
+      - button "用户中心" [ref=e25] [cursor=pointer]:
+        - img [ref=e26]
+  - main [ref=e30]:
+    - generic [ref=e34]:
+      - generic [ref=e503]:
+        - generic [ref=e504]:
+          - generic [ref=e547]:
+            - text: Conversation Studio
+            - strong [ref=e548]: 先把需求说清楚，再把三餐、库存和采购一起推到执行态。
+          - generic [ref=e549]:
+            - generic [ref=e550]: 日模式
+            - generic [ref=e551]: 0 条消息
+            - generic [ref=e552]: AI 主生成
+        - region "AI 对话搭配页" [ref=e553]:
+          - generic [ref=e554]:
+            - img [ref=e556]
+            - generic [ref=e559]:
+              - heading "AI 对话搭配页" [level=2] [ref=e560]
+              - paragraph [ref=e561]: 告诉 AI 口味、目标和库存，快速生成方案。
+          - generic "聊天消息记录" [ref=e562]:
+            - generic [ref=e563]:
+              - strong [ref=e564]: 还没有对话
+              - paragraph [ref=e565]: 先在上方输入需求。你可以问普通问题，也可以让 AI 生成今日餐单。
+          - generic [ref=e567]:
+            - generic [ref=e568]: 告诉 AI 你的口味、目标或饮食问题
+            - textbox "告诉 AI 你的口味、目标或饮食问题" [ref=e569]:
+              - /placeholder: 告诉 AI 你的口味、目标，或问任何饮食问题...
+            - button "发送消息" [ref=e570] [cursor=pointer]:
+              - img [ref=e572]
+          - generic [ref=e575]:
+            - heading "常用饮食指令" [level=3] [ref=e576]
+            - generic [ref=e577]:
+              - button "推荐食材替换" [ref=e578] [cursor=pointer]:
+                - img [ref=e580]
+                - generic [ref=e583]: 推荐食材替换
+              - button "快捷调整营养目标" [ref=e584] [cursor=pointer]:
+                - img [ref=e586]
+                - generic [ref=e590]: 快捷调整营养目标
+              - button "减少油脂" [ref=e591] [cursor=pointer]:
+                - img [ref=e593]
+                - generic [ref=e596]: 减少油脂
+              - button "提升蛋白质" [ref=e597] [cursor=pointer]:
+                - img [ref=e599]
+                - generic [ref=e602]: 提升蛋白质
+              - button "控制热量" [ref=e603] [cursor=pointer]:
+                - img [ref=e605]
+                - generic [ref=e607]: 控制热量
+              - button "多用库存食材" [ref=e608] [cursor=pointer]:
+                - img [ref=e610]
+                - generic [ref=e612]: 多用库存食材
+      - generic [ref=e613]:
+        - generic [ref=e614]:
+          - generic [ref=e615]:
+            - generic [ref=e616]: 当前方案
+            - strong [ref=e617]: 等待生成
+          - paragraph [ref=e618]: 先发一条需求，让系统生成真实日计划和购物清单。
+          - generic [ref=e619]:
+            - generic [ref=e620]: 0 项待买
+            - generic [ref=e621]: 0 项库存已使用
+        - generic [ref=e622]:
+          - generic [ref=e623]:
+            - generic [ref=e624]: 今日执行
+            - strong [ref=e625]: 0 餐
+          - button "查看今日三餐" [ref=e626] [cursor=pointer]
+        - generic [ref=e627]:
+          - generic [ref=e628]:
+            - generic [ref=e629]: 执行摘要
+            - strong [ref=e630]: 已生成今日方案
+          - list [ref=e631]:
+            - listitem [ref=e632]: 蛋白质接近目标
+            - listitem [ref=e633]: 脂肪控制良好
+            - listitem [ref=e634]: 保留 3 项待买
+            - listitem [ref=e635]: 排除库存鸡蛋
+            - listitem [ref=e636]: 已使用 鸡蛋
+            - listitem [ref=e637]: 已使用 番茄
+            - listitem [ref=e638]: 已使用 鸡胸肉
+            - listitem [ref=e639]: 已使用 西兰花

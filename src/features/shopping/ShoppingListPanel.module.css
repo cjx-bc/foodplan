@@ -1,8 +1,8 @@
 .panel {
-  background: linear-gradient(180deg, #fffefb, #fbf7ef);
-  border: 1px solid rgba(230, 221, 207, 0.96);
-  border-radius: 18px;
-  box-shadow: 0 14px 30px rgba(89, 74, 46, 0.05);
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(249, 243, 232, 0.96));
+  border: 1px solid rgba(164, 150, 124, 0.18);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
   display: grid;
   gap: 14px;
   padding: 16px;
@@ -35,8 +35,8 @@
 }
 
 .group {
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  background: rgba(255, 253, 248, 0.94);
+  border: 1px solid rgba(164, 150, 124, 0.16);
   border-radius: 16px;
   display: grid;
   gap: 8px;
@@ -68,8 +68,8 @@
 
 .complete {
   align-items: center;
-  background: #edf8ef;
-  border: 1px solid rgba(31, 140, 78, 0.22);
+  background: var(--primary-soft);
+  border: 1px solid rgba(31, 122, 70, 0.18);
   border-radius: 14px;
   color: var(--primary-dark);
   display: flex;
@@ -80,8 +80,8 @@
 }
 
 .emptyState {
-  background: white;
-  border: 1px dashed rgba(31, 140, 78, 0.32);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1px dashed rgba(31, 122, 70, 0.28);
   border-radius: 16px;
   color: var(--muted);
   display: grid;
@@ -138,8 +138,8 @@
 
 .item {
   align-items: center;
-  background: #fffefb;
-  border: 1px solid rgba(230, 221, 207, 0.96);
+  background: rgba(255, 252, 246, 0.88);
+  border: 1px solid rgba(164, 150, 124, 0.14);
   border-radius: 14px;
   color: inherit;
   cursor: pointer;
@@ -153,7 +153,7 @@
 }
 
 .item:hover {
-  border-color: rgba(31, 140, 78, 0.3);
+  border-color: rgba(31, 122, 70, 0.24);
 }
 
 .item:disabled {
@@ -163,7 +163,7 @@
 
 .checkbox {
   align-items: center;
-  border: 1px solid rgba(191, 210, 197, 1);
+  border: 1px solid rgba(90, 128, 96, 0.28);
   border-radius: 6px;
   color: white;
   display: flex;
@@ -194,7 +194,7 @@
 }
 
 .checked {
-  background: #f3f5f1;
+  background: rgba(228, 241, 231, 0.54);
 }
 
 .checked .checkbox {

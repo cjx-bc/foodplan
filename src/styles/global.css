@@ -1,29 +1,36 @@
 :root {
   color-scheme: light;
-  --primary: #11823b;
-  --primary-dark: #086a2e;
-  --success: #1f9d55;
-  --warning: #f59e0b;
-  --danger: #ef4444;
+  --primary: #1f7a46;
+  --primary-dark: #175934;
+  --primary-soft: #e4f1e7;
+  --success: #2c9a5a;
+  --warning: #d79a34;
+  --warning-soft: #fff5df;
+  --danger: #d85f43;
+  --danger-soft: #fff0ea;
   --tomato: #d95b43;
   --tomato-soft: #fff1ec;
   --amber-soft: #fff7df;
-  --cream: #fbf7ed;
-  --oat: #f4efe4;
-  --surface-muted: #faf8f1;
-  --background: #fbf7ed;
-  --surface: #ffffff;
-  --green-soft: #eefaf1;
-  --ink: #17211b;
-  --muted: #66736a;
-  --muted-light: #97a39b;
-  --border: #dde7df;
-  --border-strong: #bfd2c5;
+  --cream: #faf4e8;
+  --oat: #f1eadb;
+  --surface-muted: #f8f2e6;
+  --background: #f7f0e2;
+  --surface: rgba(255, 252, 246, 0.92);
+  --surface-strong: #fffdf9;
+  --surface-contrast: #163122;
+  --green-soft: #edf6ee;
+  --ink: #1b241d;
+  --muted: #697469;
+  --muted-light: #95a095;
+  --border: rgba(174, 160, 136, 0.26);
+  --border-strong: rgba(56, 97, 67, 0.18);
   --radius-xs: 8px;
   --radius-sm: 10px;
   --radius-md: 14px;
-  --shadow: 0 16px 40px rgba(76, 63, 43, 0.08);
-  font-family: Inter, "Segoe UI", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  --radius-lg: 20px;
+  --shadow: 0 18px 44px rgba(78, 64, 40, 0.08);
+  --shadow-soft: 0 10px 24px rgba(76, 61, 34, 0.05);
+  font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
   font-synthesis: none;
   line-height: 1.5;
   text-rendering: optimizeLegibility;
@@ -35,10 +42,13 @@
 
 body {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(251, 247, 237, 0.92)),
-    radial-gradient(circle at top left, rgba(217, 91, 67, 0.08), transparent 32%),
-    radial-gradient(circle at top right, rgba(245, 158, 11, 0.08), transparent 26%),
+    linear-gradient(180deg, rgba(255, 253, 249, 0.92), rgba(247, 240, 226, 0.96)),
+    radial-gradient(circle at top left, rgba(217, 91, 67, 0.09), transparent 28%),
+    radial-gradient(circle at top right, rgba(44, 154, 90, 0.07), transparent 24%),
+    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
     var(--background);
+  background-size: auto, auto, auto, 28px 28px, 28px 28px, auto;
   color: var(--ink);
   font-size: 15px;
   margin: 0;

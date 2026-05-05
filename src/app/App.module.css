@@ -1,21 +1,22 @@
 .app {
   display: grid;
-  gap: 16px;
+  gap: 18px;
   margin: 0 auto;
   max-width: 1520px;
-  padding: 8px 16px 20px;
+  padding: 12px 18px 28px;
 }
 
 .header {
   align-items: center;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(224, 216, 201, 0.9);
-  border-radius: 16px;
-  box-shadow: 0 14px 30px rgba(83, 68, 44, 0.06);
+  backdrop-filter: blur(14px);
+  background: rgba(255, 250, 242, 0.8);
+  border: 1px solid rgba(170, 154, 126, 0.2);
+  border-radius: 18px;
+  box-shadow: var(--shadow-soft);
   display: grid;
   gap: 16px;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  padding: 10px 14px;
+  padding: 12px 16px;
   position: sticky;
   top: 6px;
   z-index: 10;
@@ -34,17 +35,17 @@
 
 .brand > span {
   align-items: center;
-  background: linear-gradient(135deg, #1f8c4e, #16753f);
+  background: linear-gradient(135deg, #1f7a46, #175934);
   border-radius: 10px;
   color: white;
   display: inline-flex;
-  height: 28px;
+  height: 32px;
   justify-content: center;
-  width: 28px;
+  width: 32px;
 }
 
 .brand strong {
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 800;
   line-height: 1;
 }
@@ -73,14 +74,14 @@
 .nav button {
   background: transparent;
   border: 0;
-  color: #5f605a;
+  color: #5c6059;
   cursor: pointer;
   flex: 0 0 auto;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
-  min-height: 28px;
-  padding: 4px 0;
+  min-height: 32px;
+  padding: 4px 2px;
   position: relative;
 }
 
@@ -112,29 +113,30 @@
 }
 
 .headerCta {
-  background: linear-gradient(135deg, #1f8c4e, #16753f);
-  border: 1px solid #1f8c4e;
+  background: linear-gradient(135deg, #1f7a46, #175934);
+  border: 1px solid rgba(23, 89, 52, 0.92);
   border-radius: 10px;
+  box-shadow: 0 12px 24px rgba(31, 122, 70, 0.18);
   color: white;
   cursor: pointer;
   font: inherit;
   font-size: 12px;
   font-weight: 800;
-  min-height: 32px;
-  padding: 0 13px;
+  min-height: 36px;
+  padding: 0 14px;
 }
 
 .utilityButton {
   align-items: center;
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1px solid var(--border);
   border-radius: 999px;
   color: #464740;
   cursor: pointer;
   display: inline-flex;
-  height: 32px;
+  height: 34px;
   justify-content: center;
-  width: 32px;
+  width: 34px;
 }
 
 .main {
@@ -177,13 +179,13 @@
 }
 
 .pageFrame {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(226, 218, 204, 0.95);
-  border-radius: 20px;
-  box-shadow: 0 18px 36px rgba(84, 71, 47, 0.07);
+  background: rgba(255, 252, 246, 0.82);
+  border: 1px solid rgba(170, 154, 126, 0.2);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
   display: grid;
-  gap: 16px;
-  padding: 16px;
+  gap: 18px;
+  padding: 18px;
 }
 
 .pageTitle {
@@ -287,13 +289,13 @@
 }
 
 .surfaceCard {
-  background: linear-gradient(180deg, #fffefb, #fbf7ef);
-  border: 1px solid rgba(230, 221, 207, 0.96);
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(249, 243, 232, 0.96));
+  border: 1px solid rgba(164, 150, 124, 0.18);
   border-radius: 16px;
-  box-shadow: 0 10px 22px rgba(92, 77, 48, 0.045);
+  box-shadow: var(--shadow-soft);
   display: grid;
   gap: 12px;
-  padding: 14px;
+  padding: 16px;
 }
 
 .surfaceHeader {
@@ -304,17 +306,21 @@
 }
 
 .surfaceHeader span {
-  color: #4f5049;
+  color: #5b6157;
   font-size: 13px;
   font-weight: 800;
 }
 
 .surfaceHeader strong {
   color: var(--primary);
-  font-size: 33px;
+  font-size: 31px;
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1;
+}
+
+.stageCard {
+  min-height: 100%;
 }
 
 .miniMealList {
@@ -327,6 +333,13 @@
   display: grid;
   gap: 10px;
   grid-template-columns: 54px minmax(0, 1fr) auto;
+}
+
+.miniMealRowCompact {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(160, 145, 120, 0.14);
+  border-radius: 14px;
+  padding: 10px 12px;
 }
 
 .miniMealRow img {
@@ -418,8 +431,8 @@
   font-weight: 800;
   gap: 8px;
   justify-content: center;
-  min-height: 36px;
-  padding: 0 13px;
+  min-height: 38px;
+  padding: 0 14px;
 }
 
 .inlineAction:disabled,
@@ -434,22 +447,23 @@
 }
 
 .inlineAction {
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  background: rgba(255, 253, 248, 0.96);
+  border: 1px solid var(--border);
   color: var(--primary);
 }
 
 .secondaryAction {
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(191, 210, 197, 0.92);
+  background: rgba(255, 253, 248, 0.72);
+  border: 1px solid rgba(90, 128, 96, 0.18);
   color: #2a6c46;
 }
 
 .primaryBlockAction,
 .primaryMiniAction,
 .weeklyActions button:first-child:not(.secondaryAction) {
-  background: linear-gradient(135deg, #1f8c4e, #16753f);
-  border: 1px solid #1f8c4e;
+  background: linear-gradient(135deg, #1f7a46, #175934);
+  border: 1px solid rgba(23, 89, 52, 0.92);
+  box-shadow: 0 10px 22px rgba(31, 122, 70, 0.16);
   color: white;
 }
 
@@ -461,7 +475,7 @@
   align-items: stretch;
   display: grid;
   gap: 18px;
-  grid-template-columns: minmax(520px, 1fr) minmax(280px, 360px);
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.72fr);
   min-width: 0;
 }
 
@@ -472,30 +486,79 @@
   gap: 14px;
 }
 
+.chatMainStage {
+  display: grid;
+  gap: 14px;
+}
+
+.chatStageIntro {
+  align-items: end;
+  background:
+    linear-gradient(135deg, rgba(24, 72, 43, 0.24), rgba(32, 99, 61, 0.18)),
+    linear-gradient(180deg, rgba(11, 27, 19, 0.04), rgba(11, 27, 19, 0.14)),
+    url("../assets/chat-hero-kitchen.jpg");
+  background-position: center, center, center;
+  background-repeat: no-repeat;
+  background-size: auto, auto, cover;
+  border: 1px solid rgba(23, 89, 52, 0.24);
+  border-radius: 20px;
+  color: white;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 188px;
+  overflow: hidden;
+  padding: 18px 18px 16px;
+  position: relative;
+}
+
+.chatStageIntro::before {
+  background: linear-gradient(90deg, rgba(10, 27, 18, 0.68) 0%, rgba(10, 27, 18, 0.5) 34%, rgba(10, 27, 18, 0.16) 68%, transparent 100%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.chatStageIntro > * {
+  position: relative;
+  z-index: 1;
+}
+
+.chatStageIntro strong {
+  display: block;
+  font-size: 28px;
+  line-height: 1.15;
+  margin-top: 6px;
+  max-width: 520px;
+}
+
+.chatStageIntro .summaryPills {
+  justify-content: flex-end;
+}
+
+.chatStageIntro .summaryPills span {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 252, 246, 0.92);
+}
+
 .chatWorkspace {
   align-self: stretch;
-  grid-auto-rows: max-content;
+  grid-auto-rows: minmax(0, max-content);
   min-width: 0;
 }
 
-.chatWorkspace .surfaceCard {
+.chatRailCard {
   overflow: hidden;
 }
 
 .chatWorkspace .surfaceHeader strong {
   font-size: 20px;
-  max-width: 160px;
+  max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.chatWorkspace .miniMealRow {
-  grid-template-columns: 44px minmax(0, 1fr) auto;
-}
-
-.chatWorkspace .miniMealRow img {
-  width: 44px;
 }
 
 .cardDetail {
@@ -522,30 +585,68 @@
 
 .overviewHero {
   align-items: stretch;
-  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.68fr);
+  grid-template-columns: minmax(0, 1.48fr) minmax(310px, 0.72fr);
 }
 
 .overviewHeroMain,
 .overviewHeroSide {
-  background: linear-gradient(180deg, #fffefb, #fbf7ef);
-  border: 1px solid rgba(230, 221, 207, 0.96);
-  border-radius: 18px;
-  box-shadow: 0 10px 22px rgba(92, 77, 48, 0.045);
+  border-radius: 20px;
   display: grid;
-  gap: 12px;
+  gap: 14px;
   padding: 18px;
+}
+
+.overviewHeroMain {
+  background:
+    radial-gradient(circle at top right, rgba(255, 219, 140, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(255, 252, 246, 0.96), rgba(243, 236, 222, 0.96));
+  border: 1px solid rgba(170, 154, 126, 0.18);
+  box-shadow: var(--shadow-soft);
+}
+
+.overviewHeroSide {
+  background: linear-gradient(180deg, rgba(249, 243, 232, 0.84), rgba(255, 251, 244, 0.92));
+  border: 1px solid rgba(170, 154, 126, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.54);
 }
 
 .heroEyebrow {
   color: var(--primary);
   font-size: 12px;
   font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heroIntro {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.heroStatus {
+  align-items: center;
+  background: rgba(31, 122, 70, 0.08);
+  border: 1px solid rgba(31, 122, 70, 0.14);
+  border-radius: 999px;
+  color: var(--primary);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  min-height: 30px;
+  padding: 0 12px;
+}
+
+.heroHeadline {
+  display: grid;
+  gap: 10px;
 }
 
 .overviewHeroMain h3 {
   color: var(--ink);
-  font-size: 36px;
-  line-height: 1.06;
+  font-size: 44px;
+  line-height: 0.98;
   margin: 0;
 }
 
@@ -557,6 +658,47 @@
   margin: 0;
 }
 
+.heroMetricBand {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.heroMetricBand article {
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(166, 151, 125, 0.16);
+  border-radius: 16px;
+  display: grid;
+  gap: 4px;
+  min-height: 98px;
+  padding: 14px;
+}
+
+.heroMetricBand span,
+.stageStat span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.heroMetricBand strong {
+  color: var(--ink);
+  font-size: 34px;
+  line-height: 1;
+}
+
+.heroMetricBand small {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.heroMealStage {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .overviewActionRow {
   display: flex;
   flex-wrap: wrap;
@@ -566,7 +708,7 @@
 .overviewFlowStrip {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .overviewFlowStrip button {
@@ -643,7 +785,7 @@
 
 .overviewGrid {
   align-items: start;
-  grid-template-columns: minmax(0, 1.24fr) minmax(320px, 0.76fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .overviewMainColumn,
@@ -656,6 +798,21 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.stageStat {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(165, 151, 126, 0.14);
+  border-radius: 14px;
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+}
+
+.stageStat strong {
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.35;
+}
+
 .summaryPills {
   display: flex;
   flex-wrap: wrap;
@@ -663,8 +820,9 @@
 }
 
 .summaryPills span {
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  align-items: center;
+  background: rgba(255, 253, 248, 0.9);
+  border: 1px solid rgba(166, 151, 125, 0.14);
   border-radius: 999px;
   color: #5a5b54;
   display: inline-flex;
@@ -672,7 +830,6 @@
   font-weight: 700;
   min-height: 30px;
   padding: 0 12px;
-  align-items: center;
 }
 
 .insightList {
@@ -696,8 +853,8 @@
 }
 
 .preferenceHint {
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(226, 218, 204, 0.92);
+  background: rgba(255, 253, 248, 0.82);
+  border: 1px solid rgba(165, 151, 126, 0.14);
   border-radius: 14px;
   display: grid;
   gap: 4px;
@@ -731,8 +888,8 @@
 
 .preferenceList button {
   align-items: center;
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1px solid var(--border);
   border-radius: 12px;
   color: #4d4e48;
   cursor: pointer;
@@ -748,8 +905,8 @@
 }
 
 .preferenceList .preferenceActive {
-  background: #edf8ef;
-  border-color: rgba(31, 140, 78, 0.35);
+  background: var(--primary-soft);
+  border-color: rgba(31, 122, 70, 0.24);
   color: var(--primary);
 }
 
@@ -815,8 +972,8 @@
 }
 
 .weekPlanner {
-  background: linear-gradient(180deg, #fffefb, #fbf7ef);
-  border: 1px solid rgba(230, 221, 207, 0.96);
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(249, 243, 232, 0.96));
+  border: 1px solid rgba(165, 151, 126, 0.16);
   border-radius: 18px;
   display: grid;
   gap: 12px;
@@ -840,8 +997,8 @@
 
 .dayPill,
 .dayPillActive {
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1px solid var(--border);
   border-radius: 14px;
   cursor: pointer;
   display: grid;
@@ -864,8 +1021,8 @@
 }
 
 .dayPillActive {
-  border-color: rgba(31, 140, 78, 0.38);
-  box-shadow: 0 10px 22px rgba(31, 140, 78, 0.08);
+  border-color: rgba(31, 122, 70, 0.28);
+  box-shadow: 0 12px 24px rgba(31, 122, 70, 0.08);
 }
 
 .weekPlannerRow {
@@ -885,8 +1042,8 @@
 
 .weekMealCell {
   align-items: center;
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1px solid var(--border);
   border-radius: 16px;
   cursor: pointer;
   display: grid;
@@ -898,8 +1055,8 @@
 }
 
 .weekMealCellActive {
-  border-color: rgba(31, 140, 78, 0.42);
-  box-shadow: 0 12px 24px rgba(31, 140, 78, 0.1);
+  border-color: rgba(31, 122, 70, 0.3);
+  box-shadow: 0 12px 24px rgba(31, 122, 70, 0.1);
 }
 
 .weekMealCell img {
@@ -942,17 +1099,18 @@
 }
 
 .metricTile {
-  background: #fffefb;
-  border: 1px solid rgba(230, 221, 207, 0.96);
+  background: rgba(255, 253, 249, 0.9);
+  border: 1px solid rgba(165, 151, 126, 0.16);
   border-radius: 13px;
   display: grid;
   gap: 8px;
-  padding: 12px;
+  min-height: 110px;
+  padding: 14px;
 }
 
 .metricTile strong {
   color: var(--ink);
-  font-size: 24px;
+  font-size: 26px;
   line-height: 1.1;
 }
 
@@ -969,10 +1127,10 @@
 
 .nutritionHeroMain,
 .nutritionHeroSide {
-  background: linear-gradient(180deg, #fffefb, #fbf7ef);
-  border: 1px solid rgba(230, 221, 207, 0.96);
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(249, 243, 232, 0.96));
+  border: 1px solid rgba(165, 151, 126, 0.16);
   border-radius: 18px;
-  box-shadow: 0 10px 22px rgba(92, 77, 48, 0.045);
+  box-shadow: var(--shadow-soft);
   display: grid;
   gap: 12px;
   padding: 18px;
@@ -1008,8 +1166,8 @@
 .filterPills button,
 .dateRange,
 .asideActions button {
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1px solid var(--border);
   border-radius: 10px;
   color: #585953;
   font: inherit;
@@ -1057,8 +1215,8 @@
 
 .chartStatRow span {
   align-items: center;
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1px solid var(--border);
   border-radius: 999px;
   color: #5a5b54;
   display: inline-flex;
@@ -1213,6 +1371,11 @@
     grid-template-columns: 1fr;
   }
 
+  .heroMetricBand,
+  .heroMealStage {
+    grid-template-columns: 1fr;
+  }
+
   .metricStrip {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1244,7 +1407,6 @@
   .chatPage,
   .overviewMetricGrid,
   .overviewSplit,
-  .overviewFlowStrip,
   .weeklyDigestGrid,
   .weeklyFooterCards,
   .nutritionCharts,
@@ -1359,6 +1521,14 @@
 
   .overviewHeroMain h3 {
     font-size: 28px;
+  }
+
+  .chatStageIntro {
+    grid-template-columns: 1fr;
+  }
+
+  .chatStageIntro strong {
+    font-size: 24px;
   }
 
   .nutritionHeroMain h3,

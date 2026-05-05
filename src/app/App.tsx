@@ -159,6 +159,10 @@ function toCurrency(amount: number) {
   return `¥ ${amount.toFixed(1)}`;
 }
 
+function formatNumber(value: number) {
+  return value.toLocaleString("zh-CN");
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -863,39 +867,107 @@ export function App() {
 
   function renderOverviewPage() {
     const completedWeeklyDays = weeklyPlanDraft.filter((day) => day.status !== "needs_attention").length;
+    const heroMeals = activeMeals.slice(0, 3);
 
     return (
       <section className={styles.pageFrame}>
         <div className={styles.overviewHero}>
           <div className={styles.overviewHeroMain}>
-            <span className={styles.heroEyebrow}>{overviewMetrics.heroEyebrow}</span>
-            <h3>{overviewMetrics.heroTitle}</h3>
-            <p>{overviewMetrics.heroDescription}</p>
-            <div className={styles.summaryPills}>
-              <span>{overviewMetrics.modeLabel}</span>
-              <span>{shoppingSummary.remainingCount} 项待采购</span>
-              <span>{nutritionSummary.score} 分营养贴合度</span>
+            <div className={styles.heroIntro}>
+              <span className={styles.heroEyebrow}>{overviewMetrics.heroEyebrow}</span>
+              <span className={styles.heroStatus}>{overviewMetrics.modeLabel}</span>
             </div>
-          </div>
-          <div className={styles.overviewHeroStats}>
-            <MetricTile label="采购缺口" value={overviewMetrics.shoppingValue} />
-            <MetricTile label="库存提醒" value={overviewMetrics.inventoryValue} />
-            <MetricTile label="本周进度" value={`${completedWeeklyDays}/${Math.max(weeklyPlanDraft.length, 1)} 天`} />
-          </div>
-        </div>
-
-        <div className={styles.overviewGrid}>
-          <SurfaceCard title="当前执行摘要" emphasis={overviewMetrics.modeLabel}>
-            <p className={styles.cardDetail}>{overviewMetrics.modeDescription}</p>
-            <div className={styles.actionStack}>
-              <button type="button" className={styles.primaryMiniAction} onClick={() => navigate("chat")}>和 AI 聊聊</button>
+            <div className={styles.heroHeadline}>
+              <h3>{overviewMetrics.heroTitle}</h3>
+              <p>{overviewMetrics.heroDescription}</p>
+            </div>
+            <div className={styles.heroMetricBand}>
+              <article>
+                <span>今日热量</span>
+                <strong>{formatNumber(nutritionSummary.actual.calories)}</strong>
+                <small>kcal</small>
+              </article>
+              <article>
+                <span>采购缺口</span>
+                <strong>{shoppingSummary.remainingCount}</strong>
+                <small>项待买</small>
+              </article>
+              <article>
+                <span>库存利用</span>
+                <strong>{currentMealPlan?.inventoryUsage.length ?? 0}</strong>
+                <small>项已使用</small>
+              </article>
+            </div>
+            <div className={styles.heroMealStage}>
+              {heroMeals.map((meal) => (
+                <MiniMealRow
+                  key={meal.id}
+                  image={meal.imageUrl}
+                  title={meal.title}
+                  meta={mealTypeLabels[meal.mealType]}
+                  value={`${meal.nutrition.calories} kcal`}
+                  compact
+                />
+              ))}
+            </div>
+            <div className={styles.overviewActionRow}>
+              <button type="button" className={styles.primaryMiniAction} onClick={() => navigate("chat")}>和 AI 调方案</button>
               <button type="button" className={styles.inlineAction} onClick={() => navigate(isWeeklyMode ? "weekly" : "today")}>
                 {isWeeklyMode ? "回看周计划" : "查看今日三餐"}
               </button>
             </div>
+          </div>
+          <div className={styles.overviewHeroSide}>
+            <div className={styles.overviewHeroStats}>
+              <MetricTile label="采购缺口" value={overviewMetrics.shoppingValue} />
+              <MetricTile label="库存提醒" value={overviewMetrics.inventoryValue} />
+              <MetricTile label="本周进度" value={`${completedWeeklyDays}/${Math.max(weeklyPlanDraft.length, 1)} 天`} />
+            </div>
+            <SurfaceCard title="执行节奏" emphasis={planningMode === "weekly" ? "周执行" : "日执行"} className={styles.stageCard}>
+              <div className={styles.overviewFlowStrip}>
+                <button type="button" onClick={() => navigate("chat")}>
+                  <strong>1</strong>
+                  <span>对话明确偏好与库存约束</span>
+                </button>
+                <button type="button" onClick={() => navigate("today")}>
+                  <strong>2</strong>
+                  <span>确认三餐与营养结构</span>
+                </button>
+                <button type="button" onClick={() => navigate("shopping")}>
+                  <strong>3</strong>
+                  <span>补齐采购缺口并进入执行</span>
+                </button>
+              </div>
+            </SurfaceCard>
+          </div>
+        </div>
+
+        <div className={styles.overviewGrid}>
+          <SurfaceCard title="今日建议" emphasis={overviewMetrics.modeLabel} className={styles.stageCard}>
+            <p className={styles.cardDetail}>{overviewMetrics.modeDescription}</p>
+            <div className={styles.summaryPills}>
+              <span>{nutritionSummary.score} 分营养贴合度</span>
+              <span>{expiringItems.length} 个临期提醒</span>
+              <span>{weeklyAttentionCount} 天待微调</span>
+            </div>
+            <ul className={styles.insightList}>
+              <li>{todayContextNote}</li>
+              <li>{shoppingSummary.remainingCount > 0 ? `当前还有 ${shoppingSummary.remainingCount} 项采购缺口，需要在执行前补齐。` : "当前采购缺口已清空，可以直接进入执行。"}</li>
+              <li>{currentMealPlan?.generationMeta?.source === "fallback" ? "本次方案来自规则兜底，适合继续让 AI 微调一轮。" : "当前方案已可直接作为今天的执行底稿。"}</li>
+            </ul>
           </SurfaceCard>
 
-          <SurfaceCard title="今日餐单预览" emphasis={`${activeMeals.length} 餐`}>
+          <SurfaceCard title="关键缺口" emphasis={shoppingSummary.remainingCount > 0 ? `${shoppingSummary.remainingCount} 项待补` : "已补齐"} className={styles.stageCard}>
+            <div className={styles.overviewSplit}>
+              <div className={styles.stageStat}>
+                <span>采购重点</span>
+                <strong>{overviewMetrics.shoppingDetail}</strong>
+              </div>
+              <div className={styles.stageStat}>
+                <span>库存关注</span>
+                <strong>{expiringItems.slice(0, 3).map((item) => item.name).join("、") || "库存状态稳定"}</strong>
+              </div>
+            </div>
             <div className={styles.miniMealList}>
               {activeMeals.map((meal) => (
                 <MiniMealRow
@@ -903,13 +975,14 @@ export function App() {
                   image={meal.imageUrl}
                   title={meal.title}
                   meta={mealTypeLabels[meal.mealType]}
-                  value={`${meal.nutrition.calories} kcal`}
+                  value={`${meal.nutrition.protein} g 蛋白`}
+                  compact
                 />
               ))}
             </div>
           </SurfaceCard>
 
-          <SurfaceCard title="AI 执行结果摘要" emphasis={actionSummary.title}>
+          <SurfaceCard title="AI 执行结果" emphasis={actionSummary.title} className={styles.stageCard}>
             <div className={styles.summaryPills}>
               {actionSummary.affectedMeals.map((item) => <span key={item}>{item}</span>)}
             </div>
@@ -919,7 +992,7 @@ export function App() {
             </ul>
           </SurfaceCard>
 
-          <SurfaceCard title="下一步动作" emphasis={planningMode === "weekly" ? "周执行" : "今日执行"}>
+          <SurfaceCard title="下一步" emphasis={planningMode === "weekly" ? "周执行" : "今日执行"} className={styles.stageCard}>
             <div className={styles.actionStack}>
               <button type="button" className={styles.primaryBlockAction} onClick={() => navigate("shopping")}>查看采购清单</button>
               <button type="button" className={styles.inlineAction} onClick={() => navigate("nutrition")}>打开营养统计</button>
@@ -935,21 +1008,33 @@ export function App() {
     return (
       <section className={styles.pageFrame}>
         <div className={styles.chatPage}>
-          <ChatPanel
-            messages={messages}
-            isGenerating={isGenerating || isBootstrapping}
-            isBootstrapping={isBootstrapping}
-            onSend={(message) => void handleSend(message)}
-            onQuickAction={(action) => void handleQuickAction(action)}
-          />
+          <div className={styles.chatMainStage}>
+            <div className={styles.chatStageIntro}>
+              <div>
+                <span className={styles.heroEyebrow}>Conversation Studio</span>
+                <strong>先把需求说清楚，再把三餐、库存和采购一起推到执行态。</strong>
+              </div>
+              <div className={styles.summaryPills}>
+                <span>{planningMode === "weekly" ? "周模式" : "日模式"}</span>
+                <span>{messages.length} 条消息</span>
+                <span>{currentMealPlan?.generationMeta?.source === "fallback" ? "规则兜底" : "AI 主生成"}</span>
+              </div>
+            </div>
+            <ChatPanel
+              messages={messages}
+              isGenerating={isGenerating || isBootstrapping}
+              isBootstrapping={isBootstrapping}
+              onSend={(message) => void handleSend(message)}
+              onQuickAction={(action) => void handleQuickAction(action)}
+            />
+          </div>
 
           <div className={styles.chatWorkspace}>
-            <SurfaceCard title="当前方案" emphasis={currentMealPlan ? `${currentMealPlan.nutritionSummary.actual.calories} kcal` : "等待生成"}>
+            <SurfaceCard title="当前方案" emphasis={currentMealPlan ? `${currentMealPlan.nutritionSummary.actual.calories} kcal` : "等待生成"} className={styles.chatRailCard}>
               <p className={styles.cardDetail}>
                 {currentMealPlan ? currentMealPlan.reply : "先发一条需求，让系统生成真实日计划和购物清单。"}
               </p>
               <div className={styles.summaryPills}>
-                <span>{planningMode === "weekly" ? "周模式" : "日模式"}</span>
                 <span>{currentShoppingList?.items.filter((item) => !item.checked).length ?? 0} 项待买</span>
                 <span>{currentMealPlan?.inventoryUsage.length ?? 0} 项库存已使用</span>
                 {currentMealPlan?.generationMeta?.source === "fallback" ? <span>规则兜底生成</span> : null}
@@ -957,7 +1042,7 @@ export function App() {
               </div>
             </SurfaceCard>
 
-            <SurfaceCard title="今日执行" emphasis={`${activeMeals.length} 餐`}>
+            <SurfaceCard title="今日执行" emphasis={`${activeMeals.length} 餐`} className={styles.chatRailCard}>
               <div className={styles.miniMealList}>
                 {activeMeals.map((meal) => (
                   <MiniMealRow
@@ -966,13 +1051,14 @@ export function App() {
                     title={meal.title}
                     meta={mealTypeLabels[meal.mealType]}
                     value={`${meal.nutrition.protein} g 蛋白`}
+                    compact
                   />
                 ))}
               </div>
               <button type="button" className={styles.inlineAction} onClick={() => navigate("today")}>查看今日三餐</button>
             </SurfaceCard>
 
-            <SurfaceCard title="执行摘要" emphasis={actionSummary.title}>
+            <SurfaceCard title="执行摘要" emphasis={actionSummary.title} className={styles.chatRailCard}>
               <ul className={styles.insightList}>
                 {actionSummary.nutritionChanges.map((item) => <li key={item}>{item}</li>)}
                 {actionSummary.shoppingChanges.map((item) => <li key={item}>{item}</li>)}
@@ -1355,9 +1441,9 @@ export function App() {
   );
 }
 
-function SurfaceCard({ title, emphasis, children }: { title: string; emphasis?: string; children: ReactNode }) {
+function SurfaceCard({ title, emphasis, className, children }: { title: string; emphasis?: string; className?: string; children: ReactNode }) {
   return (
-    <section className={styles.surfaceCard}>
+    <section className={className ? `${styles.surfaceCard} ${className}` : styles.surfaceCard}>
       <div className={styles.surfaceHeader}>
         <span>{title}</span>
         {emphasis ? <strong>{emphasis}</strong> : null}
@@ -1367,9 +1453,9 @@ function SurfaceCard({ title, emphasis, children }: { title: string; emphasis?: 
   );
 }
 
-function MiniMealRow({ image, title, meta, value }: { image: string; title: string; meta: string; value: string }) {
+function MiniMealRow({ image, title, meta, value, compact = false }: { image: string; title: string; meta: string; value: string; compact?: boolean }) {
   return (
-    <article className={styles.miniMealRow}>
+    <article className={compact ? `${styles.miniMealRow} ${styles.miniMealRowCompact}` : styles.miniMealRow}>
       <img src={image} alt={title} />
       <div>
         <span>{meta}</span>

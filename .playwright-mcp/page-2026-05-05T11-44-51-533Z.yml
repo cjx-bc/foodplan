@@ -1,0 +1,60 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - button "SmartMeal 助手 MVP" [ref=e5] [cursor=pointer]:
+      - img [ref=e7]
+      - strong [ref=e10]: SmartMeal 助手 MVP
+    - navigation "主导航" [ref=e11]:
+      - button "总览" [ref=e12] [cursor=pointer]
+      - button "AI 对话" [ref=e13] [cursor=pointer]
+      - button "今日三餐" [ref=e14] [cursor=pointer]
+      - button "库存管理" [ref=e15] [cursor=pointer]
+      - button "每周计划" [ref=e16] [cursor=pointer]
+      - button "营养统计" [ref=e17] [cursor=pointer]
+      - button "购物清单" [ref=e18] [cursor=pointer]
+    - generic [ref=e19]:
+      - button "立即和 AI 聊聊" [ref=e20] [cursor=pointer]
+      - button "消息提醒" [ref=e21] [cursor=pointer]:
+        - img [ref=e22]
+      - button "用户中心" [ref=e25] [cursor=pointer]:
+        - img [ref=e26]
+  - main [ref=e30]:
+    - generic [ref=e34]:
+      - generic [ref=e503]:
+        - generic [ref=e504]:
+          - article [ref=e505]:
+            - generic [ref=e506]: 待买项目
+            - strong [ref=e507]: 0 项
+          - article [ref=e508]:
+            - generic [ref=e509]: 预计花费
+            - strong [ref=e510]: ¥ 0.0
+          - article [ref=e511]:
+            - generic [ref=e512]: 覆盖餐次
+            - strong [ref=e513]: 0 类食材
+        - region "购物清单" [ref=e514]:
+          - generic [ref=e515]:
+            - generic [ref=e516]:
+              - img [ref=e517]
+              - text: 购物清单
+            - strong [ref=e521]: 今日采购 · 全部完成
+          - generic [ref=e522]:
+            - strong [ref=e523]: 还没有购物清单
+            - paragraph [ref=e524]: 先生成今日餐单或本周计划，再让系统按缺口整理采购项。
+            - button "重试生成" [ref=e525] [cursor=pointer]
+      - complementary [ref=e526]:
+        - generic [ref=e527]:
+          - button "打印购物单" [ref=e528] [cursor=pointer]:
+            - img [ref=e529]
+            - text: 打印购物单
+          - button "导出清单" [ref=e533] [cursor=pointer]:
+            - img [ref=e534]
+            - text: 导出清单
+        - generic [ref=e537]:
+          - generic [ref=e539]: AI 购物建议
+          - list
+          - button "更新生成清单" [disabled] [ref=e540]
+        - generic [ref=e541]:
+          - generic [ref=e542]:
+            - generic [ref=e543]: 常买清单
+            - strong [ref=e544]: ¥ 0.0
+          - paragraph [ref=e545]: 豆腐、青菜、燕麦、牛奶是当前阶段最稳定的缺口食材，可直接复用到下一次生成。
+          - button "管理常买食材" [ref=e546] [cursor=pointer]

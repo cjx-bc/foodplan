@@ -1,0 +1,72 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - button "SmartMeal 助手 MVP" [ref=e5] [cursor=pointer]:
+      - img [ref=e7]
+      - strong [ref=e10]: SmartMeal 助手 MVP
+    - navigation "主导航" [ref=e11]:
+      - button "总览" [ref=e12] [cursor=pointer]
+      - button "AI 对话" [ref=e13] [cursor=pointer]
+      - button "今日三餐" [ref=e14] [cursor=pointer]
+      - button "库存管理" [ref=e15] [cursor=pointer]
+      - button "每周计划" [ref=e16] [cursor=pointer]
+      - button "营养统计" [ref=e17] [cursor=pointer]
+      - button "购物清单" [ref=e18] [cursor=pointer]
+    - generic [ref=e19]:
+      - button "立即和 AI 聊聊" [ref=e20] [cursor=pointer]
+      - button "消息提醒" [ref=e21] [cursor=pointer]:
+        - img [ref=e22]
+      - button "用户中心" [ref=e25] [cursor=pointer]:
+        - img [ref=e26]
+  - main [ref=e30]:
+    - generic [ref=e34]:
+      - region "今日三餐推荐页" [ref=e353]:
+        - generic [ref=e354]:
+          - img [ref=e356]
+          - generic [ref=e359]:
+            - heading "今日三餐推荐页" [level=2] [ref=e360]
+            - paragraph [ref=e361]: AI 已按清淡、高蛋白和库存优先优化。
+        - paragraph [ref=e362]: 当前餐单是今日独立草稿，会直接驱动营养统计和采购缺口。
+        - generic [ref=e363]:
+          - strong [ref=e364]: 还没有可执行餐单
+          - paragraph [ref=e365]: 去 AI 对话页生成一份今日方案，或重试恢复最近一次工作台状态。
+          - button "重试恢复" [ref=e366] [cursor=pointer]
+      - region "今日营养概览" [ref=e367]:
+        - generic [ref=e368]:
+          - generic [ref=e369]:
+            - img [ref=e370]
+            - text: 今日营养概览
+          - strong [ref=e372]: 0 分
+        - paragraph [ref=e373]: 当前营养统计只跟随今日三餐变化。
+        - generic [ref=e374]:
+          - generic [ref=e375]:
+            - generic [ref=e376]: 总热量
+            - strong [ref=e377]: "0"
+            - generic [ref=e378]: "-1900kcal"
+          - generic [ref=e379]:
+            - generic [ref=e380]: 蛋白质
+            - strong [ref=e381]: 0g
+            - generic [ref=e382]: "-95g"
+        - generic [ref=e383]:
+          - generic [ref=e385]:
+            - generic [ref=e386]: 热量
+            - strong [ref=e387]: 0 / 1900 kcal
+            - emphasis [ref=e388]: 0%
+          - generic [ref=e391]:
+            - generic [ref=e392]: 蛋白质
+            - strong [ref=e393]: 0 / 95 g
+            - emphasis [ref=e394]: 0%
+          - generic [ref=e397]:
+            - generic [ref=e398]: 碳水
+            - strong [ref=e399]: 0 / 250 g
+            - emphasis [ref=e400]: 0%
+          - generic [ref=e403]:
+            - generic [ref=e404]: 脂肪
+            - strong [ref=e405]: 0 / 65 g
+            - emphasis [ref=e406]: 0%
+          - generic [ref=e409]:
+            - generic [ref=e410]: 膳食纤维
+            - strong [ref=e411]: 0 / 25 g
+            - emphasis [ref=e412]: 0%
+        - heading "AI 个性化建议" [level=3] [ref=e415]:
+          - img [ref=e416]
+          - text: AI 个性化建议

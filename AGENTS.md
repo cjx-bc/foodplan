@@ -304,9 +304,11 @@ server
 | 评论驱动 UI 修正 | 已完成 | 已根据页面评论压缩 `chat` 快捷操作区、为消息区增加内部滚动、收紧 `overview` CTA 宽度，并把 `weekly` 偏好按钮改成更均衡的双列布局。 |
 | 页面顶部说明移除 | 已完成 | 已移除 `overview / chat / today / inventory / weekly / nutrition / shopping` 页顶部的页面标题和说明文案，首屏直接进入主内容。 |
 | Overview / Chat CTA 闭环 | 已完成 | 已补强总览页 CTA、三步流转条、模式动作区和对话页执行流程卡，让 AI 调整、今日执行、本周确认和采购回看形成明确动作链。 |
+| Overview / Chat 骨架重构 | 已完成 | 已重做 `overview` Hero、执行节奏侧栏、关键缺口区和 `chat` 左主舞台 / 右摘要栈结构，并把配色、按钮、容器层级切到更强的编辑台风格。 |
 | 390px - 768px 首屏压缩 | 已完成 | 已改为更紧凑的头部间距、横向滚动导航、小尺寸 CTA 和更浅的首屏卡片间距，窄屏下无横向溢出，首屏高度明显收敛。 |
 | 本地规则闭环 | 已完成 | 今日三餐、营养统计、每周计划和购物清单已通过共享状态推导保持同步，并支持今日/本周双模式切换。 |
 | Web UI 定向打磨 | 已完成 | 已切换为暖白底、绿色主操作、圆角卡片和高保真桌面工作台风格。 |
+| Today / Shopping / Weekly 视觉体系统一 | 进行中 | 已统一全局视觉变量、主要按钮、面板底色和状态色，`TodayMealsPanel`、`ShoppingListPanel`、`weekly` 主工作区已切到同一套容器语言；仍需继续做真实运行态回归和局部间距收口。 |
 | Git 仓库发布 | 已完成 | 项目已初始化 Git，忽略构建产物后提交并推送到 `cjx-bc/foodplan` 的 `main`。 |
 | GitHub README | 已完成 | 已基于 `docs` 目录内容补齐仓库首页说明。 |
 | 后端 API 合约 | 已完成 | 已新增正式 API 合约文档，明确 profile、inventory、meal-plan、weekly-plan、shopping-list、conversation 资源边界、请求响应和错误格式。 |
@@ -331,8 +333,8 @@ server
 
 | 范围 | 百分比 | 状态 | 依据 |
 | --- | ---: | --- | --- |
-| 前端 MVP 演示闭环 | 100% | 进行中 | 总览、AI 对话、今日三餐、库存、周计划、营养和购物清单已统一到真实后端数据源，刷新恢复改为“轻量 ID + 后端回拉”。 |
-| 整体 MVP | 97% | 进行中 | 前端主要工作区、日计划/购物/会话/weekly-plan/adopt 主链路、guest workspace 隔离、DeepSeek AI 适配层、MySQL 持久化和后端回归脚本已落地；前端运行态回归仍需下轮收口。 |
+| 前端 MVP 演示闭环 | 100% | 进行中 | 总览、AI 对话、今日三餐、库存、周计划、营养和购物清单已统一到真实后端数据源，刷新恢复改为“轻量 ID + 后端回拉”，且 `overview / chat` 已升级为更强主次结构。 |
+| 整体 MVP | 98% | 进行中 | 前端主要工作区、日计划/购物/会话/weekly-plan/adopt 主链路、guest workspace 隔离、DeepSeek AI 适配层、MySQL 持久化和后端回归脚本已落地；当前主要剩真实运行态回归与 `today / shopping / weekly` 细节收口。 |
 | 文档与交接 | 100% | 进行中 | PRD、任务清单、开发拆解、README、本文件、正式 API/数据模型文档、数据库命令和回归命令说明已同步；后续主要补 MySQL 落地记录与真实模型联调结果。 |
 
 ## 下一步计划
@@ -352,6 +354,9 @@ server
 | P0 | 已完成 | 继续把 `overview` 与 `chat` 的 CTA 闭环压实 | 已补齐总览三步流转、模式动作区和聊天页流程卡，用户可直接从总览跳到 AI 调整、今日执行、本周确认和采购补缺口。 |
 | P1 | 已完成 | 把前端 `chat / today / shopping` 接到已存在的后端 API | 已从本地 mock 过渡到真实接口，并改为资源 ID + 后端回拉恢复。 |
 | P1 | 已完成 | 压缩 390px 到 768px 视口下的头部和首屏高度 | 已压缩头部、导航、按钮和 Hero 间距，并通过 `390px`、`768px` 浏览器截图确认首屏高度收敛。 |
+| P1 | 已完成 | 重做 `overview` 页面骨架和视觉变量 | 已切到新的暖米底色、深绿 Hero、分层指标带和执行节奏侧栏，并通过 Playwright 回归 `#/overview` 桌面截图。 |
+| P1 | 已完成 | 重做 `chat` 页左主区与右摘要区的主次关系 | 已把左侧升级为 Conversation Studio 主舞台，右侧摘要栈压成紧凑执行面板，并通过 Playwright 回归 `#/chat` 桌面截图。 |
+| P1 | 进行中 | 统一 `today / shopping / weekly` 容器体系、按钮体系、状态色体系 | 已统一全局变量和主要面板样式，下一轮继续做真实运行态回归，检查局部溢出、空状态和细节对齐。 |
 | P1 | 已完成 | 实现 weekly-plan API 与 adopt 同步逻辑 | 已支持周计划生成、微调、确认采用，并同步今日餐单和周采购。 |
 | P1 | 进行中 | 收紧前端错误态与加载态 | 已补接口失败提示、空状态、loading、按钮 pending、retry 和失效资源恢复；还需继续跑通真实浏览器运行态回归。 |
 | P1 | 待执行 | 做一轮桌面端运行态回归 | 在真实后端模式下检查 `overview / chat / today / weekly / shopping` 的溢出、错位和按钮行为。 |
@@ -422,6 +427,8 @@ server
 
 | 日期 | 状态 | 变更 | 原因与目标 | 验证 |
 | --- | --- | --- | --- | --- |
+| 2026-05-05 | 已完成 | 根据页面评论把 `chat` 页 Conversation Studio Hero 从纯绿色渐变改为本地厨房蔬菜背景图：新增 `src/assets/chat-hero-kitchen.jpg`，更新 `src/app/App.module.css` 和 `AGENTS.md` | 用户希望把对话页顶部绿色背景替换成更符合“绿色健康蔬菜 / 厨房”语义的真实图片，同时保留标题和状态胶囊的可读性。 | 已通过 `npm run build`；已用 Playwright MCP 回归 `#/chat`，截图保存到 `smartmeal-chat-hero-photo-full.png`。 |
+| 2026-05-05 | 已完成 | 重做 `overview` 骨架、`chat` 主次结构并统一视觉变量：更新 `src/styles/global.css`、`src/components/IconButton.module.css`、`src/app/App.tsx`、`src/app/App.module.css`、`src/features/chat/ChatPanel.module.css`、`src/features/meals/TodayMealsPanel.module.css`、`src/features/shopping/ShoppingListPanel.module.css`、`src/features/nutrition/NutritionPanel.module.css` 和 `AGENTS.md` | 用户要求先重做 `overview` 页面骨架与视觉变量，再重做 `chat` 页左主区和右摘要区，最后统一 `today / shopping / weekly` 的容器、按钮和状态色体系。目标是在不改业务链路的前提下，把页面从平均卡片布局推进到更强主次的健康编辑台视觉。 | 已通过 `npm run build`、`npm run build:server`；已用 Playwright MCP 回归 `#/overview` 与 `#/chat`，生成 `smartmeal-overview-redesign.png` 与 `smartmeal-chat-redesign.png`。 |
 | 2026-05-05 | 已完成 | 继续压缩 chat 顶部标题、输入区和快捷按钮：更新 `src/features/chat/ChatPanel.tsx`、`src/features/chat/ChatPanel.module.css`，下调标题图标、说明文案、输入按钮和快捷按钮尺寸，并单独压低发送按钮高度 | 用户反馈前几轮“还是厚”，希望把对话页变得更扁更简洁。目标是继续压低视觉密度，同时保留原有信息结构。 | 待 `npm run build` 验证。 |
 | 2026-05-05 | 已完成 | 再次收紧 chat 头部、输入条和快捷指令区：更新 `src/features/chat/ChatPanel.module.css`，进一步降低标题字号、图标尺寸、卡片 padding、输入高度和快捷按钮密度 | 用户通过页面评论要求把输入区、快捷指令区和标题区都“窄一点”，同时让 `AI 对话搭配页` 更简洁。目标是只做局部密度压缩，不改页面结构。 | 已通过 `npm run build`。 |
 | 2026-05-05 | 已完成 | 稳定 `chat` 刷新定位：更新 `src/features/chat/ChatPanel.tsx`、`src/features/chat/ChatPanel.module.css`、`src/app/App.tsx`，把历史消息滚动改成 `useLayoutEffect` 受控定位，刷新/初始化阶段直接定位到底部，避免 `smooth` 滚动和浏览器锚点造成的来回晃动 | 用户反馈 `#/chat` 一刷新页面就动来动去，怀疑是对话历史定位问题。目标是刷新后直接停在最新聊天位置，不再出现可见滚动漂移。 | 已通过 `npm run build`。 |

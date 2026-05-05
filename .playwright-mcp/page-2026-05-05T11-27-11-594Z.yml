@@ -1,0 +1,867 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - link "Courses" [ref=e5] [cursor=pointer]:
+      - /url: /academy-plan?utm_source=alert
+    - generic [ref=e6]:
+      - strong [ref=e7]: The Creative Pass
+      - img [ref=e8]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e15]:
+      - strong [ref=e16]: The Creative Pass
+      - img [ref=e17]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e24]:
+      - strong [ref=e25]: The Creative Pass
+      - img [ref=e26]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e33]:
+      - strong [ref=e34]: The Creative Pass
+      - img [ref=e35]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e42]:
+      - strong [ref=e43]: The Creative Pass
+      - img [ref=e44]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e51]:
+      - strong [ref=e52]: The Creative Pass
+      - img [ref=e53]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e60]:
+      - strong [ref=e61]: The Creative Pass
+      - img [ref=e62]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e69]:
+      - strong [ref=e70]: The Creative Pass
+      - img [ref=e71]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e78]:
+      - strong [ref=e79]: The Creative Pass
+      - img [ref=e80]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e87]:
+      - strong [ref=e88]: The Creative Pass
+      - img [ref=e89]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e96]:
+      - strong [ref=e97]: The Creative Pass
+      - img [ref=e98]
+      - text: Watch all courses for just $12/month
+  - banner [ref=e105]:
+    - generic [ref=e109]:
+      - link "Awwwards" [ref=e110] [cursor=pointer]:
+        - /url: /
+        - img [ref=e111]
+      - navigation [ref=e113]:
+        - list [ref=e114]:
+          - listitem [ref=e115]:
+            - generic [ref=e116] [cursor=pointer]:
+              - text: Explore
+              - img [ref=e117]
+          - listitem [ref=e119]:
+            - link "Directory" [ref=e120] [cursor=pointer]:
+              - /url: /directory/
+          - listitem [ref=e121]:
+            - link "Academy New" [ref=e122] [cursor=pointer]:
+              - /url: /academy/
+              - text: Academy
+              - generic [ref=e124]: New
+          - listitem [ref=e125]:
+            - link "Jobs" [ref=e126] [cursor=pointer]:
+              - /url: /jobs/
+          - listitem [ref=e127]:
+            - link "Market" [ref=e128] [cursor=pointer]:
+              - /url: /market/
+      - generic [ref=e131]:
+        - button "Search" [ref=e132] [cursor=pointer]:
+          - img [ref=e133]
+        - textbox "Search by Inspiration" [ref=e135]
+      - generic [ref=e136]:
+        - generic [ref=e137]:
+          - strong [ref=e138] [cursor=pointer]: Log in
+          - strong [ref=e139] [cursor=pointer]: Sign Up
+        - generic [ref=e140]:
+          - link "Be Pro" [ref=e141] [cursor=pointer]:
+            - /url: /pro
+          - link "Submit Website" [ref=e142] [cursor=pointer]:
+            - /url: /submit/
+  - generic [ref=e143]:
+    - generic [ref=e145]:
+      - generic [ref=e146]:
+        - strong [ref=e147]: ASTRODITHER
+        - generic [ref=e148]:
+          - text: by
+          - list [ref=e150]:
+            - listitem [ref=e151]:
+              - figure [ref=e153]:
+                - link "Robert Borghesi" [ref=e154] [cursor=pointer]:
+                  - /url: /dghez/
+                  - strong [ref=e156]: Robert Borghesi
+      - list [ref=e158]:
+        - listitem [ref=e159]:
+          - img [ref=e161] [cursor=pointer]
+        - listitem [ref=e163]:
+          - img [ref=e165] [cursor=pointer]
+        - listitem [ref=e167]:
+          - link [ref=e168] [cursor=pointer]:
+            - /url: https://astrodither.robertborghesi.is/
+            - img [ref=e169]
+    - generic [ref=e172]:
+      - generic [ref=e175]:
+        - generic [ref=e176]:
+          - generic [ref=e178]:
+            - strong [ref=e180]: SOTD
+            - generic [ref=e182]:
+              - strong [ref=e183]: "7.35"
+              - subscript [ref=e184]: /10
+          - list [ref=e186]:
+            - listitem [ref=e187]:
+              - img [ref=e189] [cursor=pointer]
+            - listitem [ref=e191]:
+              - img [ref=e193] [cursor=pointer]
+            - listitem [ref=e195]:
+              - link [ref=e196] [cursor=pointer]:
+                - /url: https://astrodither.robertborghesi.is/
+                - img [ref=e197]
+        - generic [ref=e199]:
+          - heading "Site of the Day - May 5, 2026" [level=2] [ref=e201]
+          - heading "ASTRODITHER" [level=1] [ref=e203]:
+            - link "ASTRODITHER" [ref=e204] [cursor=pointer]:
+              - /url: https://astrodither.robertborghesi.is/
+          - list [ref=e208]:
+            - listitem [ref=e209]:
+              - figure [ref=e211]:
+                - link "Robert Borghesi" [ref=e212] [cursor=pointer]:
+                  - /url: /dghez/
+                  - strong [ref=e214]: Robert Borghesi
+        - list [ref=e215]:
+          - listitem [ref=e216]:
+            - img "ASTRODITHER" [ref=e218]
+      - generic [ref=e220]:
+        - generic [ref=e221]:
+          - heading "Elements" [level=2] [ref=e223]
+          - heading "See the highlights of this website." [level=3] [ref=e225]:
+            - text: See the highlights
+            - text: of this website.
+        - list [ref=e226]:
+          - listitem [ref=e227]:
+            - generic [ref=e228]:
+              - figure [ref=e230]:
+                - link "Overall experience" [ref=e231] [cursor=pointer]:
+                  - /url: /inspiration/overall-experience-astrodither-1
+                - generic:
+                  - generic: video
+              - generic [ref=e234]:
+                - heading "Overall experience" [level=3] [ref=e235]:
+                  - link "Overall experience" [ref=e236] [cursor=pointer]:
+                    - /url: /inspiration/overall-experience-astrodither-1
+                - generic [ref=e237]:
+                  - generic [ref=e238]: from
+                  - link "Content" [ref=e239] [cursor=pointer]:
+                    - /url: /elements/content/
+    - generic [ref=e240]:
+      - generic [ref=e242]:
+        - heading "Color Palette" [level=2] [ref=e245]
+        - generic [ref=e246]:
+          - paragraph [ref=e247]:
+            - text: This website uses a color
+            - text: palette of
+            - strong [ref=e248]: "2"
+            - text: colors
+          - list [ref=e250]:
+            - listitem [ref=e251]:
+              - generic [ref=e253]:
+                - generic [ref=e254]:
+                  - generic [ref=e255]:
+                    - strong [ref=e256]: HEX
+                    - text: "#FF4FA3"
+                  - link [ref=e258] [cursor=pointer]:
+                    - /url: /websites/%23FF4FA3/
+                    - img [ref=e260]
+                - generic [ref=e262]: Aa
+            - listitem [ref=e263]:
+              - generic [ref=e265]:
+                - generic [ref=e266]:
+                  - generic [ref=e267]:
+                    - strong [ref=e268]: HEX
+                    - text: "#0B0B12"
+                  - link [ref=e270] [cursor=pointer]:
+                    - /url: /websites/%230B0B12/
+                    - img [ref=e272]
+                - generic [ref=e274]: Aa
+      - generic [ref=e275]:
+        - generic [ref=e276]:
+          - heading "Technologies & Tools" [level=2] [ref=e279]
+          - list [ref=e280]:
+            - listitem [ref=e281]:
+              - strong [ref=e282]:
+                - link "Technology" [ref=e283] [cursor=pointer]:
+                  - /url: /websites/technology/
+            - listitem [ref=e284]:
+              - strong [ref=e285]:
+                - link "Web & Interactive" [ref=e286] [cursor=pointer]:
+                  - /url: /websites/web-interactive/
+            - listitem [ref=e287]:
+              - strong [ref=e288]:
+                - link "Experimental" [ref=e289] [cursor=pointer]:
+                  - /url: /websites/experimental/
+            - listitem [ref=e290]:
+              - strong [ref=e291]:
+                - link "Animation" [ref=e292] [cursor=pointer]:
+                  - /url: /websites/animation/
+            - listitem [ref=e293]:
+              - strong [ref=e294]:
+                - link "Colorful" [ref=e295] [cursor=pointer]:
+                  - /url: /websites/colorful/
+            - listitem [ref=e296]:
+              - strong [ref=e297]:
+                - link "Fullscreen" [ref=e298] [cursor=pointer]:
+                  - /url: /websites/fullscreen/
+            - listitem [ref=e299]:
+              - strong [ref=e300]:
+                - link "Single page" [ref=e301] [cursor=pointer]:
+                  - /url: /websites/single-page/
+            - listitem [ref=e302]:
+              - strong [ref=e303]:
+                - link "3D" [ref=e304] [cursor=pointer]:
+                  - /url: /websites/3d/
+            - listitem [ref=e305]:
+              - strong [ref=e306]:
+                - link "Filters and Effects" [ref=e307] [cursor=pointer]:
+                  - /url: /websites/filters-and-effects/
+            - listitem [ref=e308]:
+              - strong [ref=e309]:
+                - link "WebGL" [ref=e310] [cursor=pointer]:
+                  - /url: /websites/webgl/
+            - listitem [ref=e311]:
+              - strong [ref=e312]:
+                - link "Three.js" [ref=e313] [cursor=pointer]:
+                  - /url: /websites/three-js/
+            - listitem [ref=e314]:
+              - strong [ref=e315]:
+                - link "Astro" [ref=e316] [cursor=pointer]:
+                  - /url: /websites/astro/
+        - generic [ref=e318]:
+          - heading "Description" [level=2] [ref=e320]
+          - heading "An audio reactive threejs webGPU experiment with TSL, custom fluid simulation, selective bloom, postprocessing, dithering, time warp and much more things i don't even remember." [level=3] [ref=e322]
+        - generic [ref=e323]:
+          - generic [ref=e324]:
+            - heading "Inside look" [level=2] [ref=e326]
+            - heading "Discover more details of this SOTD." [level=3] [ref=e328]:
+              - text: Discover more
+              - text: details of this SOTD.
+          - list [ref=e329]:
+            - listitem [ref=e330]:
+              - generic [ref=e331]:
+                - figure [ref=e332]:
+                  - link [ref=e333] [cursor=pointer]:
+                    - /url: /inspiration/desktop-astrodither
+                - generic [ref=e335]:
+                  - heading "Great element" [level=3] [ref=e336]:
+                    - link "Great element" [ref=e337] [cursor=pointer]:
+                      - /url: /inspiration/desktop-astrodither
+                  - generic [ref=e338]:
+                    - generic [ref=e339]: from
+                    - link "Desktop thumbnail" [ref=e340] [cursor=pointer]:
+                      - /url: /elements/thumbnail/
+            - listitem [ref=e341]:
+              - generic [ref=e342]:
+                - figure [ref=e343]:
+                  - link [ref=e344] [cursor=pointer]:
+                    - /url: /inspiration/mobile-astrodither
+                - generic [ref=e346]:
+                  - heading "Great element" [level=3] [ref=e347]:
+                    - link "Great element" [ref=e348] [cursor=pointer]:
+                      - /url: /inspiration/mobile-astrodither
+                  - generic [ref=e349]:
+                    - generic [ref=e350]: from
+                    - link "Mobile thumbnail" [ref=e351] [cursor=pointer]:
+                      - /url: /elements/mobile_thumbnail/
+      - generic [ref=e352]:
+        - generic [ref=e353]:
+          - generic [ref=e354]:
+            - heading "SOTD / SCORE → 7.35/ 10" [level=2] [ref=e355]:
+              - text: SOTD / SCORE
+              - generic [ref=e356]:
+                - text: → 7.35
+                - superscript [ref=e357]: / 10
+            - link "Evaluation System" [ref=e359] [cursor=pointer]:
+              - /url: /about-evaluation/
+          - generic [ref=e360]:
+            - generic [ref=e361]:
+              - text: Design
+              - strong [ref=e362]: 40%
+            - generic [ref=e363]:
+              - text: Usability
+              - strong [ref=e364]: 30%
+            - generic [ref=e365]:
+              - text: Creativity
+              - strong [ref=e366]: 20%
+            - generic [ref=e367]:
+              - text: Content
+              - strong [ref=e368]: 10%
+            - strong [ref=e374]: 7.31 / 10
+            - strong [ref=e376]: 7.19 / 10
+            - strong [ref=e378]: 7.91 / 10
+            - strong [ref=e380]: 6.85 / 10
+          - generic [ref=e381]:
+            - generic [ref=e383]:
+              - heading "Votes" [level=2] [ref=e384]
+              - list [ref=e385]:
+                - listitem [ref=e386] [cursor=pointer]: Jury
+                - listitem [ref=e387] [cursor=pointer]: Community Members
+            - generic [ref=e389]:
+              - generic [ref=e390]:
+                - generic [ref=e391]: Design
+                - generic [ref=e392]: Usability
+                - generic [ref=e393]: Creativity
+                - generic [ref=e394]: Content
+                - generic [ref=e395]: Overall
+              - list [ref=e396]:
+                - listitem [ref=e397]:
+                  - generic [ref=e398]:
+                    - figure [ref=e399]:
+                      - link "Denys Koloskov" [ref=e400] [cursor=pointer]:
+                        - /url: /dns/
+                        - img "Denys Koloskov" [ref=e401]
+                    - generic [ref=e402]:
+                      - generic [ref=e403]:
+                        - link "Denys Koloskov" [ref=e404] [cursor=pointer]:
+                          - /url: /dns/
+                          - strong [ref=e405]: Denys Koloskov
+                        - generic [ref=e406]:
+                          - text: from
+                          - strong [ref=e407]: Ukraine
+                      - generic [ref=e408]: UX/UI designer
+                  - generic [ref=e410]:
+                    - generic [ref=e411]: "7"
+                    - generic [ref=e412]: "7"
+                    - generic [ref=e413]: "7"
+                    - generic [ref=e414]: "7"
+                    - generic [ref=e415]: "7.00"
+                - listitem [ref=e416]:
+                  - generic [ref=e417]:
+                    - figure [ref=e418]:
+                      - link "Eugene Sokolovski" [ref=e419] [cursor=pointer]:
+                        - /url: /eugenesokolovski/
+                        - img "Eugene Sokolovski" [ref=e420]
+                    - generic [ref=e421]:
+                      - generic [ref=e422]:
+                        - link "Eugene Sokolovski" [ref=e423] [cursor=pointer]:
+                          - /url: /eugenesokolovski/
+                          - strong [ref=e424]: Eugene Sokolovski
+                        - generic [ref=e425]:
+                          - text: from
+                          - strong [ref=e426]: Belarus
+                      - generic [ref=e427]: web designer
+                  - generic [ref=e429]:
+                    - generic [ref=e430]: "7"
+                    - generic [ref=e431]: "6"
+                    - generic [ref=e432]: "7"
+                    - generic [ref=e433]: "6"
+                    - generic [ref=e434]: "6.60"
+                - listitem [ref=e435]:
+                  - generic [ref=e436]:
+                    - figure [ref=e437]:
+                      - link "Oleg Savenok" [ref=e438] [cursor=pointer]:
+                        - /url: /oleg-savenok/
+                        - img "Oleg Savenok" [ref=e439]
+                    - generic [ref=e440]:
+                      - generic [ref=e441]:
+                        - link "Oleg Savenok" [ref=e442] [cursor=pointer]:
+                          - /url: /oleg-savenok/
+                          - strong [ref=e443]: Oleg Savenok
+                        - generic [ref=e444]:
+                          - text: from
+                          - strong [ref=e445]: Ukraine
+                      - generic [ref=e446]: сreative developer
+                  - generic [ref=e448]:
+                    - generic [ref=e449]: "7"
+                    - generic [ref=e450]: "7"
+                    - generic [ref=e451]: "9"
+                    - generic [ref=e452]: "7"
+                    - generic [ref=e453]: "7.40"
+                - listitem [ref=e454]:
+                  - generic [ref=e455]:
+                    - figure [ref=e456]:
+                      - link "Serhii Churilov" [ref=e457] [cursor=pointer]:
+                        - /url: /SerhiiChurilov/
+                        - img "Serhii Churilov" [ref=e458]
+                    - generic [ref=e459]:
+                      - generic [ref=e460]:
+                        - link "Serhii Churilov" [ref=e461] [cursor=pointer]:
+                          - /url: /SerhiiChurilov/
+                          - strong [ref=e462]: Serhii Churilov
+                        - generic [ref=e463]:
+                          - text: from
+                          - strong [ref=e464]: Ukraine
+                      - generic [ref=e465]: Freelance Digital Art Director & Designer
+                  - generic [ref=e467]:
+                    - generic [ref=e468]: "6"
+                    - generic [ref=e469]: "7"
+                    - generic [ref=e470]: "8"
+                    - generic [ref=e471]: "6"
+                    - generic [ref=e472]: "6.70"
+                - listitem [ref=e473]:
+                  - generic [ref=e474]:
+                    - figure [ref=e475]:
+                      - link "Nils Landrodie" [ref=e476] [cursor=pointer]:
+                        - /url: /N0Ls/
+                        - img "Nils Landrodie" [ref=e477]
+                    - generic [ref=e478]:
+                      - generic [ref=e479]:
+                        - link "Nils Landrodie" [ref=e480] [cursor=pointer]:
+                          - /url: /N0Ls/
+                          - strong [ref=e481]: Nils Landrodie
+                        - generic [ref=e482]:
+                          - text: from
+                          - strong [ref=e483]: France
+                      - generic [ref=e484]: Creative Developer
+                  - generic [ref=e486]:
+                    - generic [ref=e487]: "8"
+                    - generic [ref=e488]: "8"
+                    - generic [ref=e489]: "9"
+                    - generic [ref=e490]: "7"
+                    - generic [ref=e491]: "8.10"
+                  - generic [ref=e493] [cursor=pointer]: •••
+        - generic [ref=e494]:
+          - generic [ref=e495]:
+            - heading "DEV AWARD → 7.72/ 10" [level=2] [ref=e496]:
+              - text: DEV AWARD
+              - generic [ref=e497]:
+                - text: → 7.72
+                - superscript [ref=e498]: / 10
+            - link "Evaluation System" [ref=e500] [cursor=pointer]:
+              - /url: /about-evaluation/
+          - generic [ref=e501]:
+            - generic [ref=e502]: Semantics / SEO
+            - generic [ref=e503]: Animations / Transitions
+            - generic [ref=e504]: Accessibility
+            - generic [ref=e505]: WPO
+            - generic [ref=e506]: Responsive Design
+            - generic [ref=e507]: Markup / Meta-data
+            - strong [ref=e515]: 7.00 / 10
+            - strong [ref=e517]: 8.60 / 10
+            - strong [ref=e519]: 7.20 / 10
+            - strong [ref=e521]: 8.40 / 10
+            - strong [ref=e523]: 7.60 / 10
+            - strong [ref=e525]: 7.40 / 10
+          - generic [ref=e526]:
+            - generic [ref=e528]:
+              - heading "Votes" [level=2] [ref=e529]
+              - list [ref=e530]:
+                - listitem [ref=e531] [cursor=pointer]: Jury
+            - generic [ref=e533]:
+              - generic [ref=e534]:
+                - generic [ref=e535]: Semantics
+                - generic [ref=e536]: Animations
+                - generic [ref=e537]: Accessibility
+                - generic [ref=e538]: WPO
+                - generic [ref=e539]: Responsive Design
+                - generic [ref=e540]: Markup
+                - generic [ref=e541]: Overall
+              - list [ref=e542]:
+                - listitem [ref=e543]:
+                  - generic [ref=e544]:
+                    - figure [ref=e545]:
+                      - link "Stefan Trajkov" [ref=e546] [cursor=pointer]:
+                        - /url: /stefantrajkov/
+                        - img "Stefan Trajkov" [ref=e547]
+                    - generic [ref=e548]:
+                      - generic [ref=e549]:
+                        - link "Stefan Trajkov" [ref=e550] [cursor=pointer]:
+                          - /url: /stefantrajkov/
+                          - strong [ref=e551]: Stefan Trajkov
+                        - generic [ref=e552]:
+                          - text: from
+                          - strong [ref=e553]: North Macedonia
+                      - generic [ref=e554]: Front End Developer
+                  - generic [ref=e556]:
+                    - generic [ref=e557]: "9"
+                    - generic [ref=e558]: "10"
+                    - generic [ref=e559]: "10"
+                    - generic [ref=e560]: "10"
+                    - generic [ref=e561]: "10"
+                    - generic [ref=e562]: "10"
+                    - generic [ref=e563]: "9.80"
+                - listitem [ref=e564]:
+                  - generic [ref=e565]:
+                    - figure [ref=e566]:
+                      - link "Giacomo Mottin" [ref=e567] [cursor=pointer]:
+                        - /url: /Jack89ita/
+                        - img "Giacomo Mottin" [ref=e568]
+                    - generic [ref=e569]:
+                      - generic [ref=e570]:
+                        - link "Giacomo Mottin" [ref=e571] [cursor=pointer]:
+                          - /url: /Jack89ita/
+                          - strong [ref=e572]: Giacomo Mottin
+                        - generic [ref=e573]:
+                          - text: from
+                          - strong [ref=e574]: Italy
+                      - generic [ref=e575]: Senior Frontend Developer
+                  - generic [ref=e577]:
+                    - generic [ref=e578]: "7"
+                    - generic [ref=e579]: "8"
+                    - generic [ref=e580]: "7"
+                    - generic [ref=e581]: "7"
+                    - generic [ref=e582]: "7"
+                    - generic [ref=e583]: "7"
+                    - generic [ref=e584]: "7.15"
+                - listitem [ref=e585]:
+                  - generic [ref=e586]:
+                    - figure [ref=e587]:
+                      - link "Francesco Michelini" [ref=e588] [cursor=pointer]:
+                        - /url: /francescomichelini/
+                        - img "Francesco Michelini" [ref=e589]
+                    - generic [ref=e590]:
+                      - generic [ref=e591]:
+                        - link "Francesco Michelini" [ref=e592] [cursor=pointer]:
+                          - /url: /francescomichelini/
+                          - strong [ref=e593]: Francesco Michelini
+                        - generic [ref=e594]:
+                          - text: from
+                          - strong [ref=e595]: Italy
+                      - generic [ref=e596]: Freelance creative developer
+                  - generic [ref=e598]:
+                    - generic [ref=e599]: "7"
+                    - generic [ref=e600]: "8"
+                    - generic [ref=e601]: "6"
+                    - generic [ref=e602]: "8"
+                    - generic [ref=e603]: "7"
+                    - generic [ref=e604]: "7"
+                    - generic [ref=e605]: "7.25"
+                - listitem [ref=e606]:
+                  - generic [ref=e607]:
+                    - figure [ref=e608]:
+                      - link "Bimo Tri" [ref=e609] [cursor=pointer]:
+                        - /url: /bamoj/
+                        - img "Bimo Tri" [ref=e610]
+                    - generic [ref=e611]:
+                      - generic [ref=e612]:
+                        - link "Bimo Tri" [ref=e613] [cursor=pointer]:
+                          - /url: /bamoj/
+                          - strong [ref=e614]: Bimo Tri
+                        - generic [ref=e615]:
+                          - text: from
+                          - strong [ref=e616]: Indonesia
+                      - generic [ref=e617]: Designer & Webflow Developer
+                  - generic [ref=e619]:
+                    - generic [ref=e620]: "6"
+                    - generic [ref=e621]: "7"
+                    - generic [ref=e622]: "7"
+                    - generic [ref=e623]: "9"
+                    - generic [ref=e624]: "7"
+                    - generic [ref=e625]: "7"
+                    - generic [ref=e626]: "7.20"
+                - listitem [ref=e627]:
+                  - generic [ref=e628]:
+                    - figure [ref=e629]:
+                      - link "Michele Giorgi" [ref=e630] [cursor=pointer]:
+                        - /url: /giorgi/
+                        - img "Michele Giorgi" [ref=e631]
+                    - generic [ref=e632]:
+                      - generic [ref=e633]:
+                        - link "Michele Giorgi" [ref=e634] [cursor=pointer]:
+                          - /url: /giorgi/
+                          - strong [ref=e635]: Michele Giorgi
+                        - generic [ref=e636]:
+                          - text: from
+                          - strong [ref=e637]: Italy
+                      - generic [ref=e638]: web developer
+                  - generic [ref=e640]:
+                    - generic [ref=e641]: "6"
+                    - generic [ref=e642]: "10"
+                    - generic [ref=e643]: "6"
+                    - generic [ref=e644]: "8"
+                    - generic [ref=e645]: "7"
+                    - generic [ref=e646]: "6"
+                    - generic [ref=e647]: "7.20"
+        - generic [ref=e648]:
+          - generic [ref=e649]:
+            - heading "Collections" [level=2] [ref=e651]
+            - heading "Explore more great collections." [level=3] [ref=e653]:
+              - text: Explore more
+              - text: great collections.
+          - generic [ref=e654]:
+            - generic [ref=e655]:
+              - generic [ref=e657]:
+                - figure [ref=e658]:
+                  - link "View Collection" [ref=e659] [cursor=pointer]:
+                    - /url: /Mixallo/collections/pastel-colors/
+                    - img "Pastel colors" [ref=e660]
+                - generic [ref=e662]:
+                  - heading "Pastel colors" [level=3] [ref=e663]:
+                    - link "Pastel colors" [ref=e664] [cursor=pointer]:
+                      - /url: /Mixallo/collections/pastel-colors/
+                  - generic [ref=e665]:
+                    - generic [ref=e666]: followed by
+                    - generic [ref=e667]:
+                      - list [ref=e668]:
+                        - listitem [ref=e669]:
+                          - figure [ref=e670]:
+                            - img "lorenzo-gusmitta" [ref=e671]
+                        - listitem [ref=e672]:
+                          - figure [ref=e673]:
+                            - img "abdullah-fawad" [ref=e674]
+                        - listitem [ref=e675]:
+                          - figure [ref=e676]:
+                            - img "bellaud-matias" [ref=e677]
+                      - strong [ref=e679]: "+148"
+              - generic [ref=e681]:
+                - figure [ref=e682]:
+                  - link "View Collection" [ref=e683] [cursor=pointer]:
+                    - /url: /awwwards/collections/tools-apps-platforms-worth-trying/
+                    - img "Handy Tools and Apps for Designers" [ref=e684]
+                - generic [ref=e686]:
+                  - heading "Handy Tools and Apps for De..." [level=3] [ref=e687]:
+                    - link "Handy Tools and Apps for De..." [ref=e688] [cursor=pointer]:
+                      - /url: /awwwards/collections/tools-apps-platforms-worth-trying/
+                  - generic [ref=e689]:
+                    - generic [ref=e690]: followed by
+                    - generic [ref=e691]:
+                      - list [ref=e692]:
+                        - listitem [ref=e693]:
+                          - figure [ref=e694]:
+                            - img "burak-aba" [ref=e695]
+                        - listitem [ref=e696]:
+                          - figure [ref=e697]:
+                            - img "yangyang-14" [ref=e698]
+                        - listitem [ref=e699]:
+                          - figure [ref=e700]:
+                            - img "lottie-reiff" [ref=e701]
+                      - strong [ref=e703]: "+1017"
+              - generic [ref=e705]:
+                - figure [ref=e706]:
+                  - link "View Collection" [ref=e707] [cursor=pointer]:
+                    - /url: /du-haihang/collections/css-animations/
+                    - img "CSS Animations" [ref=e708]
+                - generic [ref=e710]:
+                  - heading "CSS Animations" [level=3] [ref=e711]:
+                    - link "CSS Animations" [ref=e712] [cursor=pointer]:
+                      - /url: /du-haihang/collections/css-animations/
+                  - generic [ref=e713]:
+                    - generic [ref=e714]: followed by
+                    - generic [ref=e715]:
+                      - list [ref=e716]:
+                        - listitem [ref=e717]:
+                          - figure [ref=e718]:
+                            - img "hely-camargo-1" [ref=e719]
+                        - listitem [ref=e720]:
+                          - figure [ref=e721]:
+                            - img "Ana Ginsberg" [ref=e722]
+                        - listitem [ref=e723]:
+                          - figure [ref=e724]:
+                            - img "travis-wieser" [ref=e725]
+                      - strong [ref=e727]: "+459"
+              - generic [ref=e729]:
+                - figure [ref=e730]:
+                  - link "View Collection" [ref=e731] [cursor=pointer]:
+                    - /url: /du-haihang/collections/webgl-animations/
+                    - img "WebGL Animations" [ref=e732]
+                - generic [ref=e734]:
+                  - heading "WebGL Animations" [level=3] [ref=e735]:
+                    - link "WebGL Animations" [ref=e736] [cursor=pointer]:
+                      - /url: /du-haihang/collections/webgl-animations/
+                  - generic [ref=e737]:
+                    - generic [ref=e738]: followed by
+                    - generic [ref=e739]:
+                      - list [ref=e740]:
+                        - listitem [ref=e741]:
+                          - figure [ref=e742]:
+                            - img "Ana Ginsberg" [ref=e743]
+                        - listitem [ref=e744]:
+                          - figure [ref=e745]:
+                            - img "archo" [ref=e746]
+                        - listitem [ref=e747]:
+                          - figure [ref=e748]:
+                            - img "ahmed-ahmed-4" [ref=e749]
+                      - strong [ref=e751]: "+260"
+              - generic [ref=e753]:
+                - figure [ref=e754]:
+                  - link "View Collection" [ref=e755] [cursor=pointer]:
+                    - /url: /bryansaftler/collections/webgl-html5-games/
+                    - img "WebGL / HTML5 Games" [ref=e756]
+                - generic [ref=e758]:
+                  - heading "WebGL / HTML5 Games" [level=3] [ref=e759]:
+                    - link "WebGL / HTML5 Games" [ref=e760] [cursor=pointer]:
+                      - /url: /bryansaftler/collections/webgl-html5-games/
+                  - generic [ref=e761]:
+                    - generic [ref=e762]: followed by
+                    - generic [ref=e763]:
+                      - list [ref=e764]:
+                        - listitem [ref=e765]:
+                          - figure [ref=e766]:
+                            - img "kewei" [ref=e767]
+                        - listitem [ref=e768]:
+                          - figure [ref=e769]:
+                            - img "The Cardboard Samurai" [ref=e770]
+                        - listitem [ref=e771]:
+                          - figure [ref=e772]:
+                            - img "john-kaplan" [ref=e773]
+                      - strong [ref=e775]: "+74"
+              - generic [ref=e777]:
+                - figure [ref=e778]:
+                  - link "View Collection" [ref=e779] [cursor=pointer]:
+                    - /url: /mireia_ortega/collections/movie-landing-page-design/
+                - generic [ref=e782]:
+                  - heading "Movie Landing Page Design" [level=3] [ref=e783]:
+                    - link "Movie Landing Page Design" [ref=e784] [cursor=pointer]:
+                      - /url: /mireia_ortega/collections/movie-landing-page-design/
+                  - generic [ref=e785]:
+                    - generic [ref=e786]: followed by
+                    - generic [ref=e787]:
+                      - list [ref=e788]:
+                        - listitem [ref=e789]:
+                          - figure [ref=e790]:
+                            - img "about-sketch" [ref=e791]
+                        - listitem [ref=e792]:
+                          - figure [ref=e793]:
+                            - img "darya-palcikova" [ref=e794]
+                        - listitem [ref=e795]:
+                          - figure [ref=e796]:
+                            - img "kanishka-vashishth" [ref=e797]
+                      - strong [ref=e799]: "+175"
+              - generic [ref=e801]:
+                - figure [ref=e802]:
+                  - link "View Collection" [ref=e803] [cursor=pointer]:
+                    - /url: /awwwards_collections/collections/text-marquee-effect/
+                    - img "Text Marquee animation" [ref=e804]
+                - generic [ref=e806]:
+                  - heading "Text Marquee animation" [level=3] [ref=e807]:
+                    - link "Text Marquee animation" [ref=e808] [cursor=pointer]:
+                      - /url: /awwwards_collections/collections/text-marquee-effect/
+                  - generic [ref=e809]:
+                    - generic [ref=e810]: followed by
+                    - generic [ref=e811]:
+                      - list [ref=e812]:
+                        - listitem [ref=e813]:
+                          - figure [ref=e814]:
+                            - img "antony-northcutt" [ref=e815]
+                        - listitem [ref=e816]:
+                          - figure [ref=e817]:
+                            - img "dennis-agbovinure" [ref=e818]
+                        - listitem [ref=e819]:
+                          - figure [ref=e820]:
+                            - img "mumu-li" [ref=e821]
+                      - strong [ref=e823]: "+30"
+              - generic [ref=e825]:
+                - figure [ref=e826]:
+                  - link "View Collection" [ref=e827] [cursor=pointer]:
+                    - /url: /teoross/collections/webgl/
+                    - img "WebGL Inspiration" [ref=e828]
+                - generic [ref=e830]:
+                  - heading "WebGL Inspiration" [level=3] [ref=e831]:
+                    - link "WebGL Inspiration" [ref=e832] [cursor=pointer]:
+                      - /url: /teoross/collections/webgl/
+                  - generic [ref=e833]:
+                    - generic [ref=e834]: followed by
+                    - generic [ref=e835]:
+                      - list [ref=e836]:
+                        - listitem [ref=e837]:
+                          - figure [ref=e838]:
+                            - img "antony-northcutt" [ref=e839]
+                        - listitem [ref=e840]:
+                          - figure [ref=e841]:
+                            - img "gracetyy" [ref=e842]
+                        - listitem [ref=e843]:
+                          - figure [ref=e844]:
+                            - img "cirsten-kot" [ref=e845]
+                      - strong [ref=e847]: "+142"
+            - img [ref=e850] [cursor=pointer]
+    - generic [ref=e853]:
+      - link "Awwwards home page" [ref=e856] [cursor=pointer]:
+        - /url: /
+        - img [ref=e857]
+      - list [ref=e862]:
+        - listitem [ref=e863]:
+          - link "Creator" [ref=e864] [cursor=pointer]:
+            - /url: "#creator"
+        - listitem [ref=e865]:
+          - link "Font & Color" [ref=e866] [cursor=pointer]:
+            - /url: "#typography"
+        - listitem [ref=e867]:
+          - link "Details" [ref=e868] [cursor=pointer]:
+            - /url: "#details"
+        - listitem [ref=e869]:
+          - link "Score" [ref=e870] [cursor=pointer]:
+            - /url: "#score"
+      - strong [ref=e873]:
+        - link "Visit Site" [ref=e874] [cursor=pointer]:
+          - /url: https://astrodither.robertborghesi.is/
+  - contentinfo [ref=e875]:
+    - generic [ref=e876]:
+      - generic [ref=e877]:
+        - paragraph [ref=e878]:
+          - img [ref=e879]
+        - generic [ref=e882]:
+          - list [ref=e883]:
+            - listitem [ref=e884]:
+              - link "Websites" [ref=e885] [cursor=pointer]:
+                - /url: /websites/
+            - listitem [ref=e886]:
+              - link "Collections" [ref=e887] [cursor=pointer]:
+                - /url: /collections/search/
+            - listitem [ref=e888]:
+              - link "Elements" [ref=e889] [cursor=pointer]:
+                - /url: /elements/
+          - list [ref=e890]:
+            - listitem [ref=e891]:
+              - link "Academy" [ref=e892] [cursor=pointer]:
+                - /url: /academy/
+            - listitem [ref=e893]:
+              - link "Jobs" [ref=e894] [cursor=pointer]:
+                - /url: /jobs/search/
+            - listitem [ref=e895]:
+              - link "Market" [ref=e896] [cursor=pointer]:
+                - /url: /market/
+          - list [ref=e897]:
+            - listitem [ref=e898]:
+              - link "Directory" [ref=e899] [cursor=pointer]:
+                - /url: /directory/search/
+            - listitem [ref=e900]:
+              - link "Conferences" [ref=e901] [cursor=pointer]:
+                - /url: https://conference.awwwards.com
+          - list [ref=e902]:
+            - listitem [ref=e903]:
+              - link "FAQs" [ref=e904] [cursor=pointer]:
+                - /url: /faqs/
+            - listitem [ref=e905]:
+              - link "About Us" [ref=e906] [cursor=pointer]:
+                - /url: /about-us/
+            - listitem [ref=e907]:
+              - link "Contact Us" [ref=e908] [cursor=pointer]:
+                - /url: /contact-us/
+      - generic [ref=e909]:
+        - list [ref=e911]:
+          - listitem [ref=e912]:
+            - link "Cookies Policy" [ref=e913] [cursor=pointer]:
+              - /url: /cookies-policy/
+          - listitem [ref=e914]:
+            - link "Legal Terms" [ref=e915] [cursor=pointer]:
+              - /url: /terms/
+          - listitem [ref=e916]:
+            - link "Privacy Policy" [ref=e917] [cursor=pointer]:
+              - /url: /privacy-policy/
+        - list [ref=e919]:
+          - listitem [ref=e920]:
+            - strong [ref=e921]: "Connect:"
+          - listitem [ref=e922]:
+            - link "Instagram" [ref=e923] [cursor=pointer]:
+              - /url: https://www.instagram.com/awwwards
+          - listitem [ref=e924]:
+            - link "LinkedIn" [ref=e925] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/awwwards
+          - listitem [ref=e926]:
+            - link "Twitter" [ref=e927] [cursor=pointer]:
+              - /url: https://twitter.com/awwwards
+          - listitem [ref=e928]:
+            - link "Facebook" [ref=e929] [cursor=pointer]:
+              - /url: https://www.facebook.com/awwwards
+          - listitem [ref=e930]:
+            - link "YouTube" [ref=e931] [cursor=pointer]:
+              - /url: https://www.youtube.com/awwwardstv
+          - listitem [ref=e932]:
+            - link "TikTok" [ref=e933] [cursor=pointer]:
+              - /url: https://www.tiktok.com/@awwwards.com
+          - listitem [ref=e934]:
+            - link "Pinterest" [ref=e935] [cursor=pointer]:
+              - /url: https://www.pinterest.es/awwwards/

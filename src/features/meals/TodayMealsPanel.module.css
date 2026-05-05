@@ -1,8 +1,8 @@
 .panel {
-  background: linear-gradient(180deg, #fffefb, #fbf7ef);
-  border: 1px solid rgba(230, 221, 207, 0.96);
-  border-radius: 18px;
-  box-shadow: 0 14px 30px rgba(89, 74, 46, 0.05);
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(249, 243, 232, 0.96));
+  border: 1px solid rgba(164, 150, 124, 0.18);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
   display: grid;
   gap: 16px;
   padding: 16px;
@@ -38,8 +38,8 @@
 }
 
 .contextNote {
-  background: #fff8eb;
-  border: 1px solid #efdfbc;
+  background: var(--warning-soft);
+  border: 1px solid rgba(215, 154, 52, 0.26);
   border-radius: 14px;
   color: #8a6225;
   font-size: 13px;
@@ -54,8 +54,8 @@
 }
 
 .emptyState {
-  background: white;
-  border: 1px dashed rgba(31, 140, 78, 0.32);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1px dashed rgba(31, 122, 70, 0.28);
   border-radius: 18px;
   color: var(--muted);
   display: grid;
@@ -111,16 +111,17 @@
 }
 
 .mealCard {
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  background: rgba(255, 253, 248, 0.96);
+  border: 1px solid rgba(164, 150, 124, 0.16);
   border-radius: 18px;
-  padding: 14px;
+  box-shadow: 0 10px 22px rgba(76, 61, 34, 0.04);
+  padding: 16px;
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .expanded {
-  border-color: rgba(31, 140, 78, 0.34);
-  box-shadow: 0 14px 28px rgba(31, 140, 78, 0.08);
+  border-color: rgba(31, 122, 70, 0.28);
+  box-shadow: 0 16px 28px rgba(31, 122, 70, 0.08);
 }
 
 .mealHeader {
@@ -219,8 +220,8 @@
 }
 
 .nutritionGrid span {
-  background: #fffefb;
-  border: 1px solid rgba(231, 223, 209, 0.96);
+  background: rgba(255, 252, 246, 0.86);
+  border: 1px solid rgba(164, 150, 124, 0.14);
   border-radius: 12px;
   color: #5d5e57;
   display: flex;
@@ -235,8 +236,8 @@
 }
 
 .tip {
-  background: #eef8ef;
-  border: 1px solid rgba(31, 140, 78, 0.2);
+  background: var(--primary-soft);
+  border: 1px solid rgba(31, 122, 70, 0.18);
   border-radius: 12px;
   color: #376746;
   font-size: 13px;
@@ -252,8 +253,8 @@
 }
 
 .ingredients span {
-  background: white;
-  border: 1px solid rgba(225, 217, 200, 0.95);
+  background: rgba(255, 253, 248, 0.92);
+  border: 1px solid rgba(164, 150, 124, 0.16);
   border-radius: 999px;
   color: #5f6059;
   font-size: 12px;
@@ -261,8 +262,8 @@
 }
 
 .ingredients .inventoryTag {
-  background: #edf8ef;
-  border-color: rgba(31, 140, 78, 0.28);
+  background: var(--primary-soft);
+  border-color: rgba(31, 122, 70, 0.2);
   color: var(--primary);
   font-weight: 800;
 }

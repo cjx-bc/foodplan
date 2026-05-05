@@ -1,0 +1,386 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - link "Courses" [ref=e5] [cursor=pointer]:
+      - /url: /academy-plan?utm_source=alert
+    - generic [ref=e6]:
+      - strong [ref=e7]: The Creative Pass
+      - img [ref=e8]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e15]:
+      - strong [ref=e16]: The Creative Pass
+      - img [ref=e17]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e24]:
+      - strong [ref=e25]: The Creative Pass
+      - img [ref=e26]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e33]:
+      - strong [ref=e34]: The Creative Pass
+      - img [ref=e35]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e42]:
+      - strong [ref=e43]: The Creative Pass
+      - img [ref=e44]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e51]:
+      - strong [ref=e52]: The Creative Pass
+      - img [ref=e53]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e60]:
+      - strong [ref=e61]: The Creative Pass
+      - img [ref=e62]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e69]:
+      - strong [ref=e70]: The Creative Pass
+      - img [ref=e71]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e78]:
+      - strong [ref=e79]: The Creative Pass
+      - img [ref=e80]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e87]:
+      - strong [ref=e88]: The Creative Pass
+      - img [ref=e89]
+      - text: Watch all courses for just $12/month
+    - generic [ref=e96]:
+      - strong [ref=e97]: The Creative Pass
+      - img [ref=e98]
+      - text: Watch all courses for just $12/month
+  - banner [ref=e105]:
+    - generic [ref=e109]:
+      - link "Awwwards" [ref=e110] [cursor=pointer]:
+        - /url: /
+        - img [ref=e111]
+      - navigation [ref=e113]:
+        - list [ref=e114]:
+          - listitem [ref=e115]:
+            - generic [ref=e116] [cursor=pointer]:
+              - text: Explore
+              - img [ref=e117]
+          - listitem [ref=e119]:
+            - link "Directory" [ref=e120] [cursor=pointer]:
+              - /url: /directory/
+          - listitem [ref=e121]:
+            - link "Academy New" [ref=e122] [cursor=pointer]:
+              - /url: /academy/
+              - text: Academy
+              - generic [ref=e124]: New
+          - listitem [ref=e125]:
+            - link "Jobs" [ref=e126] [cursor=pointer]:
+              - /url: /jobs/
+          - listitem [ref=e127]:
+            - link "Market" [ref=e128] [cursor=pointer]:
+              - /url: /market/
+      - generic [ref=e131]:
+        - button "Search" [ref=e132] [cursor=pointer]:
+          - img [ref=e133]
+        - textbox "Search by Inspiration" [ref=e135]
+      - generic [ref=e136]:
+        - generic [ref=e137]:
+          - strong [ref=e138] [cursor=pointer]: Log in
+          - strong [ref=e139] [cursor=pointer]: Sign Up
+        - generic [ref=e140]:
+          - link "Be Pro" [ref=e141] [cursor=pointer]:
+            - /url: /pro
+          - link "Submit Website" [ref=e142] [cursor=pointer]:
+            - /url: /submit/
+  - generic [ref=e143]:
+    - generic [ref=e145]:
+      - generic [ref=e146]:
+        - strong [ref=e147]: Razorpay Sprint 26
+        - generic [ref=e148]:
+          - text: by
+          - list [ref=e150]:
+            - listitem [ref=e151]:
+              - figure [ref=e153]:
+                - link "Razorpay Design" [ref=e154] [cursor=pointer]:
+                  - /url: /razorpaydesign/
+                  - strong [ref=e156]: Razorpay Design
+      - list [ref=e158]:
+        - listitem [ref=e159]:
+          - img [ref=e161] [cursor=pointer]
+        - listitem [ref=e163]:
+          - img [ref=e165] [cursor=pointer]
+        - listitem [ref=e167]:
+          - link [ref=e168] [cursor=pointer]:
+            - /url: https://razorpay.com/sprint/26
+            - img [ref=e169]
+    - generic [ref=e172]:
+      - generic [ref=e174]:
+        - generic [ref=e175]:
+          - list [ref=e178]:
+            - listitem [ref=e179]:
+              - img [ref=e181] [cursor=pointer]
+            - listitem [ref=e183]:
+              - img [ref=e185] [cursor=pointer]
+            - listitem [ref=e187]:
+              - link [ref=e188] [cursor=pointer]:
+                - /url: https://razorpay.com/sprint/26
+                - img [ref=e189]
+          - generic [ref=e191]:
+            - heading "Nominee - May 5, 2026" [level=2] [ref=e193]
+            - heading "Razorpay Sprint 26" [level=1] [ref=e195]:
+              - link "Razorpay Sprint 26" [ref=e196] [cursor=pointer]:
+                - /url: https://razorpay.com/sprint/26
+            - list [ref=e200]:
+              - listitem [ref=e201]:
+                - figure [ref=e203]:
+                  - link "Razorpay Design" [ref=e204] [cursor=pointer]:
+                    - /url: /razorpaydesign/
+                    - strong [ref=e206]: Razorpay Design
+        - list [ref=e208]:
+          - listitem [ref=e209]:
+            - link [ref=e210] [cursor=pointer]:
+              - /url: https://razorpay.com/sprint/26
+      - heading "An immersive journey into the future of AI-led payments. Razorpay Sprint26 is about 100+ product updates brought to life through 100+ scroll and click triggered interactions." [level=3] [ref=e215]
+    - generic [ref=e218]:
+      - generic [ref=e219]:
+        - heading "Elements" [level=2] [ref=e221]
+        - heading "See the highlights of this website." [level=3] [ref=e223]:
+          - text: See the highlights
+          - text: of this website.
+      - generic [ref=e224]:
+        - figure [ref=e225]:
+          - 'link "Razorpay Sprint26: AI Payments" [ref=e226] [cursor=pointer]':
+            - /url: /inspiration/razorpay-sprint26-ai-payments-razorpay-sprint-26
+            - 'img "Razorpay Sprint26: AI Payments" [ref=e227]'
+        - figure [ref=e228]:
+          - 'link "Razorpay Sprint26: Agentic Stack" [ref=e229] [cursor=pointer]':
+            - /url: /inspiration/sprint26-agentic-stack-razorpay-sprint-26
+            - 'img "Razorpay Sprint26: Agentic Stack" [ref=e230]'
+        - figure [ref=e231]:
+          - 'link "Razorpay Sprint26: D2C" [ref=e232] [cursor=pointer]':
+            - /url: /inspiration/sprint26-d2c-razorpay-sprint-26
+            - 'img "Razorpay Sprint26: D2C" [ref=e233]'
+        - figure [ref=e234]:
+          - 'link "Razorpay Sprint26: International Payments" [ref=e235] [cursor=pointer]':
+            - /url: /inspiration/sprint26-international-payment-razorpay-sprint-26
+            - 'img "Razorpay Sprint26: International Payments" [ref=e236]'
+        - figure [ref=e237]:
+          - 'link "Razorpay Sprint26: Business Banking" [ref=e238] [cursor=pointer]':
+            - /url: /inspiration/sprint26-banking-razorpay-sprint-26
+            - 'img "Razorpay Sprint26: Business Banking" [ref=e239]'
+    - generic [ref=e241]:
+      - paragraph [ref=e242]: This website was built with...
+      - list [ref=e244]:
+        - listitem [ref=e245]
+        - listitem [ref=e247]
+        - listitem [ref=e249]:
+          - strong [ref=e250]:
+            - link "Art & Illustration" [ref=e251] [cursor=pointer]:
+              - /url: /websites/art-illustration/
+        - listitem [ref=e252]:
+          - strong [ref=e253]:
+            - link "Technology" [ref=e254] [cursor=pointer]:
+              - /url: /websites/technology/
+        - listitem [ref=e255]:
+          - strong [ref=e256]:
+            - link "Web & Interactive" [ref=e257] [cursor=pointer]:
+              - /url: /websites/web-interactive/
+        - listitem [ref=e258]:
+          - strong [ref=e259]:
+            - link "Animation" [ref=e260] [cursor=pointer]:
+              - /url: /websites/animation/
+        - listitem [ref=e261]:
+          - strong [ref=e262]:
+            - link "Scrolling" [ref=e263] [cursor=pointer]:
+              - /url: /websites/scrolling/
+        - listitem [ref=e264]:
+          - strong [ref=e265]:
+            - link "Illustration" [ref=e266] [cursor=pointer]:
+              - /url: /websites/illustration/
+        - listitem [ref=e267]:
+          - strong [ref=e268]:
+            - link "3D" [ref=e269] [cursor=pointer]:
+              - /url: /websites/3d/
+        - listitem [ref=e270]:
+          - strong [ref=e271]:
+            - link "Interaction Design" [ref=e272] [cursor=pointer]:
+              - /url: /websites/interaction-design/
+        - listitem [ref=e273]:
+          - strong [ref=e274]:
+            - link "Microinteractions" [ref=e275] [cursor=pointer]:
+              - /url: /websites/microinteractions/
+        - listitem [ref=e276]:
+          - strong [ref=e277]:
+            - link "WebGL" [ref=e278] [cursor=pointer]:
+              - /url: /websites/webgl/
+        - listitem [ref=e279]:
+          - strong [ref=e280]:
+            - link "Three.js" [ref=e281] [cursor=pointer]:
+              - /url: /websites/three-js/
+        - listitem [ref=e282]:
+          - strong [ref=e283]:
+            - link "Webflow" [ref=e284] [cursor=pointer]:
+              - /url: /websites/webflow/
+    - generic [ref=e285]:
+      - paragraph [ref=e286]:
+        - text: Have your say, if you liked
+        - strong [ref=e287]: Razorpay Sprint 26
+        - text: make your vote here!
+      - paragraph [ref=e288]:
+        - generic [ref=e289] [cursor=pointer]:
+          - img [ref=e290]
+          - generic [ref=e292]:
+            - text: "Vote:"
+            - strong [ref=e293]: "6"
+            - text: Days
+            - strong [ref=e294]: "22"
+            - text: Hours
+            - strong [ref=e295]: "12"
+            - text: Min
+    - generic [ref=e298]:
+      - generic [ref=e300]:
+        - heading "Votes" [level=2] [ref=e301]
+        - list [ref=e302]:
+          - listitem [ref=e303] [cursor=pointer]: Community Members
+      - generic [ref=e305]:
+        - generic [ref=e306]:
+          - generic [ref=e307]: Design
+          - generic [ref=e308]: Usability
+          - generic [ref=e309]: Creativity
+          - generic [ref=e310]: Content
+          - generic [ref=e311]: Overall
+        - list [ref=e312]:
+          - listitem [ref=e313]:
+            - generic [ref=e314]:
+              - figure [ref=e315]:
+                - link "Mango 🥭" [ref=e316] [cursor=pointer]:
+                  - /url: /diced.mango/
+                  - img "Mango 🥭" [ref=e317]
+              - generic [ref=e318]:
+                - generic [ref=e319]:
+                  - strong [ref=e320]: Mango 🥭
+                  - text: from
+                  - strong [ref=e321]: Netherlands
+                - generic [ref=e322]: mango-media.eu
+            - generic [ref=e324]:
+              - generic [ref=e325]: "9"
+              - generic [ref=e326]: "7"
+              - generic [ref=e327]: "10"
+              - generic [ref=e328]: "7"
+              - generic [ref=e329]: "8.40"
+          - listitem [ref=e330]:
+            - generic [ref=e331]:
+              - figure [ref=e332]:
+                - link "Harsih I J" [ref=e333] [cursor=pointer]:
+                  - /url: /HarsihIJ/
+                  - img "Harsih I J" [ref=e334]
+              - generic [ref=e336]:
+                - strong [ref=e337]: Harsih I J
+                - text: from
+                - strong [ref=e338]: India
+            - generic [ref=e340]:
+              - generic [ref=e341]: "9"
+              - generic [ref=e342]: "10"
+              - generic [ref=e343]: "10"
+              - generic [ref=e344]: "10"
+              - generic [ref=e345]: "9.60"
+          - listitem [ref=e346]:
+            - generic [ref=e347]:
+              - figure [ref=e348]:
+                - link "sudhanshu-kaptiyal" [ref=e349] [cursor=pointer]:
+                  - /url: /sudhanshu-kaptiyal/
+                  - img "sudhanshu-kaptiyal" [ref=e350]
+              - strong [ref=e353]: sudhanshu-kaptiyal
+            - generic [ref=e355]:
+              - generic [ref=e356]: "9"
+              - generic [ref=e357]: "8"
+              - generic [ref=e358]: "9"
+              - generic [ref=e359]: "7"
+              - generic [ref=e360]: "8.50"
+    - generic [ref=e362]:
+      - link "Awwwards home page" [ref=e365] [cursor=pointer]:
+        - /url: /
+        - img [ref=e366]
+      - list [ref=e371]:
+        - listitem [ref=e372]:
+          - link "Info" [ref=e373] [cursor=pointer]:
+            - /url: "#info"
+        - listitem [ref=e374]:
+          - link "Elements" [ref=e375] [cursor=pointer]:
+            - /url: "#elements"
+        - listitem [ref=e376]:
+          - link "Votes" [ref=e377] [cursor=pointer]:
+            - /url: "#votes"
+      - strong [ref=e380]:
+        - link "Visit Site" [ref=e381] [cursor=pointer]:
+          - /url: https://razorpay.com/sprint/26
+  - contentinfo [ref=e382]:
+    - generic [ref=e383]:
+      - generic [ref=e384]:
+        - paragraph [ref=e385]:
+          - img [ref=e386]
+        - generic [ref=e389]:
+          - list [ref=e390]:
+            - listitem [ref=e391]:
+              - link "Websites" [ref=e392] [cursor=pointer]:
+                - /url: /websites/
+            - listitem [ref=e393]:
+              - link "Collections" [ref=e394] [cursor=pointer]:
+                - /url: /collections/search/
+            - listitem [ref=e395]:
+              - link "Elements" [ref=e396] [cursor=pointer]:
+                - /url: /elements/
+          - list [ref=e397]:
+            - listitem [ref=e398]:
+              - link "Academy" [ref=e399] [cursor=pointer]:
+                - /url: /academy/
+            - listitem [ref=e400]:
+              - link "Jobs" [ref=e401] [cursor=pointer]:
+                - /url: /jobs/search/
+            - listitem [ref=e402]:
+              - link "Market" [ref=e403] [cursor=pointer]:
+                - /url: /market/
+          - list [ref=e404]:
+            - listitem [ref=e405]:
+              - link "Directory" [ref=e406] [cursor=pointer]:
+                - /url: /directory/search/
+            - listitem [ref=e407]:
+              - link "Conferences" [ref=e408] [cursor=pointer]:
+                - /url: https://conference.awwwards.com
+          - list [ref=e409]:
+            - listitem [ref=e410]:
+              - link "FAQs" [ref=e411] [cursor=pointer]:
+                - /url: /faqs/
+            - listitem [ref=e412]:
+              - link "About Us" [ref=e413] [cursor=pointer]:
+                - /url: /about-us/
+            - listitem [ref=e414]:
+              - link "Contact Us" [ref=e415] [cursor=pointer]:
+                - /url: /contact-us/
+      - generic [ref=e416]:
+        - list [ref=e418]:
+          - listitem [ref=e419]:
+            - link "Cookies Policy" [ref=e420] [cursor=pointer]:
+              - /url: /cookies-policy/
+          - listitem [ref=e421]:
+            - link "Legal Terms" [ref=e422] [cursor=pointer]:
+              - /url: /terms/
+          - listitem [ref=e423]:
+            - link "Privacy Policy" [ref=e424] [cursor=pointer]:
+              - /url: /privacy-policy/
+        - list [ref=e426]:
+          - listitem [ref=e427]:
+            - strong [ref=e428]: "Connect:"
+          - listitem [ref=e429]:
+            - link "Instagram" [ref=e430] [cursor=pointer]:
+              - /url: https://www.instagram.com/awwwards
+          - listitem [ref=e431]:
+            - link "LinkedIn" [ref=e432] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/awwwards
+          - listitem [ref=e433]:
+            - link "Twitter" [ref=e434] [cursor=pointer]:
+              - /url: https://twitter.com/awwwards
+          - listitem [ref=e435]:
+            - link "Facebook" [ref=e436] [cursor=pointer]:
+              - /url: https://www.facebook.com/awwwards
+          - listitem [ref=e437]:
+            - link "YouTube" [ref=e438] [cursor=pointer]:
+              - /url: https://www.youtube.com/awwwardstv
+          - listitem [ref=e439]:
+            - link "TikTok" [ref=e440] [cursor=pointer]:
+              - /url: https://www.tiktok.com/@awwwards.com
+          - listitem [ref=e441]:
+            - link "Pinterest" [ref=e442] [cursor=pointer]:
+              - /url: https://www.pinterest.es/awwwards/

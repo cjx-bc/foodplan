@@ -1,0 +1,75 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - button "SmartMeal 助手 MVP" [ref=e5] [cursor=pointer]:
+      - img [ref=e7]
+      - strong [ref=e10]: SmartMeal 助手 MVP
+    - navigation "主导航" [ref=e11]:
+      - button "总览" [ref=e12] [cursor=pointer]
+      - button "AI 对话" [ref=e13] [cursor=pointer]
+      - button "今日三餐" [ref=e14] [cursor=pointer]
+      - button "库存管理" [ref=e15] [cursor=pointer]
+      - button "每周计划" [ref=e16] [cursor=pointer]
+      - button "营养统计" [ref=e17] [cursor=pointer]
+      - button "购物清单" [ref=e18] [cursor=pointer]
+    - generic [ref=e19]:
+      - button "立即和 AI 聊聊" [ref=e20] [cursor=pointer]
+      - button "消息提醒" [ref=e21] [cursor=pointer]:
+        - img [ref=e22]
+      - button "用户中心" [ref=e25] [cursor=pointer]:
+        - img [ref=e26]
+  - main [ref=e30]:
+    - status [ref=e31]:
+      - generic [ref=e32]: 正在恢复当前工作台状态...
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - generic [ref=e36]: 今日饮食状态
+          - heading "清淡高蛋白方案已准备好" [level=3] [ref=e37]
+          - paragraph [ref=e38]: 三餐预计 0 kcal，已优先使用 现有库存。
+          - generic [ref=e39]:
+            - generic [ref=e40]: 今日执行
+            - generic [ref=e41]: 0 项待采购
+            - generic [ref=e42]: 0 分营养贴合度
+        - generic [ref=e43]:
+          - article [ref=e44]:
+            - generic [ref=e45]: 采购缺口
+            - strong [ref=e46]: 0 项待买
+          - article [ref=e47]:
+            - generic [ref=e48]: 库存提醒
+            - strong [ref=e49]: 0 个临期
+          - article [ref=e50]:
+            - generic [ref=e51]: 本周进度
+            - strong [ref=e52]: 0/1 天
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e55]:
+            - generic [ref=e56]: 当前执行摘要
+            - strong [ref=e57]: 今日执行
+          - paragraph [ref=e58]: 总览、营养和购物清单都围绕今日三餐计算，适合即时调整。
+          - generic [ref=e59]:
+            - button "和 AI 聊聊" [ref=e60] [cursor=pointer]
+            - button "查看今日三餐" [ref=e61] [cursor=pointer]
+        - generic [ref=e63]:
+          - generic [ref=e64]: 今日餐单预览
+          - strong [ref=e65]: 0 餐
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e68]: AI 执行结果摘要
+            - strong [ref=e69]: 已生成今日方案
+          - generic [ref=e70]:
+            - generic [ref=e71]: 早餐
+            - generic [ref=e72]: 午餐
+            - generic [ref=e73]: 晚餐
+          - list [ref=e74]:
+            - listitem [ref=e75]: 蛋白质接近目标
+            - listitem [ref=e76]: 脂肪控制良好
+            - listitem [ref=e77]: 保留 3 项待买
+            - listitem [ref=e78]: 排除库存鸡蛋
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - generic [ref=e81]: 下一步动作
+            - strong [ref=e82]: 今日执行
+          - generic [ref=e83]:
+            - button "查看采购清单" [ref=e84] [cursor=pointer]
+            - button "打开营养统计" [ref=e85] [cursor=pointer]
+            - button "管理库存" [ref=e86] [cursor=pointer]

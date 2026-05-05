@@ -1,48 +1,51 @@
 .button {
   align-items: center;
-  border: 1px solid rgba(225, 217, 200, 0.95);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 18px rgba(70, 58, 36, 0.04);
   cursor: pointer;
   display: inline-flex;
   font: inherit;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   gap: 8px;
   justify-content: center;
-  min-height: 38px;
+  min-height: 40px;
   padding: 9px 14px;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
 .button:focus-visible {
-  outline: 3px solid rgba(17, 130, 59, 0.22);
+  outline: 3px solid rgba(31, 122, 70, 0.18);
   outline-offset: 2px;
 }
 
 .primary {
-  background: linear-gradient(135deg, #1f8c4e, #16753f);
-  border-color: #1f8c4e;
+  background: linear-gradient(135deg, #1f7a46, #175934);
+  border-color: rgba(23, 89, 52, 0.92);
   color: white;
 }
 
 .primary:hover {
-  background: linear-gradient(135deg, #1b7f47, #146938);
+  box-shadow: 0 12px 24px rgba(31, 122, 70, 0.18);
+  transform: translateY(-1px);
 }
 
 .secondary {
-  background: white;
+  background: rgba(255, 253, 248, 0.96);
   color: var(--primary);
 }
 
 .secondary:hover {
-  background: #edf8ef;
-  border-color: rgba(31, 140, 78, 0.32);
+  background: var(--primary-soft);
+  border-color: rgba(31, 122, 70, 0.24);
 }
 
 .ghost {
   background: transparent;
   border-color: transparent;
   color: var(--muted);
+  box-shadow: none;
 }
 
 .ghost:hover {

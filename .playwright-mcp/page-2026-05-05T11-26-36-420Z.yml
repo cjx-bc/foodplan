@@ -1,0 +1,794 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e7]:
+        - link "Awwwards" [ref=e8] [cursor=pointer]:
+          - /url: /
+          - img [ref=e9]
+        - navigation [ref=e11]:
+          - list [ref=e12]:
+            - listitem [ref=e13]:
+              - generic [ref=e14] [cursor=pointer]:
+                - text: Explore
+                - img [ref=e15]
+            - listitem [ref=e17]:
+              - link "Directory" [ref=e18] [cursor=pointer]:
+                - /url: /directory/
+            - listitem [ref=e19]:
+              - link "Academy New" [ref=e20] [cursor=pointer]:
+                - /url: /academy/
+                - text: Academy
+                - generic [ref=e22]: New
+            - listitem [ref=e23]:
+              - link "Jobs" [ref=e24] [cursor=pointer]:
+                - /url: /jobs/
+            - listitem [ref=e25]:
+              - link "Market" [ref=e26] [cursor=pointer]:
+                - /url: /market/
+        - generic [ref=e29]:
+          - button "Search" [ref=e30] [cursor=pointer]:
+            - img [ref=e31]
+          - textbox "Search by Inspiration" [ref=e33]
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - strong [ref=e36] [cursor=pointer]: Log in
+            - strong [ref=e37] [cursor=pointer]: Sign Up
+          - generic [ref=e38]:
+            - link "Be Pro" [ref=e39] [cursor=pointer]:
+              - /url: /pro
+            - link "Submit Website" [ref=e40] [cursor=pointer]:
+              - /url: /submit/
+    - generic [ref=e41]:
+      - generic [ref=e45]:
+        - link "ASTRODITHER - Site of the Day" [ref=e46] [cursor=pointer]:
+          - /url: /sites/astrodither
+        - generic [ref=e48]:
+          - heading "Site of the Day May 5, 2026 Score 7.35 of 10" [level=2] [ref=e50]:
+            - generic [ref=e51]: Site of the Day
+            - strong [ref=e52]: May 5, 2026
+            - generic [ref=e53]: Score 7.35 of 10
+          - heading "ASTRODITHER" [level=3] [ref=e55]
+          - list [ref=e59]:
+            - listitem [ref=e60]:
+              - figure [ref=e62]:
+                - link "Robert Borghesi" [ref=e63] [cursor=pointer]:
+                  - /url: /dghez/
+                  - strong [ref=e65]: Robert Borghesi
+        - img "ASTRODITHER" [ref=e68]
+      - generic [ref=e71]:
+        - generic [ref=e72]:
+          - heading "Latest" [level=2] [ref=e74]
+          - heading "Nominees Lottie animation" [level=3] [ref=e76]:
+            - generic [ref=e77]:
+              - text: Nominees
+              - generic:
+                - img "Lottie animation":
+                  - generic:
+                    - img
+          - generic [ref=e79]: Vote for the latest websites on awwwards
+        - list [ref=e80]:
+          - listitem [ref=e81]:
+            - generic [ref=e82]:
+              - figure [ref=e83]:
+                - link "Cdiscount - Jumping Max" [ref=e84] [cursor=pointer]:
+                  - /url: /sites/cdiscount-jumping-max
+                  - img "Cdiscount - Jumping Max" [ref=e85]
+              - generic [ref=e87]:
+                - heading "Cdiscount - Jumping Max" [level=3] [ref=e88]:
+                  - link "Cdiscount - Jumping Max" [ref=e89] [cursor=pointer]:
+                    - /url: /sites/cdiscount-jumping-max
+                - generic [ref=e90]:
+                  - generic [ref=e91]: by
+                  - list [ref=e93]:
+                    - listitem [ref=e94]:
+                      - figure [ref=e96]:
+                        - link "Merci Michel" [ref=e97] [cursor=pointer]:
+                          - /url: /Merci-Michel/
+                          - generic [ref=e98]:
+                            - strong [ref=e99]: Merci Michel
+                            - superscript [ref=e100]: PRO
+          - listitem [ref=e101]:
+            - generic [ref=e102]:
+              - figure [ref=e103]:
+                - link "Kindred Of Ireland" [ref=e104] [cursor=pointer]:
+                  - /url: /sites/kindred-of-ireland
+                  - img "Kindred Of Ireland" [ref=e105]
+              - generic [ref=e107]:
+                - heading "Kindred Of Ireland" [level=3] [ref=e108]:
+                  - link "Kindred Of Ireland" [ref=e109] [cursor=pointer]:
+                    - /url: /sites/kindred-of-ireland
+                - generic [ref=e110]:
+                  - generic [ref=e111]: by
+                  - list [ref=e113]:
+                    - listitem [ref=e114]:
+                      - figure [ref=e116]:
+                        - link "Dash" [ref=e117] [cursor=pointer]:
+                          - /url: /Dash_Creative/
+                          - generic [ref=e118]:
+                            - strong [ref=e119]: Dash
+                            - superscript [ref=e120]: PRO
+        - generic [ref=e122]:
+          - generic [ref=e123]: Check out all submitted websites
+          - link "View Nominees" [ref=e124] [cursor=pointer]:
+            - /url: /websites/nominees/
+            - img [ref=e125]
+            - strong [ref=e127]: View Nominees
+      - generic [ref=e130]:
+        - generic [ref=e131]:
+          - heading "Winners" [level=2] [ref=e133]
+          - heading "Recent Sites of the Day." [level=3] [ref=e135]:
+            - text: Recent Sites
+            - text: of the Day.
+        - list [ref=e136]:
+          - listitem [ref=e137]:
+            - generic [ref=e138]:
+              - figure [ref=e139]:
+                - link "Obys" [ref=e140] [cursor=pointer]:
+                  - /url: /sites/obys-2
+                  - img "Obys" [ref=e141]
+              - generic [ref=e143]:
+                - heading "Obys" [level=3] [ref=e144]:
+                  - link "Obys" [ref=e145] [cursor=pointer]:
+                    - /url: /sites/obys-2
+                - generic [ref=e146]:
+                  - generic [ref=e147]: by
+                  - list [ref=e149]:
+                    - listitem [ref=e150]:
+                      - figure [ref=e152]:
+                        - link "Obys" [ref=e153] [cursor=pointer]:
+                          - /url: /obys/
+                          - generic [ref=e154]:
+                            - strong [ref=e155]: Obys
+                            - superscript [ref=e156]: PRO
+          - listitem [ref=e157]:
+            - generic [ref=e158]:
+              - figure [ref=e159]:
+                - link "Where Worlds Take Shape" [ref=e160] [cursor=pointer]:
+                  - /url: /sites/where-worlds-take-shape
+                  - img "Where Worlds Take Shape" [ref=e161]
+              - generic [ref=e163]:
+                - heading "Where Worlds Take Shape" [level=3] [ref=e164]:
+                  - link "Where Worlds Take Shape" [ref=e165] [cursor=pointer]:
+                    - /url: /sites/where-worlds-take-shape
+                - generic [ref=e166]:
+                  - generic [ref=e167]: by
+                  - list [ref=e169]:
+                    - listitem [ref=e170]:
+                      - figure [ref=e172]:
+                        - link "jerome-reynet" [ref=e173] [cursor=pointer]:
+                          - /url: /jerome-reynet/
+                          - strong [ref=e175]: jerome-reynet
+          - listitem [ref=e176]:
+            - generic [ref=e177]:
+              - figure [ref=e178]:
+                - link "Fourmula AI" [ref=e179] [cursor=pointer]:
+                  - /url: /sites/fourmula-ai
+                  - img "Fourmula AI" [ref=e180]
+              - generic [ref=e182]:
+                - heading "Fourmula AI" [level=3] [ref=e183]:
+                  - link "Fourmula AI" [ref=e184] [cursor=pointer]:
+                    - /url: /sites/fourmula-ai
+                - generic [ref=e185]:
+                  - generic [ref=e186]: by
+                  - list [ref=e188]:
+                    - listitem [ref=e189]:
+                      - figure [ref=e191]:
+                        - link "Fourmeta Agency" [ref=e192] [cursor=pointer]:
+                          - /url: /fourmeta/
+                          - strong [ref=e194]: Fourmeta Agency
+          - listitem [ref=e195]:
+            - generic [ref=e196]:
+              - figure [ref=e197]:
+                - link "Adcker" [ref=e198] [cursor=pointer]:
+                  - /url: /sites/adcker
+                  - img "Adcker" [ref=e199]
+              - generic [ref=e201]:
+                - heading "Adcker" [level=3] [ref=e202]:
+                  - link "Adcker" [ref=e203] [cursor=pointer]:
+                    - /url: /sites/adcker
+                - generic [ref=e204]:
+                  - generic [ref=e205]: by
+                  - list [ref=e207]:
+                    - listitem [ref=e208]:
+                      - figure [ref=e210]:
+                        - link "Emele Collab" [ref=e211] [cursor=pointer]:
+                          - /url: /emele.collab/
+                          - generic [ref=e212]:
+                            - strong [ref=e213]: Emele Collab
+                            - superscript [ref=e214]: PRO
+          - listitem [ref=e215]:
+            - generic [ref=e216]:
+              - figure [ref=e217]:
+                - link "Studio375" [ref=e218] [cursor=pointer]:
+                  - /url: /sites/studio375-2
+                  - img "Studio375" [ref=e219]
+              - generic [ref=e221]:
+                - heading "Studio375" [level=3] [ref=e222]:
+                  - link "Studio375" [ref=e223] [cursor=pointer]:
+                    - /url: /sites/studio375-2
+                - generic [ref=e224]:
+                  - generic [ref=e225]: by
+                  - list [ref=e227]:
+                    - listitem [ref=e228]:
+                      - figure [ref=e230]:
+                        - link "Studio375" [ref=e231] [cursor=pointer]:
+                          - /url: /Studio375/
+                          - generic [ref=e232]:
+                            - strong [ref=e233]: Studio375
+                            - superscript [ref=e234]: PRO
+          - listitem [ref=e235]:
+            - generic [ref=e236]:
+              - figure [ref=e237]:
+                - link "PieterKoopt®" [ref=e238] [cursor=pointer]:
+                  - /url: /sites/pieterkoopt-r
+                  - img "PieterKoopt®" [ref=e239]
+              - generic [ref=e241]:
+                - heading "PieterKoopt®" [level=3] [ref=e242]:
+                  - link "PieterKoopt®" [ref=e243] [cursor=pointer]:
+                    - /url: /sites/pieterkoopt-r
+                - generic [ref=e244]:
+                  - generic [ref=e245]: by
+                  - list [ref=e247]:
+                    - listitem [ref=e248]:
+                      - figure [ref=e250]:
+                        - link "UNCOMMON" [ref=e251] [cursor=pointer]:
+                          - /url: /get_uncommon/
+                          - generic [ref=e252]:
+                            - strong [ref=e253]: UNCOMMON
+                            - superscript [ref=e254]: PRO
+        - generic [ref=e256]:
+          - generic [ref=e257]: Check out all submitted websites
+          - link "View Winners" [ref=e258] [cursor=pointer]:
+            - /url: /websites/sites_of_the_day/
+            - img [ref=e259]
+            - strong [ref=e261]: View Winners
+      - generic [ref=e265]:
+        - generic [ref=e266]:
+          - heading "Academy" [level=2] [ref=e268]
+          - heading "Learn from the best instructors." [level=3] [ref=e270]:
+            - text: Learn from the
+            - text: best instructors.
+        - list [ref=e271]:
+          - listitem [ref=e272]:
+            - generic [ref=e273]:
+              - figure [ref=e276]:
+                - link "Learn UI Design with Figma from Scratch" [ref=e277] [cursor=pointer]:
+                  - /url: /academy/course/ui-design-for-beginners-with-figma
+                  - img "Learn UI Design with Figma from Scratch" [ref=e278]
+              - heading "Learn UI Design with Figma from Scratch" [level=3] [ref=e280]:
+                - link "Learn UI Design with Figma from Scratch" [ref=e281] [cursor=pointer]:
+                  - /url: /academy/course/ui-design-for-beginners-with-figma
+              - generic [ref=e282]:
+                - generic [ref=e283]:
+                  - strong [ref=e284]: Instructor
+                  - generic [ref=e285]: Daniele Buffa
+                - generic [ref=e286]:
+                  - generic [ref=e289]:
+                    - strong [ref=e290]: Score
+                    - text: 4.9/5
+                  - link "View Course" [ref=e294] [cursor=pointer]:
+                    - /url: /academy/course/ui-design-for-beginners-with-figma
+                    - img [ref=e295]
+          - listitem [ref=e297]:
+            - generic [ref=e298]:
+              - figure [ref=e301]:
+                - 'link "Nordic Design Intensive Course: Complete Branding" [ref=e302] [cursor=pointer]':
+                  - /url: /academy/course/nordic-design-intensive-course-complete-branding
+                  - 'img "Nordic Design Intensive Course: Complete Branding" [ref=e303]'
+              - 'heading "Nordic Design Intensive Course: Complete Branding" [level=3] [ref=e305]':
+                - 'link "Nordic Design Intensive Course: Complete Branding" [ref=e306] [cursor=pointer]':
+                  - /url: /academy/course/nordic-design-intensive-course-complete-branding
+              - generic [ref=e307]:
+                - generic [ref=e308]:
+                  - strong [ref=e309]: Instructor
+                  - generic [ref=e310]: Hmmm Creative Studio
+                - generic [ref=e311]:
+                  - generic [ref=e314]:
+                    - strong [ref=e315]: Score
+                    - text: 5/5
+                  - link "View Course" [ref=e319] [cursor=pointer]:
+                    - /url: /academy/course/nordic-design-intensive-course-complete-branding
+                    - img [ref=e320]
+          - listitem [ref=e322]:
+            - generic [ref=e323]:
+              - figure [ref=e326]:
+                - 'link "Innovative Web Design in Figma: A Step-by-Step Process" [ref=e327] [cursor=pointer]':
+                  - /url: /academy/course/innovative-web-design-in-figma-a-step-by-step-process
+                  - 'img "Innovative Web Design in Figma: A Step-by-Step Process" [ref=e328]'
+              - 'heading "Innovative Web Design in Figma: A Step-by-Step Process" [level=3] [ref=e330]':
+                - 'link "Innovative Web Design in Figma: A Step-by-Step Process" [ref=e331] [cursor=pointer]':
+                  - /url: /academy/course/innovative-web-design-in-figma-a-step-by-step-process
+              - generic [ref=e332]:
+                - generic [ref=e333]:
+                  - strong [ref=e334]: Instructor
+                  - generic [ref=e335]: Louis Paquet
+                - generic [ref=e336]:
+                  - generic [ref=e339]:
+                    - strong [ref=e340]: Score
+                    - text: 5/5
+                  - link "View Course" [ref=e344] [cursor=pointer]:
+                    - /url: /academy/course/innovative-web-design-in-figma-a-step-by-step-process
+                    - img [ref=e345]
+        - generic [ref=e348]:
+          - generic [ref=e349]:
+            - text: Choose from over
+            - strong [ref=e350]: hundreds
+            - text: of courses
+          - link "View Academy" [ref=e351] [cursor=pointer]:
+            - /url: /academy/
+            - img [ref=e352]
+            - strong [ref=e354]: View Academy
+      - generic [ref=e357]:
+        - generic [ref=e360]:
+          - heading "Collections" [level=2] [ref=e362]
+          - heading "Explore a wide variety of collections." [level=3] [ref=e364]:
+            - text: Explore a wide
+            - text: variety of collections.
+        - list [ref=e365]:
+          - listitem [ref=e366]:
+            - generic [ref=e367]:
+              - figure [ref=e368]:
+                - link "View Collection" [ref=e369] [cursor=pointer]:
+                  - /url: /awwwards_collections/collections/text-marquee-effect/
+                  - img "Text Marquee animation" [ref=e370]
+              - generic [ref=e372]:
+                - heading "Text Marquee animation" [level=3] [ref=e373]:
+                  - link "Text Marquee animation" [ref=e374] [cursor=pointer]:
+                    - /url: /awwwards_collections/collections/text-marquee-effect/
+                - generic [ref=e375]:
+                  - generic [ref=e376]: followed by
+                  - generic [ref=e377]:
+                    - list [ref=e378]:
+                      - listitem [ref=e379]:
+                        - figure [ref=e380]:
+                          - img "antony-northcutt" [ref=e381]
+                      - listitem [ref=e382]:
+                        - figure [ref=e383]:
+                          - img "dennis-agbovinure" [ref=e384]
+                      - listitem [ref=e385]:
+                        - figure [ref=e386]:
+                          - img "mumu-li" [ref=e387]
+                    - strong [ref=e389]: "+30"
+          - listitem [ref=e390]:
+            - generic [ref=e391]:
+              - figure [ref=e392]:
+                - link "View Collection" [ref=e393] [cursor=pointer]:
+                  - /url: /teoross/collections/webgl/
+                  - img "WebGL Inspiration" [ref=e394]
+              - generic [ref=e396]:
+                - heading "WebGL Inspiration" [level=3] [ref=e397]:
+                  - link "WebGL Inspiration" [ref=e398] [cursor=pointer]:
+                    - /url: /teoross/collections/webgl/
+                - generic [ref=e399]:
+                  - generic [ref=e400]: followed by
+                  - generic [ref=e401]:
+                    - list [ref=e402]:
+                      - listitem [ref=e403]:
+                        - figure [ref=e404]:
+                          - img "antony-northcutt" [ref=e405]
+                      - listitem [ref=e406]:
+                        - figure [ref=e407]:
+                          - img "cirsten-kot" [ref=e408]
+                      - listitem [ref=e409]:
+                        - figure [ref=e410]:
+                          - img "Meet Vora" [ref=e411]
+                    - strong [ref=e413]: "+142"
+        - generic [ref=e415]:
+          - generic [ref=e416]: Find inspiration for your projects
+          - link "View Collections" [ref=e417] [cursor=pointer]:
+            - /url: /collections/
+            - img [ref=e418]
+            - strong [ref=e420]: View Collections
+      - generic [ref=e423]:
+        - generic [ref=e424]:
+          - heading "Directory" [level=2] [ref=e426]
+          - heading "w.creators Lottie animation" [level=3] [ref=e428]:
+            - generic [ref=e429]:
+              - text: w.creators
+              - generic:
+                - img "Lottie animation":
+                  - generic:
+                    - img
+          - generic [ref=e431]: Active creators in your country.
+        - list [ref=e432]:
+          - listitem [ref=e433]:
+            - generic [ref=e434]:
+              - generic [ref=e435]:
+                - figure [ref=e436]:
+                  - link "Nectar" [ref=e437] [cursor=pointer]:
+                    - /url: /nectar/
+                    - img "Nectar" [ref=e438]
+                - generic [ref=e440]:
+                  - img "Nectar" [ref=e442]
+                  - img "Nectar" [ref=e444]
+                  - img "Nectar" [ref=e446]
+                  - img "Nectar" [ref=e448]
+                  - img "Nectar" [ref=e450]
+              - generic [ref=e457]:
+                - generic [ref=e458]:
+                  - paragraph [ref=e459]: International
+                  - heading "Nectar" [level=2] [ref=e460]:
+                    - link "Nectar" [ref=e461] [cursor=pointer]:
+                      - /url: /nectar/
+                - generic [ref=e463]:
+                  - generic [ref=e464]: Works
+                  - strong [ref=e465]: "10"
+              - generic [ref=e466]:
+                - link "nectarestudio.com" [ref=e468] [cursor=pointer]:
+                  - /url: http://www.nectarestudio.com
+                - generic [ref=e469]: 9 awards
+          - listitem [ref=e470]:
+            - generic [ref=e471]:
+              - generic [ref=e472]:
+                - figure [ref=e473]:
+                  - link "Baunfire" [ref=e474] [cursor=pointer]:
+                    - /url: /baunfire/
+                    - img "Baunfire" [ref=e475]
+                - generic [ref=e477]:
+                  - img "Baunfire" [ref=e479]
+                  - img "Baunfire" [ref=e481]
+                  - img "Baunfire" [ref=e483]
+                  - img "Baunfire" [ref=e485]
+                  - img "Baunfire" [ref=e487]
+              - generic [ref=e494]:
+                - generic [ref=e495]:
+                  - paragraph [ref=e496]: International
+                  - heading "Baunfire" [level=2] [ref=e497]:
+                    - link "Baunfire" [ref=e498] [cursor=pointer]:
+                      - /url: /baunfire/
+                - generic [ref=e500]:
+                  - generic [ref=e501]: Works
+                  - strong [ref=e502]: "37"
+              - generic [ref=e503]:
+                - link "baunfire.com" [ref=e505] [cursor=pointer]:
+                  - /url: https://www.baunfire.com
+                - generic [ref=e506]: 21 awards
+        - table [ref=e508]:
+          - rowgroup [ref=e509]:
+            - row "Name Profile Awards Categories" [ref=e510]:
+              - columnheader "Name" [ref=e511]
+              - columnheader "Profile" [ref=e512]
+              - columnheader "Awards" [ref=e513]
+              - columnheader "Categories" [ref=e514]
+              - columnheader [ref=e515]
+          - rowgroup [ref=e516]:
+            - row "Agency 22 View" [ref=e517]:
+              - cell [ref=e518]:
+                - list [ref=e521]:
+                  - listitem [ref=e522]:
+                    - figure [ref=e524]:
+                      - link "eDesign Interactive" [ref=e525] [cursor=pointer]:
+                        - /url: /edesigninteractive/
+                        - generic [ref=e526]:
+                          - strong [ref=e527]: eDesign Interactive
+                          - superscript [ref=e528]: INT
+              - cell "Agency" [ref=e529]
+              - cell "22" [ref=e530]
+              - cell [ref=e531]
+              - cell "View" [ref=e532]:
+                - link "View" [ref=e534] [cursor=pointer]:
+                  - /url: /edesigninteractive/
+            - row "Freelance 0 Web Development View" [ref=e535]:
+              - cell [ref=e536]:
+                - list [ref=e539]:
+                  - listitem [ref=e540]:
+                    - figure [ref=e542]:
+                      - link "matthew.b" [ref=e543] [cursor=pointer]:
+                        - /url: /matthew.b/
+                        - generic [ref=e544]:
+                          - strong [ref=e545]: matthew.b
+                          - superscript [ref=e546]: PRO
+              - cell "Freelance" [ref=e547]
+              - cell "0" [ref=e548]
+              - cell "Web Development" [ref=e549]:
+                - generic [ref=e550]: Web Development
+              - cell "View" [ref=e551]:
+                - link "View" [ref=e553] [cursor=pointer]:
+                  - /url: /matthew.b/
+            - row "Agency 0 View" [ref=e554]:
+              - cell [ref=e555]:
+                - list [ref=e558]:
+                  - listitem [ref=e559]:
+                    - figure [ref=e561]:
+                      - link "firdosht" [ref=e562] [cursor=pointer]:
+                        - /url: /firdosht/
+                        - generic [ref=e563]:
+                          - strong [ref=e564]: firdosht
+                          - superscript [ref=e565]: PRO
+              - cell "Agency" [ref=e566]
+              - cell "0" [ref=e567]
+              - cell [ref=e568]
+              - cell "View" [ref=e569]:
+                - link "View" [ref=e571] [cursor=pointer]:
+                  - /url: /firdosht/
+            - row "Agency 0 Web Design View" [ref=e572]:
+              - cell [ref=e573]:
+                - list [ref=e576]:
+                  - listitem [ref=e577]:
+                    - figure [ref=e579]:
+                      - link "Postali LLC" [ref=e580] [cursor=pointer]:
+                        - /url: /postali_llc/
+                        - generic [ref=e581]:
+                          - strong [ref=e582]: Postali LLC
+                          - superscript [ref=e583]: PRO
+              - cell "Agency" [ref=e584]
+              - cell "0" [ref=e585]
+              - cell "Web Design" [ref=e586]:
+                - generic [ref=e587]: Web Design
+              - cell "View" [ref=e588]:
+                - link "View" [ref=e590] [cursor=pointer]:
+                  - /url: /postali_llc/
+        - generic [ref=e592]:
+          - generic [ref=e593]:
+            - text: Connect with over
+            - strong [ref=e594]: 6,038
+            - text: Agencies and Professionals
+          - link "View Directory" [ref=e595] [cursor=pointer]:
+            - /url: /directory/
+            - img [ref=e596]
+            - strong [ref=e598]: View Directory
+      - generic [ref=e601]:
+        - generic [ref=e602]:
+          - heading "Blog" [level=2] [ref=e604]
+          - heading "Explore these popular posts." [level=3] [ref=e606]:
+            - text: Explore these
+            - text: popular posts.
+        - list [ref=e607]:
+          - listitem [ref=e608]:
+            - generic [ref=e609]:
+              - figure [ref=e612]:
+                - 'link "Shopify vs WooCommerce: What''s the better?" [ref=e613] [cursor=pointer]':
+                  - /url: /shopify-vs-woocommerce.html
+                  - 'img "Shopify vs WooCommerce: What''s the better?" [ref=e614]'
+              - generic [ref=e615]:
+                - 'heading "Shopify vs WooCommerce: What''s the better?" [level=3] [ref=e616]':
+                  - 'link "Shopify vs WooCommerce: What''s the better?" [ref=e617] [cursor=pointer]':
+                    - /url: /shopify-vs-woocommerce.html
+                - text: What's the best website builder for an e-commerce? In the world of eCommerce, choosing the right platform can mean the difference between success...
+          - listitem [ref=e618]:
+            - generic [ref=e619]:
+              - figure [ref=e622]:
+                - link "100 Best Free Fonts for Designers in 2025" [ref=e623] [cursor=pointer]:
+                  - /url: /best-free-fonts.html
+                  - img "100 Best Free Fonts for Designers in 2025" [ref=e624]
+              - generic [ref=e625]:
+                - heading "100 Best Free Fonts for Designers in 2025" [level=3] [ref=e626]:
+                  - link "100 Best Free Fonts for Designers in 2025" [ref=e627] [cursor=pointer]:
+                    - /url: /best-free-fonts.html
+                - text: Typography is currently playing a central role in web design, with progressive improvements like Variable Fonts, CSS Shapes, FlexBox
+          - listitem [ref=e628]:
+            - generic [ref=e629]:
+              - figure [ref=e632]:
+                - link "Trendy Gradients in Web Design" [ref=e633] [cursor=pointer]:
+                  - /url: /gradients-in-web-design-elements.html
+                  - img "Trendy Gradients in Web Design" [ref=e634]
+              - generic [ref=e635]:
+                - heading "Trendy Gradients in Web Design" [level=3] [ref=e636]:
+                  - link "Trendy Gradients in Web Design" [ref=e637] [cursor=pointer]:
+                    - /url: /gradients-in-web-design-elements.html
+                - text: This year we have seen many&nbsp;multicolored gradients with vibrant color palettes and irregular shapes with blur and distortion effects. Gradients...
+          - listitem [ref=e638]:
+            - generic [ref=e639]:
+              - figure [ref=e642]:
+                - link "30 Great Websites with Parallax Scrolling" [ref=e643] [cursor=pointer]:
+                  - /url: /30-great-websites-with-parallax-scrolling.html
+                  - img "30 Great Websites with Parallax Scrolling" [ref=e644]
+              - generic [ref=e645]:
+                - heading "30 Great Websites with Parallax Scrolling" [level=3] [ref=e646]:
+                  - link "30 Great Websites with Parallax Scrolling" [ref=e647] [cursor=pointer]:
+                    - /url: /30-great-websites-with-parallax-scrolling.html
+                - text: The parallax effect has been around for years in classic video games, but it&nbsp;became a trend in the web design world. This cool effect is...
+        - generic [ref=e649]:
+          - generic [ref=e650]: Browse all articles
+          - link "View Blog" [ref=e651] [cursor=pointer]:
+            - /url: /blog/
+            - img [ref=e652]
+            - strong [ref=e654]: View Blog
+      - generic [ref=e658]:
+        - generic [ref=e659]:
+          - heading "Market" [level=2] [ref=e661]
+          - heading "A curated marketplace for digital & physical products" [level=3] [ref=e663]:
+            - text: A curated marketplace
+            - text: for digital & physical products
+        - list [ref=e664]:
+          - listitem [ref=e665]:
+            - generic [ref=e666]:
+              - figure [ref=e667]:
+                - link "Matte — Portfolio template for Agencies" [ref=e668] [cursor=pointer]:
+                  - /url: /market/product_69f8d0a1d1070348805115
+                  - img "Matte — Portfolio template for Agencies" [ref=e669]
+              - generic [ref=e670]:
+                - generic [ref=e672]:
+                  - text: Digital Product
+                  - heading "Matte — Portfolio template for Agencies" [level=3] [ref=e673]:
+                    - link "Matte — Portfolio template for Agencies" [ref=e674] [cursor=pointer]:
+                      - /url: /market/product_69f8d0a1d1070348805115
+                - generic [ref=e675]:
+                  - generic [ref=e677]:
+                    - text: By
+                    - strong [ref=e678]: Shaig
+                  - link "View Product" [ref=e679] [cursor=pointer]:
+                    - /url: /market/product_69f8d0a1d1070348805115
+                    - generic [ref=e680]:
+                      - strong [ref=e683]: View Product
+                      - img [ref=e685]
+          - listitem [ref=e687]:
+            - generic [ref=e688]:
+              - figure [ref=e689]:
+                - link "Lumières — A premium template for tech teams." [ref=e690] [cursor=pointer]:
+                  - /url: /market/product_69f85cbc9d890834980107
+                  - img "Lumières — A premium template for tech teams." [ref=e691]
+              - generic [ref=e692]:
+                - generic [ref=e694]:
+                  - text: Digital Product
+                  - heading "Lumières — A premium template for tech teams." [level=3] [ref=e695]:
+                    - link "Lumières — A premium template for tech teams." [ref=e696] [cursor=pointer]:
+                      - /url: /market/product_69f85cbc9d890834980107
+                - generic [ref=e697]:
+                  - generic [ref=e699]:
+                    - text: By
+                    - strong [ref=e700]: Shaig
+                  - link "View Product" [ref=e701] [cursor=pointer]:
+                    - /url: /market/product_69f85cbc9d890834980107
+                    - generic [ref=e702]:
+                      - strong [ref=e705]: View Product
+                      - img [ref=e707]
+          - listitem [ref=e709]:
+            - generic [ref=e710]:
+              - figure [ref=e711]:
+                - link "Marvin — Retro-Inspired Framer Template" [ref=e712] [cursor=pointer]:
+                  - /url: /market/product_69f5d1948875f609172878
+                  - img "Marvin — Retro-Inspired Framer Template" [ref=e713]
+              - generic [ref=e714]:
+                - generic [ref=e716]:
+                  - text: Digital Product
+                  - heading "Marvin — Retro-Inspired Framer Template" [level=3] [ref=e717]:
+                    - link "Marvin — Retro-Inspired Framer Template" [ref=e718] [cursor=pointer]:
+                      - /url: /market/product_69f5d1948875f609172878
+                - generic [ref=e719]:
+                  - generic [ref=e721]:
+                    - text: By
+                    - strong [ref=e722]: Ulvin Omarov
+                  - link "View Product" [ref=e723] [cursor=pointer]:
+                    - /url: /market/product_69f5d1948875f609172878
+                    - generic [ref=e724]:
+                      - strong [ref=e727]: View Product
+                      - img [ref=e729]
+        - generic [ref=e732]:
+          - generic [ref=e733]: Browse specially curated products
+          - link "View Market" [ref=e734] [cursor=pointer]:
+            - /url: /market/
+            - img [ref=e735]
+            - strong [ref=e737]: View Market
+      - list [ref=e741]:
+        - listitem [ref=e742]:
+          - generic [ref=e743]:
+            - img "Submit your website for visibility and recognition" [ref=e744]
+            - generic [ref=e745]:
+              - paragraph [ref=e746]: Share your work
+              - heading "Submit your website for visibility and recognition" [level=3] [ref=e747]
+              - link "Submit Website" [ref=e748] [cursor=pointer]:
+                - /url: /submit/
+            - generic [ref=e749]:
+              - text: Got questions? Read our
+              - link "FAQs" [ref=e750] [cursor=pointer]:
+                - /url: /faqs/
+        - listitem [ref=e751]:
+          - generic [ref=e752]:
+            - img "Get access to special pro features" [ref=e753]
+            - generic [ref=e754]:
+              - paragraph [ref=e755]: Be a member
+              - heading "Get access to special pro features" [level=3] [ref=e756]
+              - link "Be Pro" [ref=e757] [cursor=pointer]:
+                - /url: /plans/user-plans
+            - generic [ref=e758]:
+              - text: Got questions? Read our
+              - link "FAQs" [ref=e759] [cursor=pointer]:
+                - /url: /faqs/
+      - generic [ref=e761]:
+        - link "Awwwards home page" [ref=e764] [cursor=pointer]:
+          - /url: /
+          - img [ref=e765]
+        - list [ref=e770]:
+          - listitem [ref=e771]:
+            - link "Nominees" [ref=e772] [cursor=pointer]:
+              - /url: "#nominees"
+          - listitem [ref=e773]:
+            - link "Courses" [ref=e774] [cursor=pointer]:
+              - /url: "#courses"
+          - listitem [ref=e775]:
+            - link "Collections" [ref=e776] [cursor=pointer]:
+              - /url: "#collections"
+          - listitem [ref=e777]:
+            - link "Directory" [ref=e778] [cursor=pointer]:
+              - /url: "#directory"
+          - listitem [ref=e779]:
+            - link "Market" [ref=e780] [cursor=pointer]:
+              - /url: "#market"
+        - strong [ref=e783]:
+          - link "Visit Sotd." [ref=e784] [cursor=pointer]:
+            - /url: https://astrodither.robertborghesi.is/
+    - contentinfo [ref=e785]:
+      - generic [ref=e786]:
+        - generic [ref=e787]:
+          - paragraph [ref=e788]:
+            - img [ref=e789]
+          - generic [ref=e792]:
+            - list [ref=e793]:
+              - listitem [ref=e794]:
+                - link "Websites" [ref=e795] [cursor=pointer]:
+                  - /url: /websites/
+              - listitem [ref=e796]:
+                - link "Collections" [ref=e797] [cursor=pointer]:
+                  - /url: /collections/search/
+              - listitem [ref=e798]:
+                - link "Elements" [ref=e799] [cursor=pointer]:
+                  - /url: /elements/
+            - list [ref=e800]:
+              - listitem [ref=e801]:
+                - link "Academy" [ref=e802] [cursor=pointer]:
+                  - /url: /academy/
+              - listitem [ref=e803]:
+                - link "Jobs" [ref=e804] [cursor=pointer]:
+                  - /url: /jobs/search/
+              - listitem [ref=e805]:
+                - link "Market" [ref=e806] [cursor=pointer]:
+                  - /url: /market/
+            - list [ref=e807]:
+              - listitem [ref=e808]:
+                - link "Directory" [ref=e809] [cursor=pointer]:
+                  - /url: /directory/search/
+              - listitem [ref=e810]:
+                - link "Conferences" [ref=e811] [cursor=pointer]:
+                  - /url: https://conference.awwwards.com
+            - list [ref=e812]:
+              - listitem [ref=e813]:
+                - link "FAQs" [ref=e814] [cursor=pointer]:
+                  - /url: /faqs/
+              - listitem [ref=e815]:
+                - link "About Us" [ref=e816] [cursor=pointer]:
+                  - /url: /about-us/
+              - listitem [ref=e817]:
+                - link "Contact Us" [ref=e818] [cursor=pointer]:
+                  - /url: /contact-us/
+        - generic [ref=e819]:
+          - list [ref=e821]:
+            - listitem [ref=e822]:
+              - link "Cookies Policy" [ref=e823] [cursor=pointer]:
+                - /url: /cookies-policy/
+            - listitem [ref=e824]:
+              - link "Legal Terms" [ref=e825] [cursor=pointer]:
+                - /url: /terms/
+            - listitem [ref=e826]:
+              - link "Privacy Policy" [ref=e827] [cursor=pointer]:
+                - /url: /privacy-policy/
+          - list [ref=e829]:
+            - listitem [ref=e830]:
+              - strong [ref=e831]: "Connect:"
+            - listitem [ref=e832]:
+              - link "Instagram" [ref=e833] [cursor=pointer]:
+                - /url: https://www.instagram.com/awwwards
+            - listitem [ref=e834]:
+              - link "LinkedIn" [ref=e835] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/awwwards
+            - listitem [ref=e836]:
+              - link "Twitter" [ref=e837] [cursor=pointer]:
+                - /url: https://twitter.com/awwwards
+            - listitem [ref=e838]:
+              - link "Facebook" [ref=e839] [cursor=pointer]:
+                - /url: https://www.facebook.com/awwwards
+            - listitem [ref=e840]:
+              - link "YouTube" [ref=e841] [cursor=pointer]:
+                - /url: https://www.youtube.com/awwwardstv
+            - listitem [ref=e842]:
+              - link "TikTok" [ref=e843] [cursor=pointer]:
+                - /url: https://www.tiktok.com/@awwwards.com
+            - listitem [ref=e844]:
+              - link "Pinterest" [ref=e845] [cursor=pointer]:
+                - /url: https://www.pinterest.es/awwwards/
+  - generic [ref=e846]:
+    - paragraph [ref=e847]:
+      - text: This website uses cookies to ensure you get the best experience on our website.
+      - link "Cookies Policy" [ref=e848] [cursor=pointer]:
+        - /url: /cookies-policy/
+    - generic [ref=e849] [cursor=pointer]: GOT IT
