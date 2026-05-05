@@ -14,7 +14,7 @@ import type {
   WeeklyPlanDayStatus,
   WeeklyPlanRecord,
 } from "./types.js";
-import { createId, nowIso } from "./utils.js";
+import { createId, normalizeIngredientAmount, normalizeMealRecommendation, nowIso } from "./utils.js";
 
 const ingredientCategoryHints: Record<string, InventoryCategory> = {
   鸡蛋: "meat_egg",
@@ -33,12 +33,12 @@ const ingredientCategoryHints: Record<string, InventoryCategory> = {
 };
 
 function cloneMeal(meal: MealRecommendationRecord): MealRecommendationRecord {
-  return {
+  return normalizeMealRecommendation({
     ...meal,
     nutrition: { ...meal.nutrition },
     ingredients: meal.ingredients.map((item) => ({ ...item })),
     steps: [...meal.steps],
-  };
+  });
 }
 
 function sumNutrition(meals: MealRecommendationRecord[]): NutritionFacts {
@@ -87,7 +87,7 @@ function unique(values: string[]): string[] {
 }
 
 function shoppingStableKey(name: string, amount: string): string {
-  return `${name}|${amount}`;
+  return `${name}|${normalizeIngredientAmount(amount)}`;
 }
 
 function inferCategory(name: string, inventory: InventoryItemRecord[]): InventoryCategory {
@@ -181,15 +181,17 @@ export function createDailyMealPlanFromMeals(
   previousShoppingList: ShoppingListItemRecord[] = [],
   userId = "user_guest_default",
   conversationId?: string,
+  workspaceId = "workspace_guest_default",
   sourceMessage = "",
   reply = "已根据当前方案生成今日餐单。",
   suggestionsOverride?: string[],
   generationMeta?: GenerationMetaRecord,
 ): MealPlanRecord {
-  const shoppingList = deriveShoppingItems(meals, inventory, previousShoppingList);
-  const nutritionSummary = buildNutritionSummary(meals, profile);
+  const normalizedMeals = meals.map((meal) => normalizeMealRecommendation(meal));
+  const shoppingList = deriveShoppingItems(normalizedMeals, inventory, previousShoppingList);
+  const nutritionSummary = buildNutritionSummary(normalizedMeals, profile);
   const inventoryUsage = unique(
-    meals.flatMap((meal) => meal.ingredients.filter((item) => item.fromInventory && inventoryHasIngredient(item.name, inventory)).map((item) => item.name)),
+    normalizedMeals.flatMap((meal) => meal.ingredients.filter((item) => item.fromInventory && inventoryHasIngredient(item.name, inventory)).map((item) => item.name)),
   );
   const suggestions = suggestionsOverride ?? buildSuggestions(nutritionSummary, shoppingList);
   const createdAt = nowIso();
@@ -197,11 +199,12 @@ export function createDailyMealPlanFromMeals(
   return {
     id: createId("plan"),
     userId,
+    workspaceId,
     conversationId,
     mode: "daily",
     sourceMessage,
     reply,
-    meals,
+    meals: normalizedMeals,
     nutritionSummary,
     shoppingList,
     inventoryUsage,
@@ -321,6 +324,7 @@ export function generateDailyMealPlan(
   previousShoppingList: ShoppingListItemRecord[] = [],
   userId = "user_guest_default",
   conversationId?: string,
+  workspaceId = "workspace_guest_default",
 ): MealPlanRecord {
   const meals = [
     chooseMeal("breakfast", message, inventory),
@@ -338,6 +342,7 @@ export function generateDailyMealPlan(
     previousShoppingList,
     userId,
     conversationId,
+    workspaceId,
     message,
     buildReply(message, inventoryUsage, previewShoppingList),
   );
@@ -351,6 +356,7 @@ export function generateWeeklyPlan(
   inventory: InventoryItemRecord[],
   userId = "user_guest_default",
   conversationId?: string,
+  workspaceId = "workspace_guest_default",
 ): WeeklyPlanRecord {
   const startAt = new Date(`${startDate}T00:00:00.000Z`);
   const normalizedDays = Math.max(1, Math.min(days, 7));
@@ -391,6 +397,7 @@ export function generateWeeklyPlan(
   return {
     id: createId("week"),
     userId,
+    workspaceId,
     conversationId,
     title: buildWeeklyTitle(tags),
     description: buildWeeklyDescription(tags),
@@ -414,6 +421,7 @@ export function createWeeklyPlanFromDays(input: {
   inventory: InventoryItemRecord[];
   userId: string;
   conversationId?: string;
+  workspaceId?: string;
   adopted?: boolean;
   generationMeta?: GenerationMetaRecord;
 }): WeeklyPlanRecord {
@@ -448,6 +456,7 @@ export function createWeeklyPlanFromDays(input: {
   return {
     id: createId("week"),
     userId: input.userId,
+    workspaceId: input.workspaceId ?? "workspace_guest_default",
     conversationId: input.conversationId,
     title: input.title,
     description: input.description,

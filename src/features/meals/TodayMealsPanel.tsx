@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Clock, RefreshCcw, Utensils } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock, Loader2, RefreshCcw, Utensils } from "lucide-react";
 import { useState } from "react";
 import { IconButton } from "../../components/IconButton";
 import type { MealRecommendation, MealType } from "../../types/smartmeal";
@@ -8,10 +8,13 @@ import styles from "./TodayMealsPanel.module.css";
 type TodayMealsPanelProps = {
   meals: MealRecommendation[];
   contextNote?: string;
+  isLoading?: boolean;
+  pendingMealType?: MealType;
+  onRetry?: () => void;
   onSwapMeal: (mealType: MealType) => void;
 };
 
-export function TodayMealsPanel({ meals, contextNote, onSwapMeal }: TodayMealsPanelProps) {
+export function TodayMealsPanel({ meals, contextNote, isLoading = false, pendingMealType, onRetry, onSwapMeal }: TodayMealsPanelProps) {
   const [expanded, setExpanded] = useState<MealType>("lunch");
 
   return (
@@ -26,9 +29,21 @@ export function TodayMealsPanel({ meals, contextNote, onSwapMeal }: TodayMealsPa
 
       {contextNote ? <p className={styles.contextNote}>{contextNote}</p> : null}
 
+      {isLoading ? (
+        <div className={styles.skeletonList} aria-label="正在加载今日三餐">
+          {[0, 1, 2].map((item) => <span key={item} />)}
+        </div>
+      ) : meals.length === 0 ? (
+        <div className={styles.emptyState}>
+          <strong>还没有可执行餐单</strong>
+          <p>去 AI 对话页生成一份今日方案，或重试恢复最近一次工作台状态。</p>
+          {onRetry ? <button type="button" onClick={onRetry}>重试恢复</button> : null}
+        </div>
+      ) : (
       <div className={styles.mealList}>
         {meals.map((meal) => {
           const isExpanded = expanded === meal.mealType;
+          const isPending = pendingMealType === meal.mealType;
 
           return (
             <article key={meal.id} className={`${styles.mealCard} ${isExpanded ? styles.expanded : ""}`}>
@@ -79,8 +94,8 @@ export function TodayMealsPanel({ meals, contextNote, onSwapMeal }: TodayMealsPa
                     </div>
                     <div className={styles.cardActions}>
                       <IconButton icon={<Utensils size={16} />} type="button">查看做法</IconButton>
-                      <IconButton icon={<RefreshCcw size={16} />} type="button" onClick={() => onSwapMeal(meal.mealType)}>
-                        换一个
+                      <IconButton icon={isPending ? <Loader2 size={16} /> : <RefreshCcw size={16} />} type="button" onClick={() => onSwapMeal(meal.mealType)} disabled={Boolean(pendingMealType)}>
+                        {isPending ? "更换中" : "换一个"}
                       </IconButton>
                     </div>
                   </div>
@@ -90,6 +105,7 @@ export function TodayMealsPanel({ meals, contextNote, onSwapMeal }: TodayMealsPa
           );
         })}
       </div>
+      )}
     </section>
   );
 }

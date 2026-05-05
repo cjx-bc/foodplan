@@ -153,6 +153,12 @@
   padding: 0 10px;
 }
 
+.field input:disabled,
+.field select:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
 .form button {
   grid-column: 4;
 }
@@ -220,6 +226,23 @@
   color: #777871;
   font-size: 16px;
   justify-self: center;
+}
+
+.emptyState {
+  background: #fffefb;
+  color: var(--muted);
+  display: grid;
+  gap: 4px;
+  padding: 18px;
+}
+
+.emptyState strong {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.emptyState span {
+  font-size: 13px;
 }
 
 .fresh {

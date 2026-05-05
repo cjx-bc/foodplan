@@ -79,6 +79,17 @@ type PersistedAppState = {
   selectedWeeklyPreferences: string[];
 };
 
+type PendingAction =
+  | "bootstrap"
+  | "chat"
+  | "inventory"
+  | "weekly_generate"
+  | "weekly_adopt"
+  | "weekly_adjust"
+  | "shopping_refresh"
+  | `meal:${MealType}`
+  | `shopping:${string}`;
+
 const navItems: Array<{ id: PageId; label: string; icon: typeof BotMessageSquare }> = [
   { id: "overview", label: "总览", icon: LayoutDashboard },
   { id: "chat", label: "AI 对话", icon: BotMessageSquare },
@@ -88,44 +99,6 @@ const navItems: Array<{ id: PageId; label: string; icon: typeof BotMessageSquare
   { id: "nutrition", label: "营养统计", icon: PieChart },
   { id: "shopping", label: "购物清单", icon: ShoppingCart },
 ];
-
-const pageMeta: Record<PageId, { step: number; title: string; description: string }> = {
-  overview: {
-    step: 0,
-    title: "总览",
-    description: "把当前执行模式、今日餐单、库存覆盖、采购缺口和本周进度放在同一个桌面工作台里。",
-  },
-  chat: {
-    step: 1,
-    title: "首页 / AI 对话搭配页",
-    description: "从一句饮食需求开始，生成今日三餐、营养反馈和购物清单。",
-  },
-  today: {
-    step: 2,
-    title: "今日三餐页",
-    description: "查看早餐、午餐、晚餐细节，快速替换餐食并确认今天吃什么。",
-  },
-  inventory: {
-    step: 3,
-    title: "库存管理页",
-    description: "维护家里的食材、数量和过期日期，让 AI 优先使用库存。",
-  },
-  weekly: {
-    step: 4,
-    title: "每周计划页",
-    description: "按偏好生成一周三餐草稿，逐日微调并确认采用本周计划。",
-  },
-  nutrition: {
-    step: 5,
-    title: "营养统计页",
-    description: "对比目标和当前餐单，查看热量、蛋白质、碳水、脂肪和膳食纤维。",
-  },
-  shopping: {
-    step: 6,
-    title: "购物清单页",
-    description: "按分类查看缺口食材，保留已勾选采购项，并给出采购建议。",
-  },
-};
 
 const defaultActionSummary: AiActionSummary = {
   title: "已生成今日方案",
@@ -263,6 +236,10 @@ function getErrorMessage(error: unknown) {
   return "请求失败，请稍后重试。";
 }
 
+function isNotFoundError(error: unknown) {
+  return error instanceof ApiClientError && error.code === "not_found";
+}
+
 export function App() {
   const persistedState = useMemo(() => getPersistedState(), []);
   const [activePage, setActivePage] = useState<PageId>(getInitialPage);
@@ -274,6 +251,10 @@ export function App() {
   const [bootstrapState, setBootstrapState] = useState<ApiRequestState>("idle");
   const [bootstrapError, setBootstrapError] = useState<string | null>(null);
   const [runtimeError, setRuntimeError] = useState<string | null>(null);
+  const [runtimeNotice, setRuntimeNotice] = useState<string | null>(null);
+  const [retryAction, setRetryAction] = useState<(() => void) | null>(null);
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
+  const [bootstrapNonce, setBootstrapNonce] = useState(0);
   const [session, setSession] = useState<Session | null>(null);
   const [workspaceState, setWorkspaceState] = useState<WorkspaceState | null>(null);
   const [actionSummary, setActionSummary] = useState<AiActionSummary>(defaultActionSummary);
@@ -361,6 +342,18 @@ export function App() {
   const weeklySelectedDayStatus = selectedWeeklyDay ? (selectedWeeklyDay.status === "balanced" ? "均衡" : selectedWeeklyDay.status === "light" ? "轻负担" : "需微调") : "均衡";
   const weeklySelectedDayFocus = selectedWeeklyDay?.inventoryFocus.slice(0, 3).join("、") ?? "鸡蛋、青菜、西兰花";
 
+  function showRuntimeError(error: unknown, retry?: () => void) {
+    setRuntimeNotice(null);
+    setRuntimeError(getErrorMessage(error));
+    setRetryAction(retry ? () => retry : null);
+  }
+
+  function clearRuntimeFeedback() {
+    setRuntimeError(null);
+    setRuntimeNotice(null);
+    setRetryAction(null);
+  }
+
   useEffect(() => {
     function syncHashRoute() {
       setActivePage(getInitialPage());
@@ -382,7 +375,9 @@ export function App() {
 
     async function bootstrap() {
       setBootstrapState("loading");
+      setPendingAction("bootstrap");
       setBootstrapError(null);
+      setRuntimeNotice(null);
       try {
         await ensureGuestSession();
         const [sessionData, profileData, inventoryData, remoteWorkspace] = await Promise.all([
@@ -402,38 +397,75 @@ export function App() {
         setCurrentShoppingListId(remoteWorkspace.currentShoppingListId);
         setPlanningMode(remoteWorkspace.planningMode);
         setSelectedWeekday(remoteWorkspace.selectedWeekday ?? getDefaultSelectedWeekday());
+        const workspaceRecoveryPatch: Record<string, string | null> & { planningMode?: PlanningMode } = {};
 
         if (remoteWorkspace.currentConversationId) {
-          const nextMessages = await getConversationMessages(remoteWorkspace.currentConversationId);
-          if (!cancelled) {
-            setMessages(nextMessages);
-          }
-        }
-
-        if (remoteWorkspace.currentMealPlanId) {
-          const nextMealPlan = await getMealPlan(remoteWorkspace.currentMealPlanId);
-          if (!cancelled) {
-            setCurrentMealPlan(nextMealPlan);
-            setActionSummary(buildActionSummary("已恢复今日方案", nextMealPlan, null));
-          }
-        }
-
-        if (remoteWorkspace.currentWeeklyPlanId) {
-          const nextWeeklyPlan = await getWeeklyPlan(remoteWorkspace.currentWeeklyPlanId);
-          if (!cancelled) {
-            setCurrentWeeklyPlan(nextWeeklyPlan);
-            if (nextWeeklyPlan.days[0]?.day && !remoteWorkspace.selectedWeekday) {
-              setSelectedWeekday(nextWeeklyPlan.days[0].day);
+          try {
+            const nextMessages = await getConversationMessages(remoteWorkspace.currentConversationId);
+            if (!cancelled) {
+              setMessages(nextMessages);
+            }
+          } catch (error) {
+            if (!isNotFoundError(error)) throw error;
+            workspaceRecoveryPatch.currentConversationId = null;
+            if (!cancelled) {
+              setCurrentConversationId(undefined);
+              setMessages([]);
+              setRuntimeNotice("上次对话已不存在，已自动清理失效指针，可以直接重新开始。");
             }
           }
         }
 
-        const sourceType = remoteWorkspace.planningMode === "weekly" && remoteWorkspace.currentWeeklyPlanId
+        if (remoteWorkspace.currentMealPlanId) {
+          try {
+            const nextMealPlan = await getMealPlan(remoteWorkspace.currentMealPlanId);
+            if (!cancelled) {
+              setCurrentMealPlan(nextMealPlan);
+              setActionSummary(buildActionSummary("已恢复今日方案", nextMealPlan, null));
+            }
+          } catch (error) {
+            if (!isNotFoundError(error)) throw error;
+            workspaceRecoveryPatch.currentMealPlanId = null;
+            workspaceRecoveryPatch.currentShoppingListId = null;
+            if (!cancelled) {
+              setCurrentMealPlan(null);
+              setCurrentMealPlanId(undefined);
+              setCurrentShoppingList(null);
+              setCurrentShoppingListId(undefined);
+              setRuntimeNotice("上次餐单资源已不存在，已切回可生成状态。");
+            }
+          }
+        }
+
+        if (remoteWorkspace.currentWeeklyPlanId) {
+          try {
+            const nextWeeklyPlan = await getWeeklyPlan(remoteWorkspace.currentWeeklyPlanId);
+            if (!cancelled) {
+              setCurrentWeeklyPlan(nextWeeklyPlan);
+              if (nextWeeklyPlan.days[0]?.day && !remoteWorkspace.selectedWeekday) {
+                setSelectedWeekday(nextWeeklyPlan.days[0].day);
+              }
+            }
+          } catch (error) {
+            if (!isNotFoundError(error)) throw error;
+            workspaceRecoveryPatch.currentWeeklyPlanId = null;
+            if (!cancelled) {
+              setCurrentWeeklyPlan(null);
+              setCurrentWeeklyPlanId(undefined);
+              setPlanningMode("daily");
+              setRuntimeNotice("上次周计划已不存在，已恢复到今日执行模式。");
+            }
+          }
+        }
+
+        const effectiveWeeklyPlanId = workspaceRecoveryPatch.currentWeeklyPlanId === null ? undefined : remoteWorkspace.currentWeeklyPlanId;
+        const effectiveMealPlanId = workspaceRecoveryPatch.currentMealPlanId === null ? undefined : remoteWorkspace.currentMealPlanId;
+        const sourceType = remoteWorkspace.planningMode === "weekly" && effectiveWeeklyPlanId
           ? "weekly_plan"
-          : remoteWorkspace.currentMealPlanId
+          : effectiveMealPlanId
             ? "meal_plan"
             : null;
-        const sourceId = sourceType === "weekly_plan" ? remoteWorkspace.currentWeeklyPlanId : remoteWorkspace.currentMealPlanId;
+        const sourceId = sourceType === "weekly_plan" ? effectiveWeeklyPlanId : effectiveMealPlanId;
 
         if (sourceType && sourceId) {
           try {
@@ -442,8 +474,33 @@ export function App() {
               setCurrentShoppingList(shoppingList);
               setCurrentShoppingListId(shoppingList.id);
             }
-          } catch {
-            // Leave the shopping list empty until the next successful generation.
+          } catch (error) {
+            if (!isNotFoundError(error)) throw error;
+            try {
+              const regenerated = await generateShoppingList(sourceType, sourceId);
+              if (!cancelled) {
+                setCurrentShoppingList(regenerated);
+                setCurrentShoppingListId(regenerated.id);
+                setRuntimeNotice("上次购物清单已不存在，已按当前餐单重新生成。");
+              }
+            } catch (regenerateError) {
+              if (!isNotFoundError(regenerateError)) throw regenerateError;
+              workspaceRecoveryPatch.currentShoppingListId = null;
+              if (!cancelled) {
+                setCurrentShoppingList(null);
+                setCurrentShoppingListId(undefined);
+                setRuntimeNotice("上次购物清单资源已失效，生成新餐单后会重新整理。");
+              }
+            }
+          }
+        }
+        if (Object.keys(workspaceRecoveryPatch).length > 0) {
+          const recoveredWorkspace = await patchWorkspaceState({
+            ...workspaceRecoveryPatch,
+            planningMode: workspaceRecoveryPatch.currentWeeklyPlanId === null ? "daily" : remoteWorkspace.planningMode,
+          } as Partial<WorkspaceState>);
+          if (!cancelled) {
+            setWorkspaceState(recoveredWorkspace);
           }
         }
         if (!cancelled) {
@@ -453,10 +510,12 @@ export function App() {
         if (!cancelled) {
           setBootstrapState("error");
           setBootstrapError(getErrorMessage(error));
+          setRetryAction(() => () => setBootstrapNonce((current) => current + 1));
         }
       } finally {
         if (!cancelled) {
           setIsBootstrapping(false);
+          setPendingAction(null);
         }
       }
     }
@@ -465,7 +524,7 @@ export function App() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [bootstrapNonce]);
 
   useEffect(() => {
     if (!workspaceState || workspaceState.selectedWeekday === selectedWeekday) {
@@ -477,7 +536,7 @@ export function App() {
         setWorkspaceState(nextWorkspace);
       })
       .catch(() => {
-        // Keep the local selection even if the workspace pointer update fails.
+        setRuntimeNotice("当前选中日期已在本地切换，但同步到后端失败，刷新后可能回到上次日期。");
       });
   }, [selectedWeekday, workspaceState]);
 
@@ -510,7 +569,7 @@ export function App() {
       const nextWorkspace = await patchWorkspaceState({ currentConversationId: conversation.id });
       setWorkspaceState(nextWorkspace);
     } catch {
-      // The conversation still exists server-side; a later bootstrap can recover it.
+      setRuntimeNotice("对话已创建，但 workspace 指针同步失败；刷新时会尝试自动恢复。");
     }
     return conversation.id;
   }
@@ -530,9 +589,37 @@ export function App() {
     return shoppingList;
   }
 
+  async function handleRefreshShoppingList() {
+    if (pendingAction === "shopping_refresh") return;
+    setPendingAction("shopping_refresh");
+    clearRuntimeFeedback();
+    try {
+      const sourceType = planningMode === "weekly" && currentWeeklyPlanId ? "weekly_plan" : currentMealPlanId ? "meal_plan" : null;
+      const sourceId = sourceType === "weekly_plan" ? currentWeeklyPlanId : currentMealPlanId;
+      if (!sourceType || !sourceId) {
+        setRuntimeNotice("当前还没有餐单来源，先生成今日餐单或本周计划。");
+        return;
+      }
+      const list = await generateShoppingList(sourceType, sourceId);
+      setCurrentShoppingList(list);
+      setCurrentShoppingListId(list.id);
+      setRuntimeNotice("购物清单已按当前执行方案重新生成。");
+    } catch (error) {
+      if (isNotFoundError(error)) {
+        setCurrentShoppingList(null);
+        setCurrentShoppingListId(undefined);
+      }
+      showRuntimeError(error, () => void handleRefreshShoppingList());
+    } finally {
+      setPendingAction(null);
+    }
+  }
+
   async function handleSend(message: string) {
+    if (pendingAction === "chat") return;
     setIsGenerating(true);
-    setRuntimeError(null);
+    setPendingAction("chat");
+    clearRuntimeFeedback();
     try {
       const conversationId = await ensureConversation();
       const payload = await sendConversationMessage(conversationId, message, "daily");
@@ -544,9 +631,14 @@ export function App() {
       setCurrentShoppingListId(payload.shoppingList?.id);
       setActionSummary(buildActionSummary("已按输入生成方案", payload.mealPlan, payload.shoppingList));
     } catch (error) {
-      setRuntimeError(getErrorMessage(error));
+      if (isNotFoundError(error)) {
+        setCurrentConversationId(undefined);
+        setMessages([]);
+      }
+      showRuntimeError(error, () => void handleSend(message));
     } finally {
       setIsGenerating(false);
+      setPendingAction(null);
     }
   }
 
@@ -563,8 +655,10 @@ export function App() {
 
   async function handleSwapMeal(mealType: MealType) {
     if (!currentMealPlanId) return;
+    if (pendingAction) return;
     setIsGenerating(true);
-    setRuntimeError(null);
+    setPendingAction(`meal:${mealType}`);
+    clearRuntimeFeedback();
     try {
       const payload = await regenerateMeal(currentMealPlanId, mealType, `替换${mealTypeLabels[mealType]}`);
       setCurrentMealPlan(payload.mealPlan);
@@ -576,14 +670,22 @@ export function App() {
         { mealPlanId: payload.mealPlan.id, shoppingListId: payload.shoppingListResource?.id },
       );
     } catch (error) {
-      setRuntimeError(getErrorMessage(error));
+      if (isNotFoundError(error)) {
+        setCurrentMealPlan(null);
+        setCurrentMealPlanId(undefined);
+        setRuntimeNotice("当前餐单已不存在，已清空旧指针，请重新生成今日方案。");
+      }
+      showRuntimeError(error, () => void handleSwapMeal(mealType));
     } finally {
       setIsGenerating(false);
+      setPendingAction(null);
     }
   }
 
   async function handleAddInventory(value: InventoryFormValue) {
-    setRuntimeError(null);
+    if (pendingAction === "inventory") return;
+    setPendingAction("inventory");
+    clearRuntimeFeedback();
     try {
       const created = await createInventoryItem(value);
       const nextInventory = [created, ...inventory];
@@ -608,7 +710,10 @@ export function App() {
       });
       appendLocalAssistantMessage(`已新增库存「${value.name}」，当前采购缺口会自动按最新库存重算。`);
     } catch (error) {
-      setRuntimeError(getErrorMessage(error));
+      showRuntimeError(error, () => void handleAddInventory(value));
+      throw error;
+    } finally {
+      setPendingAction(null);
     }
   }
 
@@ -616,13 +721,21 @@ export function App() {
     if (!currentShoppingList) return;
     const target = currentShoppingList.items.find((item) => item.id === id);
     if (!target) return;
-    setRuntimeError(null);
+    if (pendingAction) return;
+    setPendingAction(`shopping:${id}`);
+    clearRuntimeFeedback();
     try {
       const nextShoppingList = await toggleShoppingItem(currentShoppingList.id, id, !target.checked);
       setCurrentShoppingList(nextShoppingList);
       setCurrentShoppingListId(nextShoppingList.id);
     } catch (error) {
-      setRuntimeError(getErrorMessage(error));
+      if (isNotFoundError(error)) {
+        setCurrentShoppingList(null);
+        setCurrentShoppingListId(undefined);
+      }
+      showRuntimeError(error, () => void handleToggleShopping(id));
+    } finally {
+      setPendingAction(null);
     }
   }
 
@@ -636,7 +749,9 @@ export function App() {
   }
 
   async function handleGenerateWeeklyPlan() {
-    setRuntimeError(null);
+    if (pendingAction === "weekly_generate") return;
+    setPendingAction("weekly_generate");
+    clearRuntimeFeedback();
     try {
       const conversationId = await ensureConversation();
       const weeklyPlan = await createWeeklyPlan({
@@ -653,7 +768,9 @@ export function App() {
         weeklyPlanId: weeklyPlan.id,
       });
     } catch (error) {
-      setRuntimeError(getErrorMessage(error));
+      showRuntimeError(error, () => void handleGenerateWeeklyPlan());
+    } finally {
+      setPendingAction(null);
     }
   }
 
@@ -661,7 +778,9 @@ export function App() {
     if (!currentWeeklyPlan) return;
     const targetDay = currentWeeklyPlan.days.find((day) => day.day === dayName);
     if (!targetDay?.date) return;
-    setRuntimeError(null);
+    if (pendingAction === "weekly_adjust") return;
+    setPendingAction("weekly_adjust");
+    clearRuntimeFeedback();
     try {
       const weeklyPlan = await patchWeeklyPlanDay(currentWeeklyPlan.id, targetDay.date, ["dinner"]);
       setCurrentWeeklyPlan(weeklyPlan);
@@ -692,13 +811,22 @@ export function App() {
         { weeklyPlanId: weeklyPlan.id },
       );
     } catch (error) {
-      setRuntimeError(getErrorMessage(error));
+      if (isNotFoundError(error)) {
+        setCurrentWeeklyPlan(null);
+        setCurrentWeeklyPlanId(undefined);
+        setPlanningMode("daily");
+      }
+      showRuntimeError(error, () => void handleAdjustWeeklyDay(dayName));
+    } finally {
+      setPendingAction(null);
     }
   }
 
   async function handleConfirmWeeklyPlan() {
     if (!currentWeeklyPlanId || !selectedWeeklyDay?.date) return;
-    setRuntimeError(null);
+    if (pendingAction === "weekly_adopt") return;
+    setPendingAction("weekly_adopt");
+    clearRuntimeFeedback();
     try {
       const result = await adoptWeeklyPlan(currentWeeklyPlanId, selectedWeeklyDay.date);
       const [weeklyPlan, mealPlan] = await Promise.all([
@@ -727,7 +855,9 @@ export function App() {
         shoppingListId: shoppingList?.id,
       });
     } catch (error) {
-      setRuntimeError(getErrorMessage(error));
+      showRuntimeError(error, () => void handleConfirmWeeklyPlan());
+    } finally {
+      setPendingAction(null);
     }
   }
 
@@ -736,7 +866,6 @@ export function App() {
 
     return (
       <section className={styles.pageFrame}>
-        <PageTitle step={pageMeta.overview.step} title={pageMeta.overview.title} description={pageMeta.overview.description} />
         <div className={styles.overviewHero}>
           <div className={styles.overviewHeroMain}>
             <span className={styles.heroEyebrow}>{overviewMetrics.heroEyebrow}</span>
@@ -805,9 +934,14 @@ export function App() {
   function renderChatPage() {
     return (
       <section className={styles.pageFrame}>
-        <PageTitle step={pageMeta.chat.step} title={pageMeta.chat.title} description={pageMeta.chat.description} />
         <div className={styles.chatPage}>
-          <ChatPanel messages={messages} isGenerating={isGenerating || isBootstrapping} onSend={(message) => void handleSend(message)} onQuickAction={(action) => void handleQuickAction(action)} />
+          <ChatPanel
+            messages={messages}
+            isGenerating={isGenerating || isBootstrapping}
+            isBootstrapping={isBootstrapping}
+            onSend={(message) => void handleSend(message)}
+            onQuickAction={(action) => void handleQuickAction(action)}
+          />
 
           <div className={styles.chatWorkspace}>
             <SurfaceCard title="当前方案" emphasis={currentMealPlan ? `${currentMealPlan.nutritionSummary.actual.calories} kcal` : "等待生成"}>
@@ -819,6 +953,7 @@ export function App() {
                 <span>{currentShoppingList?.items.filter((item) => !item.checked).length ?? 0} 项待买</span>
                 <span>{currentMealPlan?.inventoryUsage.length ?? 0} 项库存已使用</span>
                 {currentMealPlan?.generationMeta?.source === "fallback" ? <span>规则兜底生成</span> : null}
+                {currentMealPlan?.generationMeta?.promptVersion ? <span>Prompt {currentMealPlan.generationMeta.promptVersion}</span> : null}
               </div>
             </SurfaceCard>
 
@@ -853,9 +988,15 @@ export function App() {
   function renderTodayPage() {
     return (
       <section className={styles.pageFrame}>
-        <PageTitle step={pageMeta.today.step} title={pageMeta.today.title} description={pageMeta.today.description} />
         <div className={styles.todayLayout}>
-          <TodayMealsPanel meals={activeMeals} contextNote={todayContextNote} onSwapMeal={(mealType) => void handleSwapMeal(mealType)} />
+          <TodayMealsPanel
+            meals={activeMeals}
+            contextNote={todayContextNote}
+            isLoading={isBootstrapping}
+            pendingMealType={pendingAction?.startsWith("meal:") ? pendingAction.slice(5) as MealType : undefined}
+            onRetry={() => setBootstrapNonce((current) => current + 1)}
+            onSwapMeal={(mealType) => void handleSwapMeal(mealType)}
+          />
           <NutritionPanel summary={nutritionSummary} suggestions={currentMealPlan?.suggestions ?? currentWeeklyPlan?.insights ?? []} contextNote={nutritionContextNote} />
         </div>
       </section>
@@ -865,8 +1006,7 @@ export function App() {
   function renderInventoryPage() {
     return (
       <section className={styles.pageFrame}>
-        <PageTitle step={pageMeta.inventory.step} title={pageMeta.inventory.title} description={pageMeta.inventory.description} />
-        <InventoryPanel inventory={inventory} onAddInventory={(value) => void handleAddInventory(value)} />
+        <InventoryPanel inventory={inventory} isSubmitting={pendingAction === "inventory"} onAddInventory={handleAddInventory} />
       </section>
     );
   }
@@ -874,7 +1014,6 @@ export function App() {
   function renderWeeklyPage() {
     return (
       <section className={styles.pageFrame}>
-        <PageTitle step={pageMeta.weekly.step} title={pageMeta.weekly.title} description={pageMeta.weekly.description} />
         <div className={styles.weeklyBoard}>
           <aside className={styles.weeklySidebar}>
             <SurfaceCard title="计划偏好">
@@ -890,7 +1029,9 @@ export function App() {
                   </button>
                 ))}
               </div>
-              <button className={styles.inlineAction} type="button" onClick={() => void handleGenerateWeeklyPlan()}>更多偏好设置</button>
+              <button className={styles.preferenceMoreButton} type="button" onClick={() => void handleGenerateWeeklyPlan()} disabled={pendingAction === "weekly_generate"}>
+                {pendingAction === "weekly_generate" ? "生成中..." : "更多偏好设置"}
+              </button>
               <div className={styles.preferenceHint}>
                 <span>当前草稿</span>
                 <strong>{weeklyPlanApplied ? "已接管今日执行" : "待确认采用"}</strong>
@@ -907,17 +1048,17 @@ export function App() {
                 <span>{weekDates[0] ?? "--/--"} - {weekDates[weekDates.length - 1] ?? "--/--"}</span>
               </div>
               <div className={styles.weeklyActions}>
-                <button type="button" className={styles.secondaryAction} onClick={() => void handleGenerateWeeklyPlan()}>
+                <button type="button" className={styles.secondaryAction} onClick={() => void handleGenerateWeeklyPlan()} disabled={pendingAction === "weekly_generate"}>
                   <ClipboardCheck size={16} />
-                  生成本周计划
+                  {pendingAction === "weekly_generate" ? "生成中" : "生成本周计划"}
                 </button>
                 <button
                   type="button"
                   className={weeklyPlanApplied ? styles.inlineAction : styles.primaryMiniAction}
                   onClick={() => void handleConfirmWeeklyPlan()}
-                  disabled={!currentWeeklyPlan || (weeklyPlanApplied && isWeeklyMode)}
+                  disabled={!currentWeeklyPlan || (weeklyPlanApplied && isWeeklyMode) || pendingAction === "weekly_adopt"}
                 >
-                  {weeklyPlanApplied && isWeeklyMode ? "已确认采用" : "确认采用"}
+                  {pendingAction === "weekly_adopt" ? "确认中..." : weeklyPlanApplied && isWeeklyMode ? "已确认采用" : "确认采用"}
                 </button>
               </div>
             </div>
@@ -986,7 +1127,9 @@ export function App() {
                   <span>{selectedWeeklyDay?.meals.length ?? 3} 餐已排布</span>
                   <span>{weeklyPlanApplied ? "已接入执行流" : "草稿未采用"}</span>
                 </div>
-                <button className={styles.inlineAction} type="button" onClick={() => void handleAdjustWeeklyDay(selectedWeekday)}>微调这一天</button>
+                <button className={styles.inlineAction} type="button" onClick={() => void handleAdjustWeeklyDay(selectedWeekday)} disabled={pendingAction === "weekly_adjust"}>
+                  {pendingAction === "weekly_adjust" ? "微调中..." : "微调这一天"}
+                </button>
               </SurfaceCard>
 
               <SurfaceCard title="执行提示" emphasis={weeklyPlanApplied ? "已接入今日流" : "待接入"}>
@@ -1018,7 +1161,6 @@ export function App() {
 
     return (
       <section className={styles.pageFrame}>
-        <PageTitle step={pageMeta.nutrition.step} title={pageMeta.nutrition.title} description={pageMeta.nutrition.description} />
         <div className={styles.nutritionDashboard}>
           <section className={styles.nutritionHero}>
             <div className={styles.nutritionHeroMain}>
@@ -1106,7 +1248,6 @@ export function App() {
 
     return (
       <section className={styles.pageFrame}>
-        <PageTitle step={pageMeta.shopping.step} title={pageMeta.shopping.title} description={pageMeta.shopping.description} />
         <div className={styles.shoppingLayout}>
           <div className={styles.shoppingMain}>
             <div className={styles.shoppingStats}>
@@ -1114,7 +1255,14 @@ export function App() {
               <MetricTile label="预计花费" value={toCurrency(estimatedBudget)} />
               <MetricTile label="覆盖餐次" value={`${categories} 类食材`} />
             </div>
-            <ShoppingListPanel items={shoppingItems} modeLabel={isWeeklyMode ? "本周采购" : "今日采购"} onToggle={(id) => void handleToggleShopping(id)} />
+            <ShoppingListPanel
+              items={shoppingItems}
+              modeLabel={isWeeklyMode ? "本周采购" : "今日采购"}
+              isLoading={isBootstrapping || pendingAction === "shopping_refresh"}
+              pendingItemId={pendingAction?.startsWith("shopping:") ? pendingAction.slice(9) : undefined}
+              onRetry={() => void handleRefreshShoppingList()}
+              onToggle={(id) => void handleToggleShopping(id)}
+            />
           </div>
 
           <aside className={styles.shoppingAside}>
@@ -1136,21 +1284,10 @@ export function App() {
               <button
                 className={styles.primaryBlockAction}
                 type="button"
-                onClick={() => void (
-                  planningMode === "weekly" && currentWeeklyPlanId
-                    ? generateShoppingList("weekly_plan", currentWeeklyPlanId).then((list) => {
-                        setCurrentShoppingList(list);
-                        setCurrentShoppingListId(list.id);
-                      })
-                    : currentMealPlanId
-                      ? generateShoppingList("meal_plan", currentMealPlanId).then((list) => {
-                          setCurrentShoppingList(list);
-                          setCurrentShoppingListId(list.id);
-                        })
-                      : Promise.resolve()
-                )}
+                onClick={() => void handleRefreshShoppingList()}
+                disabled={pendingAction === "shopping_refresh" || (!currentMealPlanId && !currentWeeklyPlanId)}
               >
-                更新生成清单
+                {pendingAction === "shopping_refresh" ? "更新中..." : "更新生成清单"}
               </button>
             </SurfaceCard>
 
@@ -1209,19 +1346,11 @@ export function App() {
 
       <main className={styles.main}>
         {bootstrapState === "loading" ? <StatusBanner tone="info" text="正在恢复当前工作台状态..." /> : null}
-        {bootstrapError ? <StatusBanner tone="error" text={bootstrapError} actionLabel="重试" onAction={() => window.location.reload()} /> : null}
-        {runtimeError ? <StatusBanner tone="error" text={runtimeError} /> : null}
+        {bootstrapError ? <StatusBanner tone="error" text={bootstrapError} actionLabel="重试" onAction={() => setBootstrapNonce((current) => current + 1)} /> : null}
+        {runtimeNotice ? <StatusBanner tone="info" text={runtimeNotice} actionLabel="知道了" onAction={() => setRuntimeNotice(null)} /> : null}
+        {runtimeError ? <StatusBanner tone="error" text={runtimeError} actionLabel={retryAction ? "重试" : "关闭"} onAction={retryAction ?? (() => setRuntimeError(null))} /> : null}
         {renderPage()}
       </main>
-    </div>
-  );
-}
-
-function PageTitle({ step, title, description }: { step: number; title: string; description: string }) {
-  return (
-    <div className={styles.pageTitle}>
-      <h2>{step > 0 ? `${step} ${title}` : title}</h2>
-      <p>{description}</p>
     </div>
   );
 }

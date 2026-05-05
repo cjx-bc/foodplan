@@ -53,6 +53,63 @@
   gap: 14px;
 }
 
+.emptyState {
+  background: white;
+  border: 1px dashed rgba(31, 140, 78, 0.32);
+  border-radius: 18px;
+  color: var(--muted);
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  padding: 18px;
+}
+
+.emptyState strong {
+  color: var(--ink);
+  font-size: 17px;
+}
+
+.emptyState p {
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.emptyState button {
+  background: #edf8ef;
+  border: 1px solid rgba(31, 140, 78, 0.22);
+  border-radius: 999px;
+  color: var(--primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 12px;
+}
+
+.skeletonList {
+  display: grid;
+  gap: 14px;
+}
+
+.skeletonList span {
+  animation: pulse 1.1s ease-in-out infinite;
+  background: linear-gradient(90deg, #f3eadb, #fffaf0, #f3eadb);
+  background-size: 220% 100%;
+  border-radius: 18px;
+  min-height: 146px;
+}
+
+@keyframes pulse {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
 .mealCard {
   background: white;
   border: 1px solid rgba(225, 217, 200, 0.95);

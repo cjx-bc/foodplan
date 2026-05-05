@@ -549,7 +549,7 @@ AI 输出必须约束为结构化 JSON，前端只渲染结构化结果，不能
 - 样式：Tailwind CSS 或 CSS Modules
 - 图标：lucide-react
 - 后端：Node.js + Express 或 Fastify
-- 数据库：SQLite 起步，后续迁移 MySQL / PostgreSQL
+- 数据库：当前后端持久化目标为 MySQL 8
 - AI：结构化 JSON 输出 + schema 校验
 
 首版可以先使用本地 mock 数据完成视觉和交互，再接后端。

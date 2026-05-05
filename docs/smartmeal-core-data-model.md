@@ -310,7 +310,7 @@ WeeklyPlan 1 --- n WeeklyPlanDay
 
 ## 7. 建议数据库落地方式
 
-MVP 推荐使用关系型数据库，优先 `PostgreSQL` 或 `SQLite` 起步。
+MVP 当前使用 MySQL 8 作为关系型数据库，`server/data/store.json` 仅作为 seed 输入，不作为运行时真相源。
 
 建议：
 

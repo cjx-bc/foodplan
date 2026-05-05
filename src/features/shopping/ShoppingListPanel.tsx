@@ -1,4 +1,4 @@
-import { Check, ChevronDown, ChevronRight, PartyPopper, ShoppingCart } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, Loader2, PartyPopper, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import type { DerivedShoppingListItem } from "../../types/smartmeal";
 import { categoryLabels } from "../../utils/labels";
@@ -7,10 +7,13 @@ import styles from "./ShoppingListPanel.module.css";
 type ShoppingListPanelProps = {
   items: DerivedShoppingListItem[];
   modeLabel: string;
+  isLoading?: boolean;
+  pendingItemId?: string;
+  onRetry?: () => void;
   onToggle: (id: string) => void;
 };
 
-export function ShoppingListPanel({ items, modeLabel, onToggle }: ShoppingListPanelProps) {
+export function ShoppingListPanel({ items, modeLabel, isLoading = false, pendingItemId, onRetry, onToggle }: ShoppingListPanelProps) {
   const categories = Array.from(new Set(items.map((item) => item.category)));
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const remainingCount = items.filter((item) => !item.checked).length;
@@ -37,14 +40,24 @@ export function ShoppingListPanel({ items, modeLabel, onToggle }: ShoppingListPa
         <strong>{modeLabel} · {remainingCount === 0 ? "全部完成" : `${remainingCount} 项待买`}</strong>
       </div>
 
-      {remainingCount === 0 ? (
+      {isLoading ? (
+        <div className={styles.skeletonList} aria-label="正在加载购物清单">
+          {[0, 1, 2].map((item) => <span key={item} />)}
+        </div>
+      ) : items.length === 0 ? (
+        <div className={styles.emptyState}>
+          <strong>还没有购物清单</strong>
+          <p>先生成今日餐单或本周计划，再让系统按缺口整理采购项。</p>
+          {onRetry ? <button type="button" onClick={onRetry}>重试生成</button> : null}
+        </div>
+      ) : remainingCount === 0 ? (
         <div className={styles.complete}>
           <PartyPopper size={20} />
           今日采购已完成，可以确认采用这份餐单。
         </div>
       ) : null}
 
-      <div className={styles.groups}>
+      {!isLoading && items.length > 0 ? <div className={styles.groups}>
         {categories.map((category) => {
           const categoryItems = items.filter((item) => item.category === category);
           const isCollapsed = collapsed.has(category);
@@ -62,8 +75,9 @@ export function ShoppingListPanel({ items, modeLabel, onToggle }: ShoppingListPa
                   key={item.id}
                   type="button"
                   onClick={() => onToggle(item.id)}
+                  disabled={Boolean(pendingItemId)}
                 >
-                  <span className={styles.checkbox}>{item.checked ? <Check size={14} /> : null}</span>
+                  <span className={styles.checkbox}>{pendingItemId === item.id ? <Loader2 size={14} /> : item.checked ? <Check size={14} /> : null}</span>
                   <span>
                     <strong>{item.name}</strong>
                     <small>{item.reason}</small>
@@ -74,7 +88,7 @@ export function ShoppingListPanel({ items, modeLabel, onToggle }: ShoppingListPa
             </div>
           );
         })}
-      </div>
+      </div> : null}
     </section>
   );
 }

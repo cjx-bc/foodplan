@@ -40,6 +40,7 @@ body {
     radial-gradient(circle at top right, rgba(245, 158, 11, 0.08), transparent 26%),
     var(--background);
   color: var(--ink);
+  font-size: 15px;
   margin: 0;
   min-width: 320px;
 }
@@ -56,6 +57,12 @@ button {
 img {
   display: block;
   max-width: 100%;
+}
+
+@media (max-width: 1180px) {
+  body {
+    font-size: 16px;
+  }
 }
 
 .srOnly {

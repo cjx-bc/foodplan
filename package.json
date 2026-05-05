@@ -11,16 +11,18 @@
     "start:server": "node server-dist/index.js",
     "preview": "vite preview --host 0.0.0.0",
     "test:api-smoke": "tsx scripts/api-smoke.ts",
+    "test:api-contract": "tsx scripts/api-contract.ts",
     "test:workspace-smoke": "tsx scripts/workspace-smoke.ts",
     "test:ui-regression": "tsx scripts/ui-regression.ts",
     "db:migrate": "tsx scripts/db-migrate.ts",
+    "db:seed": "tsx scripts/db-seed-from-json.ts",
     "db:seed-from-json": "tsx scripts/db-seed-from-json.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.1.1",
     "ajv": "^8.17.1",
     "lucide-react": "^0.561.0",
-    "pg": "^8.16.3",
+    "mysql2": "^3.22.3",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "typescript": "^5.9.3",
@@ -29,7 +31,6 @@
   "devDependencies": {
     "@playwright/test": "^1.55.0",
     "@types/node": "^24.10.1",
-    "@types/pg": "^8.15.5",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "tsx": "^4.20.6"

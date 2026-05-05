@@ -2,7 +2,7 @@
 
 SmartMeal 是一个面向家庭饮食管理场景的 Web 端 MVP 原型。项目围绕一个可演示闭环展开：用户通过 AI 对话表达饮食需求，系统结合库存和营养目标，生成今日三餐、营养反馈、每周计划和购物清单。
 
-当前仓库已经包含前端原型和一套 MVP 阶段后端骨架。前端继续负责信息架构和演示流程；后端已提供 `health`、`profile`、`inventory-items` API、本地 JSON 存储和 TypeScript 构建能力，但还没有接入真实 AI 模型或完整业务持久化。
+当前仓库已经包含前端原型和一套 MVP 阶段后端服务。前端继续负责信息架构和演示流程；后端已提供 `health`、`profile`、`inventory-items`、`meal-plans`、`weekly-plans`、`shopping-lists`、`conversations` API，已切到 MySQL 存储，并补齐 guest session、workspace 归属、迁移脚本、seed 脚本和 DeepSeek 结构化生成适配层。
 
 ![SmartMeal MVP 示意图](docs/mvp.png)
 
@@ -23,15 +23,15 @@ SmartMeal 是一个面向家庭饮食管理场景的 Web 端 MVP 原型。项目
 - 库存管理：支持手动新增库存、临期状态展示和库存概览
 - 每周计划：支持偏好切换、生成本周计划、单日微调和确认采用
 - 购物清单：按分类展示采购项，并支持勾选已购买
-- 后端骨架：已提供 `health`、`profile`、`inventory-items`、`meal-plans`、`shopping-lists`、`conversations` 六类基础 API
+- 后端主链路：已提供 `health`、`auth/guest`、`session`、`workspace-state`、`profile`、`inventory-items`、`meal-plans`、`weekly-plans`、`shopping-lists`、`conversations` API
+- 数据持久化：已提供 MySQL migration、基于 `server/data/store.json` 的 seed 导入脚本，以及 guest session -> workspace -> resources 的隔离边界
+- 自动化脚本：已提供 `api-smoke`、`api-contract`、`workspace-smoke`、`ui-regression` 四类脚本入口
 
 ### 暂未实现
 
-- weekly-plan API 实现
-- 真实 AI 结构化生成
-- 数据库持久化存储
 - 购物清单下载或打印
 - 库存图片识别
+- 更细的营养可信度规则与异常样本分析面板
 
 ## 产品范围
 
@@ -57,6 +57,9 @@ SmartMeal 是一个面向家庭饮食管理场景的 Web 端 MVP 原型。项目
 | 样式 | CSS Modules + `src/styles/global.css` |
 | 图标 | lucide-react |
 | 包管理 | npm |
+| 后端运行时 | Node.js HTTP + TypeScript |
+| 数据库 | MySQL 8 |
+| AI 适配 | DeepSeek `deepseek-v4-flash` + AJV schema 校验 |
 
 ## 快速开始
 
@@ -94,12 +97,38 @@ npm run dev:server
 
 默认监听 `http://localhost:8787`。
 
+### 6. 初始化数据库
+
+先准备 MySQL 连接配置。后端优先读取 `DATABASE_URL`，也支持 `MYSQL_HOST`、`MYSQL_PORT`、`MYSQL_USER`、`MYSQL_PASSWORD`、`MYSQL_DATABASE`。本地示例：
+
+```powershell
+$env:MYSQL_HOST="127.0.0.1"
+$env:MYSQL_PORT="3306"
+$env:MYSQL_USER="root"
+$env:MYSQL_PASSWORD="1234"
+$env:MYSQL_DATABASE="smartmeal"
+```
+
+```powershell
+npm run db:migrate
+npm run db:seed
+```
+
+### 7. 运行回归脚本
+
+```powershell
+npm run test:api-smoke
+npm run test:api-contract
+npm run test:workspace-smoke
+```
+
 ## 目录结构
 
 ```text
 .
 ├── AGENTS.md
 ├── docs
+├── scripts
 ├── server
 ├── artifacts
 ├── src
@@ -116,7 +145,7 @@ npm run dev:server
 
 ## 核心业务模块
 
-项目当前围绕这些领域对象组织：
+项目当前围绕这些领域对象组织，并按 `session -> workspace -> user-owned resources` 管理归属：
 
 - `UserProfile`：营养目标、口味偏好、饮食限制
 - `InventoryItem`：库存食材、数量、过期日期和状态
@@ -149,22 +178,23 @@ npm run dev:server
 
 | 范围 | 进度 | 说明 |
 | --- | ---: | --- |
-| 前端 MVP 演示闭环 | 96% | 已具备总览、对话、三餐、库存、营养、购物清单和每周计划演示能力 |
-| 整体 MVP | 78% | 后端 API 合约、核心数据模型以及日计划/购物/会话主链路服务已落地；仍缺 weekly-plan、真实 AI 和数据库层 |
+| 前端 MVP 演示闭环 | 100% | 总览、对话、三餐、库存、营养、购物清单和每周计划已统一到真实后端资源，刷新恢复走 session + workspace-state 回拉 |
+| 整体 MVP | 96% | 后端 API、weekly-plan/adopt、DeepSeek 结构化生成、MySQL 存储、guest workspace 边界和关键回归脚本已落地；仍缺更细的营养可信度和完整 UI 自动验收环境 |
 
 ## 下一步
 
-1. 按 `docs/smartmeal-backend-api-contract.md` 继续实现后端接口
-2. 继续实现 `weekly-plan` 与 adopt 同步逻辑
-3. 把当前规则生成升级为真实 AI 结构化输出、schema 校验和 fallback
-4. 把本地 JSON 存储升级为数据库持久化，并增加认证联调能力
+1. 把 `chat / today / shopping / weekly` 的真实试用流接到稳定 MySQL 环境，并补正式部署配置
+2. 继续补营养可信度：食材单位归一扩展到餐食食材、推荐合理性规则和异常样本分析
+3. 跑通 `test:api-smoke / test:api-contract / test:workspace-smoke / test:ui-regression` 的持续集成环境
+4. 再往后补用户注册态和非 guest workspace 的认证联调能力
 
 ## 验证说明
 
-当前仓库没有 `test` 或 `lint` 脚本。代码改动后的最低验证方式：
+当前仓库没有 `lint` 脚本。代码改动后的最低验证方式：
 
 ```powershell
 npm run build
+npm run build:server
 ```
 
 只修改文档时，至少用 UTF-8 读取确认内容正常。

@@ -1,4 +1,4 @@
-import { AlertTriangle, Box, Plus, ShoppingBag } from "lucide-react";
+import { AlertTriangle, Box, Loader2, Plus, ShoppingBag } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 import { IconButton } from "../../components/IconButton";
 import type { InventoryCategory, InventoryItem } from "../../types/smartmeal";
@@ -14,10 +14,11 @@ export type InventoryFormValue = {
 
 type InventoryPanelProps = {
   inventory: InventoryItem[];
-  onAddInventory: (value: InventoryFormValue) => void;
+  isSubmitting?: boolean;
+  onAddInventory: (value: InventoryFormValue) => Promise<void>;
 };
 
-export function InventoryPanel({ inventory, onAddInventory }: InventoryPanelProps) {
+export function InventoryPanel({ inventory, isSubmitting = false, onAddInventory }: InventoryPanelProps) {
   const [form, setForm] = useState<InventoryFormValue>({
     name: "",
     category: "vegetable",
@@ -33,16 +34,21 @@ export function InventoryPanel({ inventory, onAddInventory }: InventoryPanelProp
     [inventory],
   );
 
-  function submit(event: FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault();
+    if (isSubmitting) return;
     const value = {
       ...form,
       name: form.name.trim(),
       quantity: form.quantity.trim() || "1 份",
     };
     if (!value.name) return;
-    onAddInventory(value);
-    setForm((current) => ({ ...current, name: "", quantity: "1 份" }));
+    try {
+      await onAddInventory(value);
+      setForm((current) => ({ ...current, name: "", quantity: "1 份" }));
+    } catch {
+      // Keep the user's input so they can retry after the app-level error banner.
+    }
   }
 
   return (
@@ -91,6 +97,7 @@ export function InventoryPanel({ inventory, onAddInventory }: InventoryPanelProp
               value={form.name}
               onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
               placeholder="例如：鸡蛋"
+              disabled={isSubmitting}
             />
           </div>
           <div className={styles.field}>
@@ -99,6 +106,7 @@ export function InventoryPanel({ inventory, onAddInventory }: InventoryPanelProp
               id="inventory-category"
               value={form.category}
               onChange={(event) => setForm((current) => ({ ...current, category: event.target.value as InventoryCategory }))}
+              disabled={isSubmitting}
             >
               {Object.entries(categoryLabels).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
@@ -112,6 +120,7 @@ export function InventoryPanel({ inventory, onAddInventory }: InventoryPanelProp
               value={form.quantity}
               onChange={(event) => setForm((current) => ({ ...current, quantity: event.target.value }))}
               placeholder="1 份"
+              disabled={isSubmitting}
             />
           </div>
           <div className={styles.field}>
@@ -121,9 +130,12 @@ export function InventoryPanel({ inventory, onAddInventory }: InventoryPanelProp
               type="date"
               value={form.expireDate}
               onChange={(event) => setForm((current) => ({ ...current, expireDate: event.target.value }))}
+              disabled={isSubmitting}
             />
           </div>
-          <IconButton icon={<Plus size={17} />} variant="primary" type="submit">添加食材</IconButton>
+          <IconButton icon={isSubmitting ? <Loader2 size={17} /> : <Plus size={17} />} variant="primary" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "添加中" : "添加食材"}
+          </IconButton>
         </form>
       </div>
 
@@ -144,7 +156,12 @@ export function InventoryPanel({ inventory, onAddInventory }: InventoryPanelProp
           <span>状态</span>
           <span>操作</span>
         </div>
-        {inventory.map((item) => (
+        {inventory.length === 0 ? (
+          <div className={styles.emptyState}>
+            <strong>还没有库存食材</strong>
+            <span>先添加鸡蛋、番茄或牛奶，后续餐单会优先使用这些库存。</span>
+          </div>
+        ) : inventory.map((item) => (
           <div className={styles.tableRow} key={item.id}>
             <strong>{item.name}</strong>
             <span>{categoryLabels[item.category]}</span>

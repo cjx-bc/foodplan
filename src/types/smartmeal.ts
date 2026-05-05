@@ -77,6 +77,7 @@ export type GenerationMeta = {
   source: GenerationSource;
   model?: string;
   requestId?: string;
+  promptVersion?: string;
 };
 
 export type DerivedShoppingListItem = ShoppingListItem & {
@@ -136,6 +137,7 @@ export type WeeklyPlan = {
 export type Session = {
   id: string;
   userId: string;
+  workspaceId?: string;
   displayName: string;
   createdAt: string;
   updatedAt: string;
@@ -143,6 +145,7 @@ export type Session = {
 
 export type WorkspaceState = {
   userId: string;
+  workspaceId?: string;
   currentConversationId?: string;
   currentMealPlanId?: string;
   currentWeeklyPlanId?: string;

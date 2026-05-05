@@ -13,10 +13,24 @@ export type PlanningMode = "daily" | "weekly";
 export type ConversationRole = "user" | "assistant";
 export type WeeklyPlanDayStatus = "balanced" | "light" | "needs_attention";
 export type GenerationSource = "ai" | "fallback";
+export type UserKind = "guest" | "registered";
+export type WorkspaceKind = "guest" | "personal";
+export type GenerationEventKind = "daily_plan" | "weekly_plan";
+export type GenerationEventStatus = "success" | "schema_invalid" | "request_error" | "fallback";
 
 export type UserRecord = {
   id: string;
   displayName: string;
+  kind?: UserKind;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type WorkspaceRecord = {
+  id: string;
+  ownerUserId: string;
+  name: string;
+  kind: WorkspaceKind;
   createdAt: string;
   updatedAt: string;
 };
@@ -24,6 +38,7 @@ export type UserRecord = {
 export type SessionRecord = {
   id: string;
   userId: string;
+  workspaceId: string;
   token: string;
   createdAt: string;
   updatedAt: string;
@@ -33,11 +48,13 @@ export type GenerationMetaRecord = {
   source: GenerationSource;
   model?: string;
   requestId?: string;
+  promptVersion?: string;
 };
 
 export type ProfileRecord = {
   id: string;
   userId: string;
+  workspaceId: string;
   name: string;
   dailyCalorieTarget: number;
   proteinTarget: number;
@@ -53,6 +70,7 @@ export type ProfileRecord = {
 export type InventoryItemRecord = {
   id: string;
   userId: string;
+  workspaceId: string;
   name: string;
   category: InventoryCategory;
   quantity: string;
@@ -112,6 +130,7 @@ export type ShoppingListItemRecord = {
 export type MealPlanRecord = {
   id: string;
   userId: string;
+  workspaceId: string;
   conversationId?: string;
   mode: PlanningMode;
   sourceMessage: string;
@@ -143,6 +162,7 @@ export type WeeklyPlanDayRecord = {
 export type WeeklyPlanRecord = {
   id: string;
   userId: string;
+  workspaceId: string;
   conversationId?: string;
   title: string;
   description: string;
@@ -158,6 +178,7 @@ export type WeeklyPlanRecord = {
 export type ShoppingListRecord = {
   id: string;
   userId: string;
+  workspaceId: string;
   sourceType: "meal_plan" | "weekly_plan";
   sourceId: string;
   items: ShoppingListItemRecord[];
@@ -168,6 +189,7 @@ export type ShoppingListRecord = {
 export type ConversationRecord = {
   id: string;
   userId: string;
+  workspaceId: string;
   title: string;
   lastMessageAt: string;
   createdAt: string;
@@ -177,6 +199,7 @@ export type ConversationRecord = {
 export type ConversationMessageRecord = {
   id: string;
   userId: string;
+  workspaceId: string;
   conversationId: string;
   role: ConversationRole;
   content: string;
@@ -188,6 +211,7 @@ export type ConversationMessageRecord = {
 
 export type WorkspaceStateRecord = {
   userId: string;
+  workspaceId: string;
   currentConversationId?: string;
   currentMealPlanId?: string;
   currentWeeklyPlanId?: string;
@@ -199,6 +223,7 @@ export type WorkspaceStateRecord = {
 
 export type AppStore = {
   users: UserRecord[];
+  workspaces?: WorkspaceRecord[];
   sessions: SessionRecord[];
   profile: ProfileRecord;
   inventoryItems: InventoryItemRecord[];
@@ -208,6 +233,27 @@ export type AppStore = {
   conversations: ConversationRecord[];
   conversationMessages: ConversationMessageRecord[];
   workspaceState: WorkspaceStateRecord;
+};
+
+export type StoreScope = {
+  userId: string;
+  workspaceId: string;
+};
+
+export type AiGenerationEventRecord = {
+  id: string;
+  workspaceId: string;
+  userId: string;
+  kind: GenerationEventKind;
+  status: GenerationEventStatus;
+  model?: string;
+  requestId?: string;
+  promptVersion?: string;
+  sourceMessage: string;
+  inputPayload: Record<string, unknown>;
+  rawOutput?: string;
+  errorMessage?: string;
+  createdAt: string;
 };
 
 export type ApiFieldError = {

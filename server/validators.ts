@@ -91,6 +91,7 @@ export function validateInventoryCreate(
   now: string,
   id: string,
   userId: string,
+  workspaceId = "workspace_guest_default",
 ): { errors: ApiFieldError[]; value?: InventoryItemRecord } {
   const errors: ApiFieldError[] = [];
 
@@ -148,6 +149,7 @@ export function validateInventoryCreate(
   const value: InventoryItemRecord = {
     id,
     userId,
+    workspaceId,
     name,
     category: (category as InventoryCategory) ?? "other",
     quantity,
@@ -386,6 +388,7 @@ export function validateConversationCreate(
   now: string,
   id: string,
   userId: string,
+  workspaceId = "workspace_guest_default",
 ): { errors: ApiFieldError[]; value?: ConversationRecord } {
   const errors: ApiFieldError[] = [];
   if (!body || typeof body !== "object" || Array.isArray(body)) {
@@ -405,6 +408,7 @@ export function validateConversationCreate(
         value: {
           id,
           userId,
+          workspaceId,
           title,
           lastMessageAt: now,
           createdAt: now,

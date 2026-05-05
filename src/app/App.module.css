@@ -1,23 +1,23 @@
 .app {
   display: grid;
-  gap: 18px;
+  gap: 16px;
   margin: 0 auto;
-  max-width: 1600px;
-  padding: 10px 18px 24px;
+  max-width: 1520px;
+  padding: 8px 16px 20px;
 }
 
 .header {
   align-items: center;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(224, 216, 201, 0.9);
-  border-radius: 18px;
-  box-shadow: 0 16px 36px rgba(83, 68, 44, 0.07);
+  border-radius: 16px;
+  box-shadow: 0 14px 30px rgba(83, 68, 44, 0.06);
   display: grid;
-  gap: 18px;
+  gap: 16px;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  padding: 12px 16px;
+  padding: 10px 14px;
   position: sticky;
-  top: 8px;
+  top: 6px;
   z-index: 10;
 }
 
@@ -44,13 +44,13 @@
 }
 
 .brand strong {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
   line-height: 1;
 }
 
 .brand small {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   margin-left: 4px;
 }
@@ -58,7 +58,7 @@
 .nav {
   align-items: center;
   display: flex;
-  gap: 24px;
+  gap: 20px;
   justify-content: center;
   min-width: 0;
   overflow-x: auto;
@@ -77,7 +77,7 @@
   cursor: pointer;
   flex: 0 0 auto;
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   min-height: 28px;
   padding: 4px 0;
@@ -118,10 +118,10 @@
   color: white;
   cursor: pointer;
   font: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
-  min-height: 34px;
-  padding: 0 14px;
+  min-height: 32px;
+  padding: 0 13px;
 }
 
 .utilityButton {
@@ -132,9 +132,9 @@
   color: #464740;
   cursor: pointer;
   display: inline-flex;
-  height: 34px;
+  height: 32px;
   justify-content: center;
-  width: 34px;
+  width: 32px;
 }
 
 .main {
@@ -146,11 +146,11 @@
 .errorBanner {
   align-items: center;
   border: 1px solid transparent;
-  border-radius: 14px;
+  border-radius: 13px;
   display: flex;
-  gap: 16px;
+  gap: 14px;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 10px 14px;
 }
 
 .infoBanner {
@@ -179,11 +179,11 @@
 .pageFrame {
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(226, 218, 204, 0.95);
-  border-radius: 22px;
-  box-shadow: 0 20px 42px rgba(84, 71, 47, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 18px 36px rgba(84, 71, 47, 0.07);
   display: grid;
-  gap: 18px;
-  padding: 18px;
+  gap: 16px;
+  padding: 16px;
 }
 
 .pageTitle {
@@ -192,7 +192,7 @@
 }
 
 .pageTitle h2 {
-  font-size: 38px;
+  font-size: 34px;
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1.06;
@@ -201,8 +201,8 @@
 
 .pageTitle p {
   color: var(--muted);
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 13px;
+  line-height: 1.5;
   margin: 0;
 }
 
@@ -247,23 +247,23 @@
 .shoppingAside,
 .shoppingMain {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .bottomShortcutBar {
   align-items: center;
   background: linear-gradient(180deg, #fffefb, #fbf7ef);
   border: 1px solid rgba(230, 221, 207, 0.96);
-  border-radius: 18px;
+  border-radius: 16px;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   grid-template-columns: auto minmax(0, 1fr);
-  padding: 14px 18px;
+  padding: 12px 16px;
 }
 
 .bottomShortcutBar > span {
   color: var(--primary);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
 }
 
@@ -289,11 +289,11 @@
 .surfaceCard {
   background: linear-gradient(180deg, #fffefb, #fbf7ef);
   border: 1px solid rgba(230, 221, 207, 0.96);
-  border-radius: 18px;
-  box-shadow: 0 12px 26px rgba(92, 77, 48, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 10px 22px rgba(92, 77, 48, 0.045);
   display: grid;
-  gap: 14px;
-  padding: 16px;
+  gap: 12px;
+  padding: 14px;
 }
 
 .surfaceHeader {
@@ -305,13 +305,13 @@
 
 .surfaceHeader span {
   color: #4f5049;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
 }
 
 .surfaceHeader strong {
   color: var(--primary);
-  font-size: 38px;
+  font-size: 33px;
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1;
@@ -414,12 +414,23 @@
   cursor: pointer;
   display: inline-flex;
   font: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   gap: 8px;
   justify-content: center;
-  min-height: 38px;
-  padding: 0 14px;
+  min-height: 36px;
+  padding: 0 13px;
+}
+
+.inlineAction:disabled,
+.primaryBlockAction:disabled,
+.primaryMiniAction:disabled,
+.secondaryAction:disabled,
+.weeklyActions button:disabled,
+.preferenceMoreButton:disabled {
+  cursor: not-allowed;
+  filter: saturate(0.72);
+  opacity: 0.62;
 }
 
 .inlineAction {
@@ -446,10 +457,51 @@
   width: 100%;
 }
 
+.chatPage {
+  align-items: stretch;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(520px, 1fr) minmax(280px, 360px);
+  min-width: 0;
+}
+
+.chatWorkspace,
+.todayLayout,
+.overviewHeroStats {
+  display: grid;
+  gap: 14px;
+}
+
+.chatWorkspace {
+  align-self: stretch;
+  grid-auto-rows: max-content;
+  min-width: 0;
+}
+
+.chatWorkspace .surfaceCard {
+  overflow: hidden;
+}
+
+.chatWorkspace .surfaceHeader strong {
+  font-size: 20px;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chatWorkspace .miniMealRow {
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+}
+
+.chatWorkspace .miniMealRow img {
+  width: 44px;
+}
+
 .cardDetail {
   color: var(--muted);
-  font-size: 13px;
-  line-height: 1.65;
+  font-size: 12px;
+  line-height: 1.58;
   margin: 0;
 }
 
@@ -477,22 +529,22 @@
 .overviewHeroSide {
   background: linear-gradient(180deg, #fffefb, #fbf7ef);
   border: 1px solid rgba(230, 221, 207, 0.96);
-  border-radius: 20px;
-  box-shadow: 0 12px 26px rgba(92, 77, 48, 0.05);
+  border-radius: 18px;
+  box-shadow: 0 10px 22px rgba(92, 77, 48, 0.045);
   display: grid;
-  gap: 14px;
-  padding: 20px;
+  gap: 12px;
+  padding: 18px;
 }
 
 .heroEyebrow {
   color: var(--primary);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
 }
 
 .overviewHeroMain h3 {
   color: var(--ink);
-  font-size: 42px;
+  font-size: 36px;
   line-height: 1.06;
   margin: 0;
 }
@@ -567,7 +619,7 @@
 
 .modeBadge strong {
   color: var(--ink);
-  font-size: 24px;
+  font-size: 21px;
   line-height: 1.1;
 }
 
@@ -575,6 +627,14 @@
 .actionStack {
   display: grid;
   gap: 10px;
+  justify-items: start;
+}
+
+.actionStack .inlineAction,
+.actionStack .primaryBlockAction,
+.actionStack .primaryMiniAction {
+  min-width: 146px;
+  width: auto;
 }
 
 .overviewMetricGrid {
@@ -666,6 +726,7 @@
 .preferenceList {
   display: grid;
   gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .preferenceList button {
@@ -680,15 +741,33 @@
   font-size: 13px;
   font-weight: 700;
   gap: 8px;
-  justify-content: flex-start;
-  min-height: 38px;
-  padding: 0 12px;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 14px;
+  text-align: center;
 }
 
 .preferenceList .preferenceActive {
   background: #edf8ef;
   border-color: rgba(31, 140, 78, 0.35);
   color: var(--primary);
+}
+
+.preferenceMoreButton {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px dashed rgba(191, 210, 197, 0.95);
+  border-radius: 12px;
+  color: var(--primary);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  width: 100%;
 }
 
 .weeklyMainBoard {
@@ -706,7 +785,7 @@
 .weekRange strong {
   color: var(--ink);
   display: block;
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .weekRange small {
@@ -865,15 +944,15 @@
 .metricTile {
   background: #fffefb;
   border: 1px solid rgba(230, 221, 207, 0.96);
-  border-radius: 14px;
+  border-radius: 13px;
   display: grid;
   gap: 8px;
-  padding: 14px;
+  padding: 12px;
 }
 
 .metricTile strong {
   color: var(--ink);
-  font-size: 28px;
+  font-size: 24px;
   line-height: 1.1;
 }
 
@@ -892,16 +971,16 @@
 .nutritionHeroSide {
   background: linear-gradient(180deg, #fffefb, #fbf7ef);
   border: 1px solid rgba(230, 221, 207, 0.96);
-  border-radius: 20px;
-  box-shadow: 0 12px 26px rgba(92, 77, 48, 0.05);
+  border-radius: 18px;
+  box-shadow: 0 10px 22px rgba(92, 77, 48, 0.045);
   display: grid;
-  gap: 14px;
-  padding: 20px;
+  gap: 12px;
+  padding: 18px;
 }
 
 .nutritionHeroMain h3 {
   color: var(--ink);
-  font-size: 34px;
+  font-size: 30px;
   line-height: 1.12;
   margin: 0;
 }
@@ -1162,6 +1241,7 @@
   }
 
   .chatGrid,
+  .chatPage,
   .overviewMetricGrid,
   .overviewSplit,
   .overviewFlowStrip,
@@ -1175,6 +1255,10 @@
   }
 
   .chatGrid > :last-child {
+    grid-template-columns: 1fr;
+  }
+
+  .preferenceList {
     grid-template-columns: 1fr;
   }
 

@@ -11,13 +11,15 @@ import {
 } from "./planner.js";
 import { sendError, sendJson, sendNoContent } from "./responses.js";
 import {
+  ensureDefaultGuestContext,
   createSession,
   createConversation,
   createConversationMessages,
   createMealPlan,
   createUser,
+  createWorkspace,
   createWeeklyPlan,
-  listUsers,
+  listWorkspacesByUserId,
   listConversationMessages,
   listConversations,
   listInventoryItems,
@@ -29,6 +31,7 @@ import {
   readShoppingListBySource,
   readUserById,
   readWeeklyPlan,
+  readWorkspaceById,
   readWorkspaceState,
   replaceInventoryItems,
   updateConversation,
@@ -43,6 +46,7 @@ import type {
   MealPlanRecord,
   MealType,
   ShoppingListRecord,
+  StoreScope,
   UserRecord,
   WeeklyPlanRecord,
   WorkspaceStateRecord,
@@ -62,7 +66,7 @@ import {
   validateWeeklyPlanCreate,
 } from "./validators.js";
 import { createId, createRequestId, nowIso } from "./utils.js";
-import { tryGenerateDailyMealPlanWithDeepSeek, tryGenerateWeeklyPlanWithDeepSeek } from "./ai/deepseek.js";
+import { tryAnswerGeneralQuestionWithDeepSeek, tryGenerateDailyMealPlanWithDeepSeek, tryGenerateWeeklyPlanWithDeepSeek } from "./ai/deepseek.js";
 
 const port = Number(process.env.PORT ?? 8787);
 
@@ -90,6 +94,39 @@ function getUrl(request: IncomingMessage): URL {
   return new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
 }
 
+function shouldGenerateMealPlanFromMessage(message: string): boolean {
+  const normalized = message.trim().toLowerCase();
+  const mealIntentPattern = /餐|饭|吃|饮食|食材|库存|营养|热量|蛋白|脂肪|碳水|纤维|清淡|油|盐|早餐|午餐|晚餐|周计划|购物|采购|meal|food|diet|calorie|protein|nutrition|shopping/;
+  return mealIntentPattern.test(normalized);
+}
+
+function answerSimpleGeneralQuestion(message: string): string | null {
+  const arithmetic = message.match(/(-?\d+(?:\.\d+)?)\s*([+\-*/×÷])\s*(-?\d+(?:\.\d+)?)/);
+  if (!arithmetic) {
+    return null;
+  }
+
+  const left = Number(arithmetic[1]);
+  const operator = arithmetic[2];
+  const right = Number(arithmetic[3]);
+  if (!Number.isFinite(left) || !Number.isFinite(right)) {
+    return null;
+  }
+
+  if ((operator === "/" || operator === "÷") && right === 0) {
+    return "除数不能为 0。";
+  }
+
+  const result = operator === "+"
+    ? left + right
+    : operator === "-"
+      ? left - right
+      : operator === "*" || operator === "×"
+        ? left * right
+        : left / right;
+  return `${arithmetic[1]}${operator}${arithmetic[3]} = ${Number.isInteger(result) ? result : Number(result.toFixed(6))}`;
+}
+
 function parseCookies(request: IncomingMessage) {
   const cookieHeader = request.headers.cookie ?? "";
   return cookieHeader.split(";").reduce<Record<string, string>>((record, part) => {
@@ -106,26 +143,47 @@ function setSessionCookie(response: ServerResponse, token: string) {
   response.setHeader("Set-Cookie", `smartmeal_session=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000`);
 }
 
-async function resolveUserFromRequest(request: IncomingMessage): Promise<UserRecord> {
+type RequestContext = {
+  user: UserRecord;
+  scope: StoreScope;
+  workspaceId: string;
+};
+
+async function resolveRequestContext(request: IncomingMessage): Promise<RequestContext> {
   const cookies = parseCookies(request);
   const sessionToken = cookies.smartmeal_session;
-  const defaultUser = (await listUsers())[0] ?? await createUser({
-    id: createId("user"),
-    displayName: "Guest",
-    createdAt: nowIso(),
-    updatedAt: nowIso(),
-  });
+  const defaultContext = await ensureDefaultGuestContext(nowIso());
 
   if (!sessionToken) {
-    return defaultUser;
+    return {
+      user: defaultContext.user,
+      workspaceId: defaultContext.workspace.id,
+      scope: defaultContext.scope,
+    };
   }
 
   const session = await readSessionByToken(sessionToken);
   if (!session) {
-    return defaultUser;
+    return {
+      user: defaultContext.user,
+      workspaceId: defaultContext.workspace.id,
+      scope: defaultContext.scope,
+    };
   }
 
-  return (await readUserById(session.userId)) ?? defaultUser;
+  const user = (await readUserById(session.userId)) ?? defaultContext.user;
+  const workspace = (await readWorkspaceById(session.workspaceId))
+    ?? (await listWorkspacesByUserId(user.id))[0]
+    ?? defaultContext.workspace;
+
+  return {
+    user,
+    workspaceId: workspace.id,
+    scope: {
+      userId: user.id,
+      workspaceId: workspace.id,
+    },
+  };
 }
 
 async function resolveSessionFromRequest(request: IncomingMessage) {
@@ -162,18 +220,18 @@ async function buildShoppingListFromSource(
   sourceType: "meal_plan" | "weekly_plan",
   sourceId: string,
   preserveCheckedState: boolean,
-  userId: string,
+  scope: StoreScope,
 ): Promise<ShoppingListRecord | null> {
-  const inventory = await listInventoryItems();
-  const currentList = await readShoppingListBySource(sourceType, sourceId);
+  const inventory = await listInventoryItems(scope);
+  const currentList = await readShoppingListBySource(scope, sourceType, sourceId);
   let items = currentList?.items ?? [];
 
   if (sourceType === "meal_plan") {
-    const mealPlan = await readMealPlan(sourceId);
+    const mealPlan = await readMealPlan(scope, sourceId);
     if (!mealPlan) return null;
     items = deriveShoppingItems(mealPlan.meals, inventory, preserveCheckedState ? currentList?.items : []);
   } else {
-    const weeklyPlan = await readWeeklyPlan(sourceId);
+    const weeklyPlan = await readWeeklyPlan(scope, sourceId);
     if (!weeklyPlan) return null;
     items = deriveShoppingItems(
       weeklyPlan.days.flatMap((day) => day.meals),
@@ -185,7 +243,8 @@ async function buildShoppingListFromSource(
   const updatedAt = nowIso();
   const shoppingList: ShoppingListRecord = {
     id: currentList?.id ?? createId("shop"),
-    userId,
+    userId: scope.userId,
+    workspaceId: scope.workspaceId,
     sourceType,
     sourceId,
     items,
@@ -226,15 +285,25 @@ async function handleAuthGuest(request: IncomingMessage, response: ServerRespons
   }
 
   const now = nowIso();
-  const existingUser = (await listUsers())[0] ?? await createUser({
+  const guestUser = await createUser({
     id: createId("user"),
     displayName: "Guest",
+    kind: "guest",
+    createdAt: now,
+    updatedAt: now,
+  });
+  const guestWorkspace = await createWorkspace({
+    id: createId("workspace"),
+    ownerUserId: guestUser.id,
+    name: "Guest Workspace",
+    kind: "guest",
     createdAt: now,
     updatedAt: now,
   });
   const session = await createSession({
     id: createId("sess"),
-    userId: existingUser.id,
+    userId: guestUser.id,
+    workspaceId: guestWorkspace.id,
     token: createId("token"),
     createdAt: now,
     updatedAt: now,
@@ -244,8 +313,9 @@ async function handleAuthGuest(request: IncomingMessage, response: ServerRespons
   sendJson(response, 201, {
     data: {
       id: session.id,
-      userId: existingUser.id,
-      displayName: existingUser.displayName,
+      userId: guestUser.id,
+      workspaceId: guestWorkspace.id,
+      displayName: guestUser.displayName,
       createdAt: session.createdAt,
       updatedAt: session.updatedAt,
     },
@@ -269,6 +339,7 @@ async function handleGetSession(request: IncomingMessage, response: ServerRespon
     data: {
       id: session.id,
       userId: session.userId,
+      workspaceId: session.workspaceId,
       displayName: user.displayName,
       createdAt: session.createdAt,
       updatedAt: session.updatedAt,
@@ -277,12 +348,13 @@ async function handleGetSession(request: IncomingMessage, response: ServerRespon
 }
 
 async function handleGetWorkspaceState(request: IncomingMessage, response: ServerResponse): Promise<void> {
-  const user = await resolveUserFromRequest(request);
-  const workspaceState = await readWorkspaceState();
+  const context = await resolveRequestContext(request);
+  const workspaceState = await readWorkspaceState(context.scope);
   sendJson(response, 200, {
     data: {
       ...workspaceState,
-      userId: workspaceState.userId ?? user.id,
+      userId: workspaceState.userId ?? context.user.id,
+      workspaceId: workspaceState.workspaceId ?? context.workspaceId,
     },
   });
 }
@@ -294,16 +366,17 @@ async function handlePatchWorkspaceState(request: IncomingMessage, response: Ser
     return;
   }
 
-  const user = await resolveUserFromRequest(request);
-  const currentState = await readWorkspaceState();
+  const context = await resolveRequestContext(request);
+  const currentState = await readWorkspaceState(context.scope);
   const payload = body as Partial<WorkspaceStateRecord>;
   const nextState: WorkspaceStateRecord = {
     ...currentState,
-    userId: user.id,
-    currentConversationId: typeof payload.currentConversationId === "string" ? payload.currentConversationId : currentState.currentConversationId,
-    currentMealPlanId: typeof payload.currentMealPlanId === "string" ? payload.currentMealPlanId : currentState.currentMealPlanId,
-    currentWeeklyPlanId: typeof payload.currentWeeklyPlanId === "string" ? payload.currentWeeklyPlanId : currentState.currentWeeklyPlanId,
-    currentShoppingListId: typeof payload.currentShoppingListId === "string" ? payload.currentShoppingListId : currentState.currentShoppingListId,
+    userId: context.user.id,
+    workspaceId: context.workspaceId,
+    currentConversationId: payload.currentConversationId === null ? undefined : typeof payload.currentConversationId === "string" ? payload.currentConversationId : currentState.currentConversationId,
+    currentMealPlanId: payload.currentMealPlanId === null ? undefined : typeof payload.currentMealPlanId === "string" ? payload.currentMealPlanId : currentState.currentMealPlanId,
+    currentWeeklyPlanId: payload.currentWeeklyPlanId === null ? undefined : typeof payload.currentWeeklyPlanId === "string" ? payload.currentWeeklyPlanId : currentState.currentWeeklyPlanId,
+    currentShoppingListId: payload.currentShoppingListId === null ? undefined : typeof payload.currentShoppingListId === "string" ? payload.currentShoppingListId : currentState.currentShoppingListId,
     planningMode: payload.planningMode === "weekly" ? "weekly" : payload.planningMode === "daily" ? "daily" : currentState.planningMode,
     selectedWeekday: typeof payload.selectedWeekday === "string" ? payload.selectedWeekday : currentState.selectedWeekday,
     updatedAt: nowIso(),
@@ -313,14 +386,16 @@ async function handlePatchWorkspaceState(request: IncomingMessage, response: Ser
   sendJson(response, 200, { data: saved });
 }
 
-async function handleGetProfile(response: ServerResponse): Promise<void> {
-  const profile = await readProfile();
+async function handleGetProfile(request: IncomingMessage, response: ServerResponse): Promise<void> {
+  const context = await resolveRequestContext(request);
+  const profile = await readProfile(context.scope);
   sendJson(response, 200, { data: profile });
 }
 
 async function handlePatchProfile(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
   const body = await readJsonBody(request);
-  const currentProfile = await readProfile();
+  const context = await resolveRequestContext(request);
+  const currentProfile = await readProfile(context.scope);
   const result = validateProfilePatch(body, currentProfile, nowIso());
 
   if (!result.value) {
@@ -334,6 +409,7 @@ async function handlePatchProfile(request: IncomingMessage, response: ServerResp
 
 async function handleListInventory(request: IncomingMessage, response: ServerResponse): Promise<void> {
   const url = getUrl(request);
+  const context = await resolveRequestContext(request);
   const statusFilters = new Set(
     (url.searchParams.get("status") ?? "")
       .split(",")
@@ -348,7 +424,7 @@ async function handleListInventory(request: IncomingMessage, response: ServerRes
   );
   const sortBy = url.searchParams.get("sort");
 
-  let items = await listInventoryItems();
+  let items = await listInventoryItems(context.scope);
 
   if (statusFilters.size > 0) {
     items = items.filter((item) => statusFilters.has(item.status));
@@ -374,16 +450,16 @@ async function handleListInventory(request: IncomingMessage, response: ServerRes
 
 async function handleCreateInventory(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
   const body = await readJsonBody(request);
-  const user = await resolveUserFromRequest(request);
-  const result = validateInventoryCreate(body, nowIso(), createId("inv"), user.id);
+  const context = await resolveRequestContext(request);
+  const result = validateInventoryCreate(body, nowIso(), createId("inv"), context.user.id, context.workspaceId);
 
   if (!result.value) {
     sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
     return;
   }
 
-  const currentItems = await listInventoryItems();
-  const items = await replaceInventoryItems([result.value, ...currentItems]);
+  const currentItems = await listInventoryItems(context.scope);
+  const items = await replaceInventoryItems(context.scope, [result.value, ...currentItems]);
   const createdItem = items.find((item) => item.id === result.value?.id) ?? result.value;
 
   response.setHeader("Location", `/api/v1/inventory-items/${createdItem.id}`);
@@ -397,7 +473,8 @@ async function handlePatchInventory(
   inventoryItemId: string,
 ): Promise<void> {
   const body = await readJsonBody(request);
-  const currentItems = await listInventoryItems();
+  const context = await resolveRequestContext(request);
+  const currentItems = await listInventoryItems(context.scope);
   const currentItem = currentItems.find((item) => item.id === inventoryItemId);
 
   if (!currentItem) {
@@ -412,12 +489,13 @@ async function handlePatchInventory(
   }
 
   const updatedItems = currentItems.map((item) => (item.id === inventoryItemId ? result.value! : item));
-  await replaceInventoryItems(updatedItems);
+  await replaceInventoryItems(context.scope, updatedItems);
   sendJson(response, 200, { data: result.value });
 }
 
-async function handleDeleteInventory(response: ServerResponse, requestId: string, inventoryItemId: string): Promise<void> {
-  const currentItems = await listInventoryItems();
+async function handleDeleteInventory(request: IncomingMessage, response: ServerResponse, requestId: string, inventoryItemId: string): Promise<void> {
+  const context = await resolveRequestContext(request);
+  const currentItems = await listInventoryItems(context.scope);
   const nextItems = currentItems.filter((item) => item.id !== inventoryItemId);
 
   if (nextItems.length === currentItems.length) {
@@ -425,12 +503,13 @@ async function handleDeleteInventory(response: ServerResponse, requestId: string
     return;
   }
 
-  await replaceInventoryItems(nextItems);
+  await replaceInventoryItems(context.scope, nextItems);
   sendNoContent(response);
 }
 
 async function handleCreateMealPlan(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
   const body = await readJsonBody(request);
+  const context = await resolveRequestContext(request);
   const result = validateMealPlanCreate(body);
   if (!result.value) {
     sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
@@ -438,16 +517,15 @@ async function handleCreateMealPlan(request: IncomingMessage, response: ServerRe
   }
 
   if (result.value.conversationId) {
-    const conversation = await readConversation(result.value.conversationId);
+    const conversation = await readConversation(context.scope, result.value.conversationId);
     if (!conversation) {
       sendError(response, 404, requestId, "not_found", "Conversation not found");
       return;
     }
   }
 
-  const profile = await readProfile();
-  const inventory = await listInventoryItems();
-  const user = await resolveUserFromRequest(request);
+  const profile = await readProfile(context.scope);
+  const inventory = await listInventoryItems(context.scope);
   let mealPlan: MealPlanRecord;
   try {
     mealPlan = (await tryGenerateDailyMealPlanWithDeepSeek({
@@ -456,18 +534,20 @@ async function handleCreateMealPlan(request: IncomingMessage, response: ServerRe
       inventory,
       previousShoppingList: [],
       conversationId: result.value.conversationId,
-      userId: user.id,
-    })) ?? generateDailyMealPlan(result.value.message, profile, inventory, [], user.id, result.value.conversationId);
+      userId: context.user.id,
+    })) ?? generateDailyMealPlan(result.value.message, profile, inventory, [], context.user.id, result.value.conversationId, context.workspaceId);
   } catch {
-    mealPlan = generateDailyMealPlan(result.value.message, profile, inventory, [], user.id, result.value.conversationId);
+    mealPlan = generateDailyMealPlan(result.value.message, profile, inventory, [], context.user.id, result.value.conversationId, context.workspaceId);
     mealPlan.generationMeta = { source: "fallback", model: "rule_planner" };
     mealPlan.reply = `${mealPlan.reply} 本次改用基础规则生成，结果仍可继续调整。`;
   }
+  mealPlan.workspaceId = context.workspaceId;
   await createMealPlan(mealPlan);
-  const shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true, user.id);
-  const workspaceState = await readWorkspaceState();
+  const shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true, context.scope);
+  const workspaceState = await readWorkspaceState(context.scope);
   await updateWorkspaceState({
     ...workspaceState,
+    workspaceId: context.workspaceId,
     currentMealPlanId: mealPlan.id,
     currentShoppingListId: shoppingList?.id,
     currentConversationId: result.value.conversationId ?? workspaceState.currentConversationId,
@@ -477,8 +557,9 @@ async function handleCreateMealPlan(request: IncomingMessage, response: ServerRe
   sendJson(response, 201, { data: mealPlan });
 }
 
-async function handleGetMealPlan(response: ServerResponse, requestId: string, mealPlanId: string): Promise<void> {
-  const mealPlan = await readMealPlan(mealPlanId);
+async function handleGetMealPlan(request: IncomingMessage, response: ServerResponse, requestId: string, mealPlanId: string): Promise<void> {
+  const context = await resolveRequestContext(request);
+  const mealPlan = await readMealPlan(context.scope, mealPlanId);
   if (!mealPlan) {
     sendError(response, 404, requestId, "not_found", "Meal plan not found");
     return;
@@ -493,7 +574,8 @@ async function handleRegenerateMeal(
   mealPlanId: string,
   mealType: MealType,
 ): Promise<void> {
-  const mealPlan = await readMealPlan(mealPlanId);
+  const context = await resolveRequestContext(request);
+  const mealPlan = await readMealPlan(context.scope, mealPlanId);
   if (!mealPlan) {
     sendError(response, 404, requestId, "not_found", "Meal plan not found");
     return;
@@ -505,12 +587,12 @@ async function handleRegenerateMeal(
     return;
   }
 
-  const inventory = await listInventoryItems();
-  const profile = await readProfile();
-  const currentList = await readShoppingListBySource("meal_plan", mealPlan.id);
+  const inventory = await listInventoryItems(context.scope);
+  const profile = await readProfile(context.scope);
+  const currentList = await readShoppingListBySource(context.scope, "meal_plan", mealPlan.id);
   const updatedPlan = regenerateMealInPlan(mealPlan, mealType, result.value.reason, profile, inventory, currentList?.items ?? []);
   await updateMealPlan(updatedPlan);
-  const shoppingList = await buildShoppingListFromSource("meal_plan", updatedPlan.id, true, mealPlan.userId);
+  const shoppingList = await buildShoppingListFromSource("meal_plan", updatedPlan.id, true, context.scope);
 
   sendJson(response, 200, {
     data: {
@@ -527,6 +609,7 @@ async function handleRegenerateMeal(
 
 async function handleGenerateShoppingList(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
   const body = await readJsonBody(request);
+  const context = await resolveRequestContext(request);
   const result = validateShoppingListGenerate(body);
   if (!result.value) {
     sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
@@ -537,7 +620,7 @@ async function handleGenerateShoppingList(request: IncomingMessage, response: Se
     result.value.sourceType,
     result.value.sourceId,
     result.value.preserveCheckedState,
-    (await resolveUserFromRequest(request)).id,
+    context.scope,
   );
 
   if (!shoppingList) {
@@ -545,9 +628,10 @@ async function handleGenerateShoppingList(request: IncomingMessage, response: Se
     return;
   }
 
-  const workspaceState = await readWorkspaceState();
+  const workspaceState = await readWorkspaceState(context.scope);
   await updateWorkspaceState({
     ...workspaceState,
+    workspaceId: context.workspaceId,
     currentShoppingListId: shoppingList.id,
     currentMealPlanId: result.value.sourceType === "meal_plan" ? result.value.sourceId : workspaceState.currentMealPlanId,
     currentWeeklyPlanId: result.value.sourceType === "weekly_plan" ? result.value.sourceId : workspaceState.currentWeeklyPlanId,
@@ -560,6 +644,7 @@ async function handleGenerateShoppingList(request: IncomingMessage, response: Se
 
 async function handleGetCurrentShoppingList(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
   const url = getUrl(request);
+  const context = await resolveRequestContext(request);
   const sourceType = url.searchParams.get("sourceType");
   const sourceId = url.searchParams.get("sourceId");
 
@@ -572,7 +657,7 @@ async function handleGetCurrentShoppingList(request: IncomingMessage, response: 
     return;
   }
 
-  const shoppingList = await readShoppingListBySource(sourceType, sourceId);
+  const shoppingList = await readShoppingListBySource(context.scope, sourceType, sourceId);
   if (!shoppingList) {
     sendError(response, 404, requestId, "not_found", "Shopping list not found");
     return;
@@ -588,7 +673,8 @@ async function handlePatchShoppingListItem(
   shoppingListId: string,
   itemId: string,
 ): Promise<void> {
-  const currentList = await readShoppingList(shoppingListId);
+  const context = await resolveRequestContext(request);
+  const currentList = await readShoppingList(context.scope, shoppingListId);
   if (!currentList) {
     sendError(response, 404, requestId, "not_found", "Shopping list not found");
     return;
@@ -618,6 +704,7 @@ async function handlePatchShoppingListItem(
 }
 
 async function handleCreateWeeklyPlan(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
+  const context = await resolveRequestContext(request);
   const result = validateWeeklyPlanCreate(await readJsonBody(request));
   if (!result.value) {
     sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
@@ -625,15 +712,14 @@ async function handleCreateWeeklyPlan(request: IncomingMessage, response: Server
   }
 
   if (result.value.conversationId) {
-    const conversation = await readConversation(result.value.conversationId);
+    const conversation = await readConversation(context.scope, result.value.conversationId);
     if (!conversation) {
       sendError(response, 404, requestId, "not_found", "Conversation not found");
       return;
     }
   }
 
-  const inventory = await listInventoryItems();
-  const user = await resolveUserFromRequest(request);
+  const inventory = await listInventoryItems(context.scope);
   let weeklyPlan: WeeklyPlanRecord;
   try {
     weeklyPlan = (await tryGenerateWeeklyPlanWithDeepSeek({
@@ -642,16 +728,18 @@ async function handleCreateWeeklyPlan(request: IncomingMessage, response: Server
       startDate: result.value.startDate,
       days: result.value.days,
       inventory,
-      userId: user.id,
+      userId: context.user.id,
       conversationId: result.value.conversationId,
+      workspaceId: context.workspaceId,
     })) ?? generateWeeklyPlan(
       result.value.message,
       result.value.preferenceTags,
       result.value.startDate,
       result.value.days,
       inventory,
-      user.id,
+      context.user.id,
       result.value.conversationId,
+      context.workspaceId,
     );
   } catch {
     weeklyPlan = generateWeeklyPlan(
@@ -660,15 +748,19 @@ async function handleCreateWeeklyPlan(request: IncomingMessage, response: Server
       result.value.startDate,
       result.value.days,
       inventory,
-      user.id,
+      context.user.id,
       result.value.conversationId,
+      context.workspaceId,
     );
     weeklyPlan.generationMeta = { source: "fallback", model: "rule_planner" };
+    weeklyPlan.description = `${weeklyPlan.description} 本次改用基础规则生成，结果仍可继续调整。`;
   }
+  weeklyPlan.workspaceId = context.workspaceId;
   await createWeeklyPlan(weeklyPlan);
-  const workspaceState = await readWorkspaceState();
+  const workspaceState = await readWorkspaceState(context.scope);
   await updateWorkspaceState({
     ...workspaceState,
+    workspaceId: context.workspaceId,
     currentWeeklyPlanId: weeklyPlan.id,
     selectedWeekday: weeklyPlan.days[0]?.day,
     updatedAt: nowIso(),
@@ -676,8 +768,9 @@ async function handleCreateWeeklyPlan(request: IncomingMessage, response: Server
   sendJson(response, 201, { data: weeklyPlan });
 }
 
-async function handleGetWeeklyPlan(response: ServerResponse, requestId: string, weeklyPlanId: string): Promise<void> {
-  const weeklyPlan = await readWeeklyPlan(weeklyPlanId);
+async function handleGetWeeklyPlan(request: IncomingMessage, response: ServerResponse, requestId: string, weeklyPlanId: string): Promise<void> {
+  const context = await resolveRequestContext(request);
+  const weeklyPlan = await readWeeklyPlan(context.scope, weeklyPlanId);
   if (!weeklyPlan) {
     sendError(response, 404, requestId, "not_found", "Weekly plan not found");
     return;
@@ -692,7 +785,8 @@ async function handlePatchWeeklyPlanDay(
   weeklyPlanId: string,
   date: string,
 ): Promise<void> {
-  const weeklyPlan = await readWeeklyPlan(weeklyPlanId);
+  const context = await resolveRequestContext(request);
+  const weeklyPlan = await readWeeklyPlan(context.scope, weeklyPlanId);
   if (!weeklyPlan) {
     sendError(response, 404, requestId, "not_found", "Weekly plan not found");
     return;
@@ -709,13 +803,13 @@ async function handlePatchWeeklyPlanDay(
     return;
   }
 
-  const inventory = await listInventoryItems();
+  const inventory = await listInventoryItems(context.scope);
   const updatedWeeklyPlan = adjustWeeklyPlanDay(weeklyPlan, date, result.value.replaceMeals, inventory);
   await updateWeeklyPlan(updatedWeeklyPlan);
 
-  const workspaceState = await readWorkspaceState();
+  const workspaceState = await readWorkspaceState(context.scope);
   if (workspaceState.currentWeeklyPlanId === updatedWeeklyPlan.id && workspaceState.planningMode === "weekly") {
-    await buildShoppingListFromSource("weekly_plan", updatedWeeklyPlan.id, true, updatedWeeklyPlan.userId);
+    await buildShoppingListFromSource("weekly_plan", updatedWeeklyPlan.id, true, context.scope);
   }
 
   sendJson(response, 200, { data: updatedWeeklyPlan });
@@ -727,7 +821,8 @@ async function handleAdoptWeeklyPlan(
   requestId: string,
   weeklyPlanId: string,
 ): Promise<void> {
-  const weeklyPlan = await readWeeklyPlan(weeklyPlanId);
+  const context = await resolveRequestContext(request);
+  const weeklyPlan = await readWeeklyPlan(context.scope, weeklyPlanId);
   if (!weeklyPlan) {
     sendError(response, 404, requestId, "not_found", "Weekly plan not found");
     return;
@@ -744,8 +839,8 @@ async function handleAdoptWeeklyPlan(
     ?? weeklyPlan.days.find((item) => item.day === weekdayFromDate(adoptValue.selectedDate ?? weeklyPlan.days[0]?.date ?? "2026-05-04"))
     ?? weeklyPlan.days[0];
 
-  const profile = await readProfile();
-  const inventory = await listInventoryItems();
+  const profile = await readProfile(context.scope);
+  const inventory = await listInventoryItems(context.scope);
   const syncedMealPlan = createDailyMealPlanFromMeals(
     (selectedDay?.meals ?? []).map((meal) => ({
       ...meal,
@@ -758,6 +853,7 @@ async function handleAdoptWeeklyPlan(
     [],
     weeklyPlan.userId,
     weeklyPlan.conversationId,
+    weeklyPlan.workspaceId,
     `Adopt weekly plan ${weeklyPlan.id}`,
     `已采用本周计划，并把 ${selectedDay?.day ?? "今天"} 的三餐同步到今日执行。`,
     weeklyPlan.insights,
@@ -771,10 +867,11 @@ async function handleAdoptWeeklyPlan(
   };
   await updateWeeklyPlan(updatedWeeklyPlan);
 
-  const shoppingList = await buildShoppingListFromSource("weekly_plan", updatedWeeklyPlan.id, true, updatedWeeklyPlan.userId);
-  const workspaceState = await readWorkspaceState();
+  const shoppingList = await buildShoppingListFromSource("weekly_plan", updatedWeeklyPlan.id, true, context.scope);
+  const workspaceState = await readWorkspaceState(context.scope);
   await updateWorkspaceState({
     ...workspaceState,
+    workspaceId: context.workspaceId,
     currentWeeklyPlanId: updatedWeeklyPlan.id,
     currentMealPlanId: syncedMealPlan.id,
     currentShoppingListId: shoppingList?.id,
@@ -794,34 +891,37 @@ async function handleAdoptWeeklyPlan(
 }
 
 async function handleCreateConversation(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
-  const user = await resolveUserFromRequest(request);
-  const result = validateConversationCreate(await readJsonBody(request), nowIso(), createId("conv"), user.id);
+  const context = await resolveRequestContext(request);
+  const result = validateConversationCreate(await readJsonBody(request), nowIso(), createId("conv"), context.user.id, context.workspaceId);
   if (!result.value) {
     sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
     return;
   }
   await createConversation(result.value);
-  const workspaceState = await readWorkspaceState();
+  const workspaceState = await readWorkspaceState(context.scope);
   await updateWorkspaceState({
     ...workspaceState,
+    workspaceId: context.workspaceId,
     currentConversationId: result.value.id,
     updatedAt: nowIso(),
   });
   sendJson(response, 201, { data: result.value });
 }
 
-async function handleListConversations(response: ServerResponse): Promise<void> {
-  const conversations = await listConversations();
+async function handleListConversations(request: IncomingMessage, response: ServerResponse): Promise<void> {
+  const context = await resolveRequestContext(request);
+  const conversations = await listConversations(context.scope);
   sendJson(response, 200, { data: conversations, meta: { total: conversations.length } });
 }
 
-async function handleListConversationMessages(response: ServerResponse, requestId: string, conversationId: string): Promise<void> {
-  const conversation = await readConversation(conversationId);
+async function handleListConversationMessages(request: IncomingMessage, response: ServerResponse, requestId: string, conversationId: string): Promise<void> {
+  const context = await resolveRequestContext(request);
+  const conversation = await readConversation(context.scope, conversationId);
   if (!conversation) {
     sendError(response, 404, requestId, "not_found", "Conversation not found");
     return;
   }
-  const messages = await listConversationMessages(conversationId);
+  const messages = await listConversationMessages(context.scope, conversationId);
   sendJson(response, 200, { data: messages.map(mapConversationMessage), meta: { total: messages.length } });
 }
 
@@ -831,7 +931,8 @@ async function handleCreateConversationMessage(
   requestId: string,
   conversationId: string,
 ): Promise<void> {
-  const conversation = await readConversation(conversationId);
+  const context = await resolveRequestContext(request);
+  const conversation = await readConversation(context.scope, conversationId);
   if (!conversation) {
     sendError(response, 404, requestId, "not_found", "Conversation not found");
     return;
@@ -844,20 +945,22 @@ async function handleCreateConversationMessage(
   }
 
   const userCreatedAt = nowIso();
-  const user = await resolveUserFromRequest(request);
   const userMessage: ConversationMessageRecord = {
     id: createId("msg"),
-    userId: user.id,
+    userId: context.user.id,
+    workspaceId: context.workspaceId,
     conversationId,
     role: "user",
     content: result.value.content,
     createdAt: userCreatedAt,
   };
 
-  const inventory = await listInventoryItems();
-  const profile = await readProfile();
+  const inventory = await listInventoryItems(context.scope);
+  const profile = await readProfile(context.scope);
   let mealPlan: MealPlanRecord | undefined;
-  if (result.value.triggerPlanGeneration) {
+  const shouldGenerateMealPlan = result.value.triggerPlanGeneration && shouldGenerateMealPlanFromMessage(result.value.content);
+  let generalReply: string | null = null;
+  if (shouldGenerateMealPlan) {
     try {
       mealPlan = (await tryGenerateDailyMealPlanWithDeepSeek({
         message: result.value.content,
@@ -865,29 +968,38 @@ async function handleCreateConversationMessage(
         inventory,
         previousShoppingList: [],
         conversationId,
-        userId: user.id,
-        conversationMessages: await listConversationMessages(conversationId),
-      })) ?? generateDailyMealPlan(result.value.content, profile, inventory, [], user.id, conversationId);
+        userId: context.user.id,
+        conversationMessages: await listConversationMessages(context.scope, conversationId),
+      })) ?? generateDailyMealPlan(result.value.content, profile, inventory, [], context.user.id, conversationId, context.workspaceId);
     } catch {
-      mealPlan = generateDailyMealPlan(result.value.content, profile, inventory, [], user.id, conversationId);
+      mealPlan = generateDailyMealPlan(result.value.content, profile, inventory, [], context.user.id, conversationId, context.workspaceId);
       mealPlan.generationMeta = { source: "fallback", model: "rule_planner" };
       mealPlan.reply = `${mealPlan.reply} 本次改用基础规则生成，结果仍可继续调整。`;
     }
+  } else {
+    generalReply = answerSimpleGeneralQuestion(result.value.content)
+      ?? await tryAnswerGeneralQuestionWithDeepSeek({
+        message: result.value.content,
+        userId: context.user.id,
+        workspaceId: context.workspaceId,
+      });
   }
 
   let shoppingList: ShoppingListRecord | null = null;
   if (mealPlan) {
     await createMealPlan(mealPlan);
-    shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true, user.id);
+    mealPlan.workspaceId = context.workspaceId;
+    shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true, context.scope);
   }
 
   const assistantCreatedAt = nowIso();
   const assistantMessage: ConversationMessageRecord = {
     id: createId("msg"),
-    userId: user.id,
+    userId: context.user.id,
+    workspaceId: context.workspaceId,
     conversationId,
     role: "assistant",
-    content: mealPlan?.reply ?? "我已经记录这条偏好，稍后可以继续生成餐单。",
+    content: mealPlan?.reply ?? generalReply ?? "我可以回答普通问题；如果你想生成餐单，请告诉我口味、营养目标或库存食材。",
     mealPlanId: mealPlan?.id,
     shoppingListId: shoppingList?.id,
     createdAt: assistantCreatedAt,
@@ -900,9 +1012,10 @@ async function handleCreateConversationMessage(
     updatedAt: assistantCreatedAt,
   });
 
-  const workspaceState = await readWorkspaceState();
+  const workspaceState = await readWorkspaceState(context.scope);
   await updateWorkspaceState({
     ...workspaceState,
+    workspaceId: context.workspaceId,
     currentConversationId: conversationId,
     currentMealPlanId: mealPlan?.id ?? workspaceState.currentMealPlanId,
     currentShoppingListId: shoppingList?.id ?? workspaceState.currentShoppingListId,
@@ -965,7 +1078,7 @@ const server = createServer(async (request, response) => {
 
     if (pathname === "/api/v1/profile") {
       if (request.method === "GET") {
-        await handleGetProfile(response);
+        await handleGetProfile(request, response);
         return;
       }
 
@@ -997,7 +1110,7 @@ const server = createServer(async (request, response) => {
       }
 
       if (request.method === "DELETE") {
-        await handleDeleteInventory(response, requestId, inventoryItemId);
+        await handleDeleteInventory(request, response, requestId, inventoryItemId);
         return;
       }
     }
@@ -1015,7 +1128,7 @@ const server = createServer(async (request, response) => {
 
     const mealPlanMatch = pathname.match(/^\/api\/v1\/meal-plans\/([^/]+)$/);
     if (mealPlanMatch && request.method === "GET") {
-      await handleGetMealPlan(response, requestId, mealPlanMatch[1]);
+      await handleGetMealPlan(request, response, requestId, mealPlanMatch[1]);
       return;
     }
 
@@ -1038,7 +1151,7 @@ const server = createServer(async (request, response) => {
 
     const weeklyPlanMatch = pathname.match(/^\/api\/v1\/weekly-plans\/([^/]+)$/);
     if (weeklyPlanMatch && request.method === "GET") {
-      await handleGetWeeklyPlan(response, requestId, weeklyPlanMatch[1]);
+      await handleGetWeeklyPlan(request, response, requestId, weeklyPlanMatch[1]);
       return;
     }
 
@@ -1064,7 +1177,7 @@ const server = createServer(async (request, response) => {
         return;
       }
       if (request.method === "GET") {
-        await handleListConversations(response);
+        await handleListConversations(request, response);
         return;
       }
     }
@@ -1072,7 +1185,7 @@ const server = createServer(async (request, response) => {
     const conversationMessagesMatch = pathname.match(/^\/api\/v1\/conversations\/([^/]+)\/messages$/);
     if (conversationMessagesMatch) {
       if (request.method === "GET") {
-        await handleListConversationMessages(response, requestId, conversationMessagesMatch[1]);
+        await handleListConversationMessages(request, response, requestId, conversationMessagesMatch[1]);
         return;
       }
       if (request.method === "POST") {
