@@ -19,9 +19,25 @@ type ChatPanelProps = {
   isBootstrapping: boolean;
   onSend: (message: string) => void;
   onQuickAction: (action: string) => void;
+  proposalMessageId?: string | null;
+  proposalMode?: "daily" | "weekly" | null;
+  onAdoptDaily?: () => void;
+  onAdoptWeekly?: () => void;
+  proposalPending?: boolean;
 };
 
-export function ChatPanel({ messages, isGenerating, isBootstrapping, onSend, onQuickAction }: ChatPanelProps) {
+export function ChatPanel({
+  messages,
+  isGenerating,
+  isBootstrapping,
+  onSend,
+  onQuickAction,
+  proposalMessageId,
+  proposalMode,
+  onAdoptDaily,
+  onAdoptWeekly,
+  proposalPending = false,
+}: ChatPanelProps) {
   const [draft, setDraft] = useState("");
   const messagesRef = useRef<HTMLDivElement | null>(null);
   const lastMessageCountRef = useRef(messages.length);
@@ -76,6 +92,19 @@ export function ChatPanel({ messages, isGenerating, isBootstrapping, onSend, onQ
             <div className={styles.avatar}>{message.role === "assistant" ? <Bot size={20} /> : "你"}</div>
             <div className={styles.bubble}>
               <p>{message.content}</p>
+              {message.id === proposalMessageId && proposalMode ? (
+                <div className={styles.proposalActions}>
+                  {proposalMode === "daily" ? (
+                    <button type="button" onClick={onAdoptDaily} disabled={proposalPending}>
+                      {proposalPending ? "采用中..." : "采用今日方案"}
+                    </button>
+                  ) : (
+                    <button type="button" onClick={onAdoptWeekly} disabled={proposalPending}>
+                      {proposalPending ? "采用中..." : "采用本周方案"}
+                    </button>
+                  )}
+                </div>
+              ) : null}
               <time>{message.createdAt}</time>
             </div>
           </article>
@@ -87,7 +116,7 @@ export function ChatPanel({ messages, isGenerating, isBootstrapping, onSend, onQ
             </div>
             <div className={`${styles.bubble} ${styles.thinking}`}>
               <Loader2 size={17} />
-              <p>AI 正在结合营养目标和家庭库存生成方案...</p>
+              <p>正在思考ing</p>
             </div>
           </article>
         ) : null}

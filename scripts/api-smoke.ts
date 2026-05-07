@@ -63,8 +63,13 @@ async function main() {
   const mealPlan = (chatResult.data as { mealPlan: { id: string } | null }).mealPlan;
   assert(mealPlan?.id, "meal plan not created from chat");
 
-  const shoppingList = (chatResult.data as { shoppingList: { id: string } | null }).shoppingList;
-  assert(shoppingList?.id, "shopping list not returned from chat");
+  const adoptedMealPlan = await client.request(`/meal-plans/${mealPlan.id}/adopt`, {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+  const adoptedMealPlanData = adoptedMealPlan.data as { mealPlanId: string; shoppingListId: string | null };
+  assert(adoptedMealPlanData.mealPlanId === mealPlan.id, "meal plan adopt returned wrong id");
+  assert(adoptedMealPlanData.shoppingListId, "shopping list id missing after meal plan adopt");
 
   const mealPlanDetail = await client.request(`/meal-plans/${mealPlan.id}`);
   assert((mealPlanDetail.data as { id: string }).id === mealPlan.id, "meal plan detail mismatch");
@@ -87,18 +92,16 @@ async function main() {
     body: JSON.stringify({ checked: !currentShoppingData.items[0].checked }),
   });
 
-  const weekly = await client.request("/weekly-plans", {
+  const weeklyFromChat = await client.request(`/conversations/${conversationId}/messages`, {
     method: "POST",
     body: JSON.stringify({
-      message: "本周尽量清淡，高蛋白。",
-      preferenceTags: ["light", "high_protein"],
-      startDate: "2026-05-04",
-      days: 7,
-      conversationId,
+      content: "请给我安排本周尽量清淡、高蛋白的 7 天饮食。",
+      mode: "weekly",
+      triggerPlanGeneration: true,
     }),
   });
-  const weeklyPlan = weekly.data as { id: string; days: Array<{ date: string }> };
-  assert(weeklyPlan.id, "weekly plan not created");
+  const weeklyPlan = (weeklyFromChat.data as { weeklyPlan: { id: string; days: Array<{ date: string }> } | null }).weeklyPlan;
+  assert(weeklyPlan?.id, "weekly plan not created");
   assert(weeklyPlan.days.length === 7, "weekly plan should contain 7 days");
 
   const adjusted = await client.request(`/weekly-plans/${weeklyPlan.id}/days/${weeklyPlan.days[0].date}`, {
@@ -121,6 +124,28 @@ async function main() {
 
   await client.request(`/shopping-lists/current?sourceType=weekly_plan&sourceId=${weeklyPlan.id}`);
   await client.request(`/meal-plans/${adoptData.syncedMealPlanId}`);
+
+  const mealPlanAfterWeekly = await client.request(`/meal-plans/${adoptData.syncedMealPlanId}`);
+  const consumptionItems = ((mealPlanAfterWeekly.data as { inventoryConsumptionPreview?: Array<{ inventoryItemId?: string; plannedValue?: number; plannedUnit?: string; plannedAmountText: string }> }).inventoryConsumptionPreview ?? [])
+    .filter((item) => item.inventoryItemId && item.plannedValue && item.plannedUnit)
+    .map((item) => ({
+      inventoryItemId: item.inventoryItemId!,
+      consumeValue: item.plannedValue!,
+      consumeUnit: item.plannedUnit!,
+      consumeText: item.plannedAmountText,
+    }));
+
+  if (consumptionItems.length > 0) {
+    await client.request("/inventory-consumptions/apply", {
+      method: "POST",
+      body: JSON.stringify({
+        sourceType: "weekly_plan",
+        sourceId: weeklyPlan.id,
+        mode: "auto",
+        items: consumptionItems,
+      }),
+    });
+  }
 
   console.log("SmartMeal API smoke test passed.");
 }

@@ -474,8 +474,8 @@
 .chatPage {
   align-items: stretch;
   display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.72fr);
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.46fr) minmax(290px, 0.62fr);
   min-width: 0;
 }
 
@@ -504,11 +504,11 @@
   border-radius: 20px;
   color: white;
   display: grid;
-  gap: 14px;
+  gap: 12px;
   grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 188px;
+  min-height: 176px;
   overflow: hidden;
-  padding: 18px 18px 16px;
+  padding: 16px 16px 14px;
   position: relative;
 }
 
@@ -527,10 +527,10 @@
 
 .chatStageIntro strong {
   display: block;
-  font-size: 28px;
+  font-size: 24px;
   line-height: 1.15;
   margin-top: 6px;
-  max-width: 520px;
+  max-width: 500px;
 }
 
 .chatStageIntro .summaryPills {
@@ -554,7 +554,7 @@
 }
 
 .chatWorkspace .surfaceHeader strong {
-  font-size: 20px;
+  font-size: 18px;
   max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;

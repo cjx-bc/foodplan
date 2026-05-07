@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 
 import {
   adjustWeeklyPlanDay,
+  buildInventoryConsumptionPreview,
   createDailyMealPlanFromMeals,
   createWeeklyPlanFromDays,
   deriveShoppingItems,
@@ -43,6 +44,8 @@ import {
 } from "./store.js";
 import type {
   ConversationMessageRecord,
+  InventoryConsumptionApplyItem,
+  InventoryItemRecord,
   MealPlanRecord,
   MealType,
   ShoppingListRecord,
@@ -54,6 +57,7 @@ import type {
 import {
   validateConversationCreate,
   validateConversationMessageCreate,
+  validateInventoryConsumptionApply,
   validateInventoryCreate,
   validateInventoryPatch,
   validateMealPlanCreate,
@@ -65,7 +69,7 @@ import {
   validateWeeklyPlanAdopt,
   validateWeeklyPlanCreate,
 } from "./validators.js";
-import { createId, createRequestId, nowIso } from "./utils.js";
+import { createId, createRequestId, normalizeQuantityText, normalizeQuantityUnit, nowIso } from "./utils.js";
 import { tryAnswerGeneralQuestionWithDeepSeek, tryGenerateDailyMealPlanWithDeepSeek, tryGenerateWeeklyPlanWithDeepSeek } from "./ai/deepseek.js";
 
 const port = Number(process.env.PORT ?? 8787);
@@ -254,6 +258,82 @@ async function buildShoppingListFromSource(
 
   await upsertShoppingList(shoppingList);
   return shoppingList;
+}
+
+async function refreshMealPlanPreview(mealPlan: MealPlanRecord, inventory: InventoryItemRecord[]) {
+  const updatedMealPlan = {
+    ...mealPlan,
+    inventoryConsumptionPreview: buildInventoryConsumptionPreview(mealPlan.meals, inventory),
+    updatedAt: nowIso(),
+  };
+  await updateMealPlan(updatedMealPlan);
+  return updatedMealPlan;
+}
+
+function buildConsumptionResponseItem(item: InventoryItemRecord, consumeItem: InventoryConsumptionApplyItem) {
+  return {
+    inventoryItemId: item.id,
+    name: item.name,
+    consumeValue: consumeItem.consumeValue,
+    consumeUnit: consumeItem.consumeUnit,
+    consumeText: consumeItem.consumeText,
+    remainingQuantity: normalizeQuantityText(item.quantity, item.quantityValue, item.quantityUnit),
+  };
+}
+
+function applyInventoryConsumptionItems(
+  inventory: InventoryItemRecord[],
+  items: InventoryConsumptionApplyItem[],
+  mode: "manual" | "auto",
+) {
+  const inventoryById = new Map(inventory.map((item) => [item.id, item]));
+  const nextInventory = inventory.map((item) => ({ ...item }));
+  const nextInventoryById = new Map(nextInventory.map((item) => [item.id, item]));
+  const appliedItems: Array<ReturnType<typeof buildConsumptionResponseItem>> = [];
+  const skippedItems: Array<{ inventoryItemId: string; name?: string; consumeText: string; reason: string }> = [];
+
+  for (const consumeItem of items) {
+    const originalItem = inventoryById.get(consumeItem.inventoryItemId);
+    const targetItem = nextInventoryById.get(consumeItem.inventoryItemId);
+    if (!originalItem || !targetItem) {
+      skippedItems.push({
+        inventoryItemId: consumeItem.inventoryItemId,
+        consumeText: consumeItem.consumeText,
+        reason: "库存食材不存在",
+      });
+      continue;
+    }
+
+    const normalizedItemUnit = normalizeQuantityUnit(targetItem.quantityUnit);
+    const normalizedConsumeUnit = normalizeQuantityUnit(consumeItem.consumeUnit);
+    if (!targetItem.quantityValue || !normalizedItemUnit || !normalizedConsumeUnit || normalizedItemUnit !== normalizedConsumeUnit) {
+      skippedItems.push({
+        inventoryItemId: targetItem.id,
+        name: targetItem.name,
+        consumeText: consumeItem.consumeText,
+        reason: mode === "auto" ? "单位不兼容，已跳过自动扣减" : "单位不兼容，无法扣减",
+      });
+      continue;
+    }
+
+    if (targetItem.quantityValue < consumeItem.consumeValue) {
+      skippedItems.push({
+        inventoryItemId: targetItem.id,
+        name: targetItem.name,
+        consumeText: consumeItem.consumeText,
+        reason: "库存数量不足",
+      });
+      continue;
+    }
+
+    const nextValue = Number((targetItem.quantityValue - consumeItem.consumeValue).toFixed(2));
+    targetItem.quantityValue = nextValue;
+    targetItem.quantity = normalizeQuantityText(targetItem.quantity, nextValue, targetItem.quantityUnit);
+    targetItem.updatedAt = nowIso();
+    appliedItems.push(buildConsumptionResponseItem(targetItem, consumeItem));
+  }
+
+  return { nextInventory, appliedItems, skippedItems };
 }
 
 async function handleHealth(response: ServerResponse): Promise<void> {
@@ -543,17 +623,6 @@ async function handleCreateMealPlan(request: IncomingMessage, response: ServerRe
   }
   mealPlan.workspaceId = context.workspaceId;
   await createMealPlan(mealPlan);
-  const shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true, context.scope);
-  const workspaceState = await readWorkspaceState(context.scope);
-  await updateWorkspaceState({
-    ...workspaceState,
-    workspaceId: context.workspaceId,
-    currentMealPlanId: mealPlan.id,
-    currentShoppingListId: shoppingList?.id,
-    currentConversationId: result.value.conversationId ?? workspaceState.currentConversationId,
-    planningMode: "daily",
-    updatedAt: nowIso(),
-  });
   sendJson(response, 201, { data: mealPlan });
 }
 
@@ -564,7 +633,9 @@ async function handleGetMealPlan(request: IncomingMessage, response: ServerRespo
     sendError(response, 404, requestId, "not_found", "Meal plan not found");
     return;
   }
-  sendJson(response, 200, { data: mealPlan });
+  const inventory = await listInventoryItems(context.scope);
+  const refreshedMealPlan = await refreshMealPlanPreview(mealPlan, inventory);
+  sendJson(response, 200, { data: refreshedMealPlan });
 }
 
 async function handleRegenerateMeal(
@@ -603,6 +674,42 @@ async function handleRegenerateMeal(
       suggestions: updatedPlan.suggestions,
       mealPlan: updatedPlan,
       shoppingListResource: shoppingList,
+    },
+  });
+}
+
+async function handleAdoptMealPlan(
+  request: IncomingMessage,
+  response: ServerResponse,
+  requestId: string,
+  mealPlanId: string,
+): Promise<void> {
+  const context = await resolveRequestContext(request);
+  const mealPlan = await readMealPlan(context.scope, mealPlanId);
+  if (!mealPlan) {
+    sendError(response, 404, requestId, "not_found", "Meal plan not found");
+    return;
+  }
+
+  const inventory = await listInventoryItems(context.scope);
+  const refreshedMealPlan = await refreshMealPlanPreview(mealPlan, inventory);
+  const shoppingList = await buildShoppingListFromSource("meal_plan", refreshedMealPlan.id, true, context.scope);
+  const workspaceState = await readWorkspaceState(context.scope);
+  const nextWorkspaceState = await updateWorkspaceState({
+    ...workspaceState,
+    workspaceId: context.workspaceId,
+    currentConversationId: refreshedMealPlan.conversationId ?? workspaceState.currentConversationId,
+    currentMealPlanId: refreshedMealPlan.id,
+    currentShoppingListId: shoppingList?.id,
+    planningMode: "daily",
+    updatedAt: nowIso(),
+  });
+
+  sendJson(response, 200, {
+    data: {
+      mealPlanId: refreshedMealPlan.id,
+      shoppingListId: shoppingList?.id ?? null,
+      workspaceState: nextWorkspaceState,
     },
   });
 }
@@ -703,6 +810,57 @@ async function handlePatchShoppingListItem(
   sendJson(response, 200, { data: updated });
 }
 
+async function handleApplyInventoryConsumption(
+  request: IncomingMessage,
+  response: ServerResponse,
+  requestId: string,
+): Promise<void> {
+  const context = await resolveRequestContext(request);
+  const result = validateInventoryConsumptionApply(await readJsonBody(request));
+  if (!result.value) {
+    sendError(response, 422, requestId, "validation_error", "Request validation failed", result.errors);
+    return;
+  }
+
+  const currentInventory = await listInventoryItems(context.scope);
+  const { nextInventory, appliedItems, skippedItems } = applyInventoryConsumptionItems(
+    currentInventory,
+    result.value.items,
+    result.value.mode,
+  );
+  await replaceInventoryItems(context.scope, nextInventory);
+
+  const workspaceState = await readWorkspaceState(context.scope);
+  const mealPlanToRefreshId = result.value.sourceType === "meal_plan"
+    ? result.value.sourceId
+    : workspaceState.currentMealPlanId;
+
+  let refreshedMealPlan: MealPlanRecord | undefined;
+  if (mealPlanToRefreshId) {
+    const mealPlan = await readMealPlan(context.scope, mealPlanToRefreshId);
+    if (mealPlan) {
+      refreshedMealPlan = await refreshMealPlanPreview(mealPlan, nextInventory);
+    }
+  }
+
+  const shoppingList = await buildShoppingListFromSource(
+    result.value.sourceType,
+    result.value.sourceId,
+    true,
+    context.scope,
+  );
+
+  sendJson(response, 200, {
+    data: {
+      updatedInventoryItems: nextInventory,
+      appliedItems,
+      skippedItems,
+      shoppingList,
+      mealPlan: refreshedMealPlan ?? null,
+    },
+  });
+}
+
 async function handleCreateWeeklyPlan(request: IncomingMessage, response: ServerResponse, requestId: string): Promise<void> {
   const context = await resolveRequestContext(request);
   const result = validateWeeklyPlanCreate(await readJsonBody(request));
@@ -757,14 +915,6 @@ async function handleCreateWeeklyPlan(request: IncomingMessage, response: Server
   }
   weeklyPlan.workspaceId = context.workspaceId;
   await createWeeklyPlan(weeklyPlan);
-  const workspaceState = await readWorkspaceState(context.scope);
-  await updateWorkspaceState({
-    ...workspaceState,
-    workspaceId: context.workspaceId,
-    currentWeeklyPlanId: weeklyPlan.id,
-    selectedWeekday: weeklyPlan.days[0]?.day,
-    updatedAt: nowIso(),
-  });
   sendJson(response, 201, { data: weeklyPlan });
 }
 
@@ -958,23 +1108,61 @@ async function handleCreateConversationMessage(
   const inventory = await listInventoryItems(context.scope);
   const profile = await readProfile(context.scope);
   let mealPlan: MealPlanRecord | undefined;
+  let weeklyPlan: WeeklyPlanRecord | undefined;
   const shouldGenerateMealPlan = result.value.triggerPlanGeneration && shouldGenerateMealPlanFromMessage(result.value.content);
   let generalReply: string | null = null;
   if (shouldGenerateMealPlan) {
-    try {
-      mealPlan = (await tryGenerateDailyMealPlanWithDeepSeek({
-        message: result.value.content,
-        profile,
-        inventory,
-        previousShoppingList: [],
-        conversationId,
-        userId: context.user.id,
-        conversationMessages: await listConversationMessages(context.scope, conversationId),
-      })) ?? generateDailyMealPlan(result.value.content, profile, inventory, [], context.user.id, conversationId, context.workspaceId);
-    } catch {
-      mealPlan = generateDailyMealPlan(result.value.content, profile, inventory, [], context.user.id, conversationId, context.workspaceId);
-      mealPlan.generationMeta = { source: "fallback", model: "rule_planner" };
-      mealPlan.reply = `${mealPlan.reply} 本次改用基础规则生成，结果仍可继续调整。`;
+    if (result.value.mode === "weekly") {
+      try {
+        weeklyPlan = (await tryGenerateWeeklyPlanWithDeepSeek({
+          message: result.value.content,
+          preferenceTags: [],
+          startDate: nowIso().slice(0, 10),
+          days: 7,
+          inventory,
+          userId: context.user.id,
+          conversationId,
+          workspaceId: context.workspaceId,
+        })) ?? generateWeeklyPlan(
+          result.value.content,
+          [],
+          nowIso().slice(0, 10),
+          7,
+          inventory,
+          context.user.id,
+          conversationId,
+          context.workspaceId,
+        );
+      } catch {
+        weeklyPlan = generateWeeklyPlan(
+          result.value.content,
+          [],
+          nowIso().slice(0, 10),
+          7,
+          inventory,
+          context.user.id,
+          conversationId,
+          context.workspaceId,
+        );
+        weeklyPlan.generationMeta = { source: "fallback", model: "rule_planner" };
+        weeklyPlan.description = `${weeklyPlan.description} 本次改用基础规则生成，结果仍可继续调整。`;
+      }
+    } else {
+      try {
+        mealPlan = (await tryGenerateDailyMealPlanWithDeepSeek({
+          message: result.value.content,
+          profile,
+          inventory,
+          previousShoppingList: [],
+          conversationId,
+          userId: context.user.id,
+          conversationMessages: await listConversationMessages(context.scope, conversationId),
+        })) ?? generateDailyMealPlan(result.value.content, profile, inventory, [], context.user.id, conversationId, context.workspaceId);
+      } catch {
+        mealPlan = generateDailyMealPlan(result.value.content, profile, inventory, [], context.user.id, conversationId, context.workspaceId);
+        mealPlan.generationMeta = { source: "fallback", model: "rule_planner" };
+        mealPlan.reply = `${mealPlan.reply} 本次改用基础规则生成，结果仍可继续调整。`;
+      }
     }
   } else {
     generalReply = answerSimpleGeneralQuestion(result.value.content)
@@ -991,6 +1179,10 @@ async function handleCreateConversationMessage(
     mealPlan.workspaceId = context.workspaceId;
     shoppingList = await buildShoppingListFromSource("meal_plan", mealPlan.id, true, context.scope);
   }
+  if (weeklyPlan) {
+    await createWeeklyPlan(weeklyPlan);
+    weeklyPlan.workspaceId = context.workspaceId;
+  }
 
   const assistantCreatedAt = nowIso();
   const assistantMessage: ConversationMessageRecord = {
@@ -999,9 +1191,13 @@ async function handleCreateConversationMessage(
     workspaceId: context.workspaceId,
     conversationId,
     role: "assistant",
-    content: mealPlan?.reply ?? generalReply ?? "我可以回答普通问题；如果你想生成餐单，请告诉我口味、营养目标或库存食材。",
+    content: mealPlan?.reply
+      ?? (weeklyPlan ? `我已经整理出一份本周候选计划「${weeklyPlan.title}」，你确认采用后，今日三餐、营养和购物清单才会正式切换。` : null)
+      ?? generalReply
+      ?? "我可以回答普通问题；如果你想生成餐单，请告诉我口味、营养目标或库存食材。",
     mealPlanId: mealPlan?.id,
     shoppingListId: shoppingList?.id,
+    weeklyPlanId: weeklyPlan?.id,
     createdAt: assistantCreatedAt,
   };
 
@@ -1017,9 +1213,6 @@ async function handleCreateConversationMessage(
     ...workspaceState,
     workspaceId: context.workspaceId,
     currentConversationId: conversationId,
-    currentMealPlanId: mealPlan?.id ?? workspaceState.currentMealPlanId,
-    currentShoppingListId: shoppingList?.id ?? workspaceState.currentShoppingListId,
-    planningMode: "daily",
     updatedAt: nowIso(),
   });
 
@@ -1029,6 +1222,7 @@ async function handleCreateConversationMessage(
       assistantMessage: mapConversationMessage(assistantMessage),
       mealPlan: mealPlan ?? null,
       shoppingList,
+      weeklyPlan: weeklyPlan ?? null,
     },
   });
 }
@@ -1126,6 +1320,12 @@ const server = createServer(async (request, response) => {
       return;
     }
 
+    const mealPlanAdoptMatch = pathname.match(/^\/api\/v1\/meal-plans\/([^/]+)\/adopt$/);
+    if (mealPlanAdoptMatch && request.method === "POST") {
+      await handleAdoptMealPlan(request, response, requestId, mealPlanAdoptMatch[1]);
+      return;
+    }
+
     const mealPlanMatch = pathname.match(/^\/api\/v1\/meal-plans\/([^/]+)$/);
     if (mealPlanMatch && request.method === "GET") {
       await handleGetMealPlan(request, response, requestId, mealPlanMatch[1]);
@@ -1157,6 +1357,11 @@ const server = createServer(async (request, response) => {
 
     if (pathname === "/api/v1/shopping-lists/generate" && request.method === "POST") {
       await handleGenerateShoppingList(request, response, requestId);
+      return;
+    }
+
+    if (pathname === "/api/v1/inventory-consumptions/apply" && request.method === "POST") {
+      await handleApplyInventoryConsumption(request, response, requestId);
       return;
     }
 

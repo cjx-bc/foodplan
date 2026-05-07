@@ -1,6 +1,8 @@
 import type {
   ApiFieldError,
   ConversationRecord,
+  InventoryConsumptionApplyItem,
+  InventoryConsumptionApplyMode,
   InventoryCategory,
   InventoryItemRecord,
   MealType,
@@ -419,7 +421,7 @@ export function validateConversationCreate(
 
 export function validateConversationMessageCreate(body: unknown): {
   errors: ApiFieldError[];
-  value?: { content: string; mode: "daily"; triggerPlanGeneration: boolean };
+  value?: { content: string; mode: "daily" | "weekly"; triggerPlanGeneration: boolean };
 } {
   const errors: ApiFieldError[] = [];
   if (!body || typeof body !== "object" || Array.isArray(body)) {
@@ -431,8 +433,8 @@ export function validateConversationMessageCreate(body: unknown): {
   if (!content) {
     errors.push({ field: "content", message: "Content is required" });
   }
-  if (payload.mode !== undefined && payload.mode !== "daily") {
-    errors.push({ field: "mode", message: "Only daily mode is supported for now" });
+  if (payload.mode !== undefined && payload.mode !== "daily" && payload.mode !== "weekly") {
+    errors.push({ field: "mode", message: "Mode must be daily or weekly" });
   }
 
   return errors.length > 0
@@ -441,8 +443,89 @@ export function validateConversationMessageCreate(body: unknown): {
         errors,
         value: {
           content,
-          mode: "daily",
+          mode: payload.mode === "weekly" ? "weekly" : "daily",
           triggerPlanGeneration: payload.triggerPlanGeneration !== false,
+        },
+      };
+}
+
+export function validateInventoryConsumptionApply(
+  body: unknown,
+): {
+  errors: ApiFieldError[];
+  value?: {
+    sourceType: "meal_plan" | "weekly_plan";
+    sourceId: string;
+    mode: InventoryConsumptionApplyMode;
+    items: InventoryConsumptionApplyItem[];
+  };
+} {
+  const errors: ApiFieldError[] = [];
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return { errors: [{ field: "body", message: "Must be a JSON object" }] };
+  }
+
+  const payload = body as Record<string, unknown>;
+  if (payload.sourceType !== "meal_plan" && payload.sourceType !== "weekly_plan") {
+    errors.push({ field: "sourceType", message: "Source type is invalid" });
+  }
+  const sourceId = typeof payload.sourceId === "string" ? payload.sourceId.trim() : "";
+  if (!sourceId) {
+    errors.push({ field: "sourceId", message: "Source ID is required" });
+  }
+  const mode = payload.mode === "manual" || payload.mode === "auto" ? payload.mode : undefined;
+  if (!mode) {
+    errors.push({ field: "mode", message: "Mode must be manual or auto" });
+  }
+
+  const items = Array.isArray(payload.items)
+    ? payload.items.flatMap((item, index) => {
+        if (!item || typeof item !== "object" || Array.isArray(item)) {
+          errors.push({ field: `items[${index}]`, message: "Must be an object" });
+          return [];
+        }
+        const value = item as Record<string, unknown>;
+        const inventoryItemId = typeof value.inventoryItemId === "string" ? value.inventoryItemId.trim() : "";
+        const consumeUnit = typeof value.consumeUnit === "string" ? value.consumeUnit.trim() : "";
+        const consumeText = typeof value.consumeText === "string" ? value.consumeText.trim() : "";
+        const consumeValue = typeof value.consumeValue === "number" && Number.isFinite(value.consumeValue) ? value.consumeValue : 0;
+        if (!inventoryItemId) {
+          errors.push({ field: `items[${index}].inventoryItemId`, message: "Inventory item ID is required" });
+        }
+        if (!consumeUnit) {
+          errors.push({ field: `items[${index}].consumeUnit`, message: "Consume unit is required" });
+        }
+        if (!consumeText) {
+          errors.push({ field: `items[${index}].consumeText`, message: "Consume text is required" });
+        }
+        if (consumeValue <= 0) {
+          errors.push({ field: `items[${index}].consumeValue`, message: "Consume value must be positive" });
+        }
+        if (!inventoryItemId || !consumeUnit || !consumeText || consumeValue <= 0) {
+          return [];
+        }
+        return [{
+          inventoryItemId,
+          consumeUnit,
+          consumeText,
+          consumeValue,
+        }];
+      })
+    : [];
+
+  if (!Array.isArray(payload.items)) {
+    errors.push({ field: "items", message: "Items must be an array" });
+  }
+
+  return errors.length > 0
+    ? { errors }
+    : {
+        errors,
+        value: {
+          sourceType: payload.sourceType as "meal_plan" | "weekly_plan",
+          sourceId,
+          mode: mode as InventoryConsumptionApplyMode,
+          items,
         },
       };
 }

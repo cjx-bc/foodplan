@@ -2,6 +2,7 @@ import { mealCatalog } from "./catalog.js";
 import type {
   GenerationMetaRecord,
   InventoryCategory,
+  InventoryConsumptionPreviewRecord,
   InventoryItemRecord,
   MealPlanRecord,
   MealRecommendationRecord,
@@ -14,7 +15,7 @@ import type {
   WeeklyPlanDayStatus,
   WeeklyPlanRecord,
 } from "./types.js";
-import { createId, normalizeIngredientAmount, normalizeMealRecommendation, nowIso } from "./utils.js";
+import { createId, normalizeIngredientAmount, normalizeMealRecommendation, normalizeQuantityUnit, nowIso } from "./utils.js";
 
 const ingredientCategoryHints: Record<string, InventoryCategory> = {
   鸡蛋: "meat_egg",
@@ -96,6 +97,77 @@ function inferCategory(name: string, inventory: InventoryItemRecord[]): Inventor
 
 function inventoryHasIngredient(name: string, inventory: InventoryItemRecord[]): boolean {
   return inventory.some((item) => item.name === name && item.status !== "expired");
+}
+
+function aggregateIngredientAmounts(meals: MealRecommendationRecord[]) {
+  const buckets = new Map<string, { name: string; amountText: string; value?: number; unit?: string }>();
+
+  for (const meal of meals) {
+    for (const ingredient of meal.ingredients) {
+      if (!ingredient.fromInventory) continue;
+
+      const normalizedAmount = normalizeIngredientAmount(ingredient.amount);
+      const matched = normalizedAmount.match(/^(\d+(?:\.\d+)?)\s+(.+)$/);
+      const value = matched ? Number(matched[1]) : undefined;
+      const unit = matched ? normalizeQuantityUnit(matched[2]) : undefined;
+      const current = buckets.get(ingredient.name);
+
+      if (!current) {
+        buckets.set(ingredient.name, {
+          name: ingredient.name,
+          amountText: normalizedAmount,
+          value,
+          unit,
+        });
+        continue;
+      }
+
+      if (current.value !== undefined && value !== undefined && current.unit && unit && current.unit === unit) {
+        const nextValue = Number((current.value + value).toFixed(2));
+        current.value = nextValue;
+        current.amountText = `${nextValue} ${unit}`;
+        continue;
+      }
+
+      current.amountText = current.amountText === normalizedAmount ? current.amountText : `${current.amountText} + ${normalizedAmount}`;
+      current.value = undefined;
+      current.unit = undefined;
+    }
+  }
+
+  return Array.from(buckets.values());
+}
+
+export function buildInventoryConsumptionPreview(
+  meals: MealRecommendationRecord[],
+  inventory: InventoryItemRecord[],
+): InventoryConsumptionPreviewRecord[] {
+  return aggregateIngredientAmounts(meals).map((ingredient) => {
+    const inventoryItem = inventory.find((item) => item.name === ingredient.name && item.status !== "expired");
+    const plannedUnit = ingredient.unit;
+    const plannedValue = ingredient.value;
+    const inventoryUnit = normalizeQuantityUnit(inventoryItem?.quantityUnit);
+    const matched = Boolean(inventoryItem);
+    const autoApplicable = Boolean(
+      inventoryItem
+      && plannedValue !== undefined
+      && plannedUnit
+      && inventoryItem.quantityValue !== undefined
+      && inventoryUnit
+      && inventoryUnit === plannedUnit
+      && inventoryItem.quantityValue >= plannedValue,
+    );
+
+    return {
+      inventoryItemId: inventoryItem?.id,
+      name: ingredient.name,
+      plannedAmountText: ingredient.amountText,
+      plannedValue,
+      plannedUnit,
+      matched,
+      autoApplicable,
+    };
+  });
 }
 
 export function deriveShoppingItems(
@@ -193,6 +265,7 @@ export function createDailyMealPlanFromMeals(
   const inventoryUsage = unique(
     normalizedMeals.flatMap((meal) => meal.ingredients.filter((item) => item.fromInventory && inventoryHasIngredient(item.name, inventory)).map((item) => item.name)),
   );
+  const inventoryConsumptionPreview = buildInventoryConsumptionPreview(normalizedMeals, inventory);
   const suggestions = suggestionsOverride ?? buildSuggestions(nutritionSummary, shoppingList);
   const createdAt = nowIso();
 
@@ -208,6 +281,7 @@ export function createDailyMealPlanFromMeals(
     nutritionSummary,
     shoppingList,
     inventoryUsage,
+    inventoryConsumptionPreview,
     suggestions,
     generationMeta,
     createdAt,
@@ -303,6 +377,7 @@ export function regenerateMealInPlan(
   const inventoryUsage = unique(
     meals.flatMap((meal) => meal.ingredients.filter((item) => item.fromInventory && inventoryHasIngredient(item.name, inventory)).map((item) => item.name)),
   );
+  const inventoryConsumptionPreview = buildInventoryConsumptionPreview(meals, inventory);
   const suggestions = buildSuggestions(nutritionSummary, shoppingList);
 
   return {
@@ -312,6 +387,7 @@ export function regenerateMealInPlan(
     nutritionSummary,
     shoppingList,
     inventoryUsage,
+    inventoryConsumptionPreview,
     suggestions,
     updatedAt: nowIso(),
   };

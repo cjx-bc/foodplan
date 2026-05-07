@@ -1,7 +1,7 @@
 import { AlertTriangle, Box, Loader2, Plus, ShoppingBag } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 import { IconButton } from "../../components/IconButton";
-import type { InventoryCategory, InventoryItem } from "../../types/smartmeal";
+import type { InventoryCategory, InventoryConsumptionApplyItem, InventoryConsumptionPreview, InventoryItem } from "../../types/smartmeal";
 import { categoryLabels } from "../../utils/labels";
 import styles from "./InventoryPanel.module.css";
 
@@ -14,11 +14,29 @@ export type InventoryFormValue = {
 
 type InventoryPanelProps = {
   inventory: InventoryItem[];
+  consumptionPreview: InventoryConsumptionPreview[];
+  manualConsumptionDraft: InventoryConsumptionApplyItem[];
+  isManualConsumptionMode: boolean;
   isSubmitting?: boolean;
   onAddInventory: (value: InventoryFormValue) => Promise<void>;
+  onToggleManualConsumptionMode: () => void;
+  onUpdateManualConsumption: (inventoryItemId: string, consumeValue: number) => void;
+  onApplyManualConsumption: () => void;
+  onApplyAutoConsumption: () => void;
 };
 
-export function InventoryPanel({ inventory, isSubmitting = false, onAddInventory }: InventoryPanelProps) {
+export function InventoryPanel({
+  inventory,
+  consumptionPreview,
+  manualConsumptionDraft,
+  isManualConsumptionMode,
+  isSubmitting = false,
+  onAddInventory,
+  onToggleManualConsumptionMode,
+  onUpdateManualConsumption,
+  onApplyManualConsumption,
+  onApplyAutoConsumption,
+}: InventoryPanelProps) {
   const [form, setForm] = useState<InventoryFormValue>({
     name: "",
     category: "vegetable",
@@ -32,6 +50,10 @@ export function InventoryPanel({ inventory, isSubmitting = false, onAddInventory
       needBuy: inventory.filter((item) => item.status === "need_buy").length,
     }),
     [inventory],
+  );
+  const consumptionMap = useMemo(
+    () => new Map(consumptionPreview.filter((item) => item.inventoryItemId).map((item) => [item.inventoryItemId!, item])),
+    [consumptionPreview],
   );
 
   async function submit(event: FormEvent) {
@@ -82,8 +104,28 @@ export function InventoryPanel({ inventory, isSubmitting = false, onAddInventory
       <div className={styles.workspace}>
         <section className={styles.aiCard}>
           <h3>AI 提醒</h3>
-          <p>番茄、西兰花、牛奶将在 3 天内到期，建议优先使用它们做轻食晚餐。</p>
-          <button type="button">查看临期食材</button>
+          <p>
+            {consumptionPreview.length > 0
+              ? `当前已采用方案预计会消耗 ${consumptionPreview.length} 项库存，确认吃完后再扣减数量。`
+              : "当前还没有已采用方案对应的库存消耗。先去 AI 对话页生成并采用方案。"}
+          </p>
+          <div className={styles.consumptionActions}>
+            <button type="button" title="逐项确认后再扣减" onClick={onToggleManualConsumptionMode} disabled={consumptionPreview.length === 0}>
+              手动扣减
+            </button>
+            <button type="button" title="按当前执行方案自动扣减可匹配数量" onClick={onApplyAutoConsumption} disabled={isSubmitting || consumptionPreview.length === 0}>
+              自动扣减
+            </button>
+          </div>
+          {consumptionPreview.length > 0 ? (
+            <div className={styles.previewList}>
+              {consumptionPreview.map((item) => (
+                <span key={`${item.inventoryItemId ?? item.name}-${item.plannedAmountText}`}>
+                  {item.name} <em>-{item.plannedAmountText}</em>
+                </span>
+              ))}
+            </div>
+          ) : null}
         </section>
 
         <form className={styles.form} onSubmit={submit}>
@@ -139,6 +181,33 @@ export function InventoryPanel({ inventory, isSubmitting = false, onAddInventory
         </form>
       </div>
 
+      {isManualConsumptionMode ? (
+        <section className={styles.manualCard}>
+          <div className={styles.formHeader}>
+            <h3>手动确认扣减</h3>
+          </div>
+          <div className={styles.manualList}>
+            {manualConsumptionDraft.map((item) => (
+              <label key={item.inventoryItemId} className={styles.manualRow}>
+                <span>{inventory.find((inventoryItem) => inventoryItem.id === item.inventoryItemId)?.name ?? item.inventoryItemId}</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={item.consumeValue}
+                  onChange={(event) => onUpdateManualConsumption(item.inventoryItemId, Number(event.target.value))}
+                />
+                <em>{item.consumeUnit}</em>
+              </label>
+            ))}
+          </div>
+          <div className={styles.consumptionActions}>
+            <button type="button" onClick={onApplyManualConsumption} disabled={isSubmitting || manualConsumptionDraft.length === 0}>确认扣减</button>
+            <button type="button" onClick={onToggleManualConsumptionMode}>取消</button>
+          </div>
+        </section>
+      ) : null}
+
       <div className={styles.tableTools}>
         <strong>全部食材</strong>
         <div>
@@ -165,7 +234,10 @@ export function InventoryPanel({ inventory, isSubmitting = false, onAddInventory
           <div className={styles.tableRow} key={item.id}>
             <strong>{item.name}</strong>
             <span>{categoryLabels[item.category]}</span>
-            <span>{item.quantity}</span>
+            <span>
+              {item.quantity}
+              {consumptionMap.get(item.id) ? <em className={styles.consumeMark}>-{consumptionMap.get(item.id)?.plannedAmountText}</em> : null}
+            </span>
             <span>{item.expireDate}</span>
             <em className={styles[item.status]}>{item.status === "expiring_soon" ? "临期" : item.status === "need_buy" ? "需采购" : item.status === "expired" ? "过期" : "新鲜"}</em>
             <button type="button" aria-label={`操作 ${item.name}`}>···</button>

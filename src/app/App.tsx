@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { IconButton } from "../components/IconButton";
-import { userProfile, weeklyPreferenceOptions } from "../data/mockData";
+import { weeklyPreferenceOptions } from "./constants";
 import { ChatPanel } from "../features/chat/ChatPanel";
 import { InventoryPanel, type InventoryFormValue } from "../features/inventory/InventoryPanel";
 import { TodayMealsPanel } from "../features/meals/TodayMealsPanel";
@@ -27,6 +27,7 @@ import type {
   ApiRequestState,
   ChatMessage,
   DerivedShoppingListItem,
+  InventoryConsumptionApplyItem,
   InventoryItem,
   MealPlan,
   MealType,
@@ -40,11 +41,12 @@ import type {
 } from "../types/smartmeal";
 import { mealTypeLabels } from "../utils/labels";
 import {
+  adoptMealPlan,
   adoptWeeklyPlan,
+  applyInventoryConsumption,
   ApiClientError,
   createConversation,
   createInventoryItem,
-  createWeeklyPlan,
   ensureGuestSession,
   generateShoppingList,
   getConversationMessages,
@@ -65,7 +67,6 @@ import {
   buildShoppingSummary,
   deriveActiveMeals,
   deriveOverviewMetrics,
-  deriveShoppingList,
   deriveWeeklyInsights,
   getSelectedWeeklyDay,
   type PlanningState,
@@ -101,11 +102,11 @@ const navItems: Array<{ id: PageId; label: string; icon: typeof BotMessageSquare
 ];
 
 const defaultActionSummary: AiActionSummary = {
-  title: "已生成今日方案",
-  affectedMeals: ["早餐", "午餐", "晚餐"],
-  nutritionChanges: ["蛋白质接近目标", "脂肪控制良好"],
-  shoppingChanges: ["保留 3 项待买", "排除库存鸡蛋"],
-  inventoryUsage: ["鸡蛋", "番茄", "鸡胸肉", "西兰花", "牛奶"],
+  title: "等待采用方案",
+  affectedMeals: ["今日执行", "本周执行"],
+  nutritionChanges: ["先在聊天里生成候选方案", "确认采用后才正式切换"],
+  shoppingChanges: ["购物清单会跟随已采用方案", "库存扣减在库存页执行"],
+  inventoryUsage: ["鸡蛋", "番茄", "鸡胸肉"],
 };
 
 const quickActionPrompts: Record<string, string> = {
@@ -118,7 +119,17 @@ const quickActionPrompts: Record<string, string> = {
 };
 
 const storageKey = "smartmeal_mvp_state_v3";
-const fixedWeeklyStartDate = "2026-05-04";
+const emptyProfile: UserProfile = {
+  id: "profile_loading",
+  name: "家庭饮食计划",
+  dailyCalorieTarget: 1900,
+  proteinTarget: 95,
+  carbsTarget: 250,
+  fatTarget: 65,
+  fiberTarget: 25,
+  tastePreferences: [],
+  dietaryRestrictions: [],
+};
 
 function getInitialPage(): PageId {
   const page = window.location.hash.replace("#/", "") as PageId;
@@ -222,17 +233,6 @@ function toDerivedShoppingItems(shoppingList: ShoppingList | null, planningMode:
   }));
 }
 
-function mapWeeklyPreferenceTag(preference: string) {
-  const mapping: Record<string, string> = {
-    清淡饮食: "light",
-    高蛋白: "high_protein",
-    低脂减油: "low_fat",
-    控糖控盐: "low_sugar_salt",
-    库存优先: "inventory_priority",
-  };
-  return mapping[preference] ?? preference;
-}
-
 function getErrorMessage(error: unknown) {
   if (error instanceof ApiClientError || error instanceof Error) {
     return error.message;
@@ -244,10 +244,26 @@ function isNotFoundError(error: unknown) {
   return error instanceof ApiClientError && error.code === "not_found";
 }
 
+function detectConversationMode(message: string): "daily" | "weekly" {
+  return /本周|这周|一周|7天|七天/.test(message) ? "weekly" : "daily";
+}
+
+function toConsumptionDraft(mealPlan: MealPlan | null): InventoryConsumptionApplyItem[] {
+  if (!mealPlan) return [];
+  return mealPlan.inventoryConsumptionPreview
+    .filter((item) => item.inventoryItemId && item.plannedValue !== undefined && item.plannedUnit)
+    .map((item) => ({
+      inventoryItemId: item.inventoryItemId!,
+      consumeValue: item.plannedValue!,
+      consumeUnit: item.plannedUnit!,
+      consumeText: item.plannedAmountText,
+    }));
+}
+
 export function App() {
   const persistedState = useMemo(() => getPersistedState(), []);
   const [activePage, setActivePage] = useState<PageId>(getInitialPage);
-  const [profile, setProfile] = useState<UserProfile>(userProfile);
+  const [profile, setProfile] = useState<UserProfile>(emptyProfile);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -269,6 +285,12 @@ export function App() {
   const [currentMealPlan, setCurrentMealPlan] = useState<MealPlan | null>(null);
   const [currentShoppingList, setCurrentShoppingList] = useState<ShoppingList | null>(null);
   const [currentWeeklyPlan, setCurrentWeeklyPlan] = useState<WeeklyPlan | null>(null);
+  const [proposalMealPlan, setProposalMealPlan] = useState<MealPlan | null>(null);
+  const [proposalShoppingList, setProposalShoppingList] = useState<ShoppingList | null>(null);
+  const [proposalWeeklyPlan, setProposalWeeklyPlan] = useState<WeeklyPlan | null>(null);
+  const [proposalMessageId, setProposalMessageId] = useState<string | null>(null);
+  const [manualConsumptionDraft, setManualConsumptionDraft] = useState<InventoryConsumptionApplyItem[]>([]);
+  const [isConsumptionManualMode, setIsConsumptionManualMode] = useState(false);
   const [planningMode, setPlanningMode] = useState<PlanningMode>("daily");
   const [selectedWeekday, setSelectedWeekday] = useState(getDefaultSelectedWeekday());
   const [selectedWeeklyPreferences, setSelectedWeeklyPreferences] = useState<string[]>(
@@ -277,6 +299,8 @@ export function App() {
 
   const dailyPlan = useMemo(() => currentMealPlan?.meals ?? [], [currentMealPlan]);
   const weeklyPlanDraft = useMemo(() => currentWeeklyPlan?.days ?? [], [currentWeeklyPlan]);
+  const visibleWeeklyPlan = currentWeeklyPlan ?? proposalWeeklyPlan;
+  const visibleWeeklyDays = visibleWeeklyPlan?.days ?? [];
   const weeklyPlanApplied = currentWeeklyPlan?.adopted ?? false;
   const weeklyUpdatedAt = currentWeeklyPlan?.updatedAt ? formatClockTime(currentWeeklyPlan.updatedAt) : formatClockTime();
 
@@ -292,8 +316,8 @@ export function App() {
   const activeMeals = useMemo(() => deriveActiveMeals(planningState), [planningState]);
   const shoppingItems = useMemo(() => {
     const fromServer = toDerivedShoppingItems(currentShoppingList, planningMode);
-    return fromServer.length > 0 ? fromServer : deriveShoppingList(planningState);
-  }, [currentShoppingList, planningMode, planningState]);
+    return fromServer.length > 0 ? fromServer : [];
+  }, [currentShoppingList, planningMode]);
   const shoppingSummary = useMemo(() => buildShoppingSummary(shoppingItems), [shoppingItems]);
   const overviewMetrics = useMemo(() => deriveOverviewMetrics(planningState, shoppingItems), [planningState, shoppingItems]);
   const nutritionSummary = useMemo(
@@ -301,22 +325,22 @@ export function App() {
     [activeMeals, currentMealPlan, profile],
   );
   const weeklyInsightResult = useMemo(() => deriveWeeklyInsights(planningState, weeklyUpdatedAt), [planningState, weeklyUpdatedAt]);
-  const selectedWeeklyDay = useMemo(() => getSelectedWeeklyDay(weeklyPlanDraft, selectedWeekday), [weeklyPlanDraft, selectedWeekday]);
+  const selectedWeeklyDay = useMemo(() => getSelectedWeeklyDay(visibleWeeklyDays, selectedWeekday), [visibleWeeklyDays, selectedWeekday]);
   const weeklyTodayMeals = useMemo(() => cloneMeals(selectedWeeklyDay?.meals ?? []), [selectedWeeklyDay]);
   const weekDates = useMemo(
-    () => weeklyPlanDraft.map((day) => (day.date ? day.date.slice(5).replace("-", "/") : "--/--")),
-    [weeklyPlanDraft],
+    () => visibleWeeklyDays.map((day) => (day.date ? day.date.slice(5).replace("-", "/") : "--/--")),
+    [visibleWeeklyDays],
   );
 
   const expiringItems = inventory.filter((item) => item.status === "expiring_soon");
-  const weeklyAttentionCount = weeklyPlanDraft.filter((day) => day.status === "needs_attention").length;
-  const weeklyBalancedCount = weeklyPlanDraft.filter((day) => day.status === "balanced").length;
+  const weeklyAttentionCount = visibleWeeklyDays.filter((day) => day.status === "needs_attention").length;
+  const weeklyBalancedCount = visibleWeeklyDays.filter((day) => day.status === "balanced").length;
   const isWeeklyMode = planningMode === "weekly" && weeklyPlanApplied;
   const isDailySyncedFromWeekly = weeklyPlanApplied && haveSameMealIds(dailyPlan, weeklyTodayMeals);
 
   const weeklyMacroAverages = useMemo(() => {
-    const days = Math.max(1, weeklyPlanDraft.length);
-    const totals = weeklyPlanDraft.reduce(
+    const days = Math.max(1, visibleWeeklyDays.length);
+    const totals = visibleWeeklyDays.reduce(
       (sum, day) => {
         const actual = buildNutritionSummary(day.meals, profile).actual;
         return {
@@ -333,7 +357,7 @@ export function App() {
       carbs: Math.round(totals.carbs / days),
       fat: Math.round(totals.fat / days),
     };
-  }, [profile, weeklyPlanDraft]);
+  }, [profile, visibleWeeklyDays]);
 
   const todayContextNote = weeklyPlanApplied
     ? isDailySyncedFromWeekly
@@ -626,14 +650,31 @@ export function App() {
     clearRuntimeFeedback();
     try {
       const conversationId = await ensureConversation();
-      const payload = await sendConversationMessage(conversationId, message, "daily");
+      const mode = detectConversationMode(message);
+      const payload = await sendConversationMessage(conversationId, message, mode);
       setMessages((current) => appendMessage(appendMessage(current, payload.userMessage), payload.assistantMessage));
-      setPlanningMode("daily");
-      setCurrentMealPlan(payload.mealPlan);
-      setCurrentMealPlanId(payload.mealPlan?.id);
-      setCurrentShoppingList(payload.shoppingList);
-      setCurrentShoppingListId(payload.shoppingList?.id);
-      setActionSummary(buildActionSummary("已按输入生成方案", payload.mealPlan, payload.shoppingList));
+      setProposalMessageId(payload.assistantMessage.id);
+      setProposalMealPlan(payload.mealPlan);
+      setProposalShoppingList(payload.shoppingList);
+      setProposalWeeklyPlan(payload.weeklyPlan);
+      if (payload.weeklyPlan?.days[0]?.day) {
+        setSelectedWeekday(payload.weeklyPlan.days[0].day);
+      }
+      setManualConsumptionDraft(toConsumptionDraft(payload.mealPlan));
+      setIsConsumptionManualMode(false);
+      setActionSummary(
+        payload.mealPlan
+          ? buildActionSummary("已生成今日候选方案，等待采用", payload.mealPlan, payload.shoppingList)
+          : payload.weeklyPlan
+            ? {
+                title: `已生成「${payload.weeklyPlan.title}」候选周计划`,
+                affectedMeals: payload.weeklyPlan.days.slice(0, 3).map((day) => day.day),
+                nutritionChanges: payload.weeklyPlan.insights.slice(0, 2),
+                shoppingChanges: ["确认采用后才切到本周采购", "未采用前不会改动当前执行页"],
+                inventoryUsage: payload.weeklyPlan.days.flatMap((day) => day.inventoryFocus).slice(0, 4),
+              }
+            : defaultActionSummary,
+      );
     } catch (error) {
       if (isNotFoundError(error)) {
         setCurrentConversationId(undefined);
@@ -703,6 +744,9 @@ export function App() {
         const nextShoppingList = await generateShoppingList("meal_plan", currentMealPlanId);
         setCurrentShoppingList(nextShoppingList);
         setCurrentShoppingListId(nextShoppingList.id);
+        const nextMealPlan = await getMealPlan(currentMealPlanId);
+        setCurrentMealPlan(nextMealPlan);
+        setManualConsumptionDraft(toConsumptionDraft(nextMealPlan));
       }
 
       setActionSummary({
@@ -754,28 +798,8 @@ export function App() {
 
   async function handleGenerateWeeklyPlan() {
     if (pendingAction === "weekly_generate") return;
-    setPendingAction("weekly_generate");
-    clearRuntimeFeedback();
-    try {
-      const conversationId = await ensureConversation();
-      const weeklyPlan = await createWeeklyPlan({
-        message: "本周尽量清淡，高蛋白，工作日做饭时间不要超过 30 分钟。",
-        preferenceTags: selectedWeeklyPreferences.map(mapWeeklyPreferenceTag),
-        startDate: fixedWeeklyStartDate,
-        days: 7,
-        conversationId,
-      });
-      setCurrentWeeklyPlan(weeklyPlan);
-      setCurrentWeeklyPlanId(weeklyPlan.id);
-      setSelectedWeekday(weeklyPlan.days[0]?.day ?? selectedWeekday);
-      appendLocalAssistantMessage(`已生成「${weeklyPlan.title}」，当前仍是周计划草稿；确认采用后，总览和采购会切到本周执行视图。`, {
-        weeklyPlanId: weeklyPlan.id,
-      });
-    } catch (error) {
-      showRuntimeError(error, () => void handleGenerateWeeklyPlan());
-    } finally {
-      setPendingAction(null);
-    }
+    navigate("chat");
+    await handleSend(`请按${selectedWeeklyPreferences.join("、")}生成我本周 7 天饮食计划，工作日尽量省时，并给出采购缺口。`);
   }
 
   async function handleAdjustWeeklyDay(dayName: string) {
@@ -827,12 +851,12 @@ export function App() {
   }
 
   async function handleConfirmWeeklyPlan() {
-    if (!currentWeeklyPlanId || !selectedWeeklyDay?.date) return;
+    if (!proposalWeeklyPlan?.id) return;
     if (pendingAction === "weekly_adopt") return;
     setPendingAction("weekly_adopt");
     clearRuntimeFeedback();
     try {
-      const result = await adoptWeeklyPlan(currentWeeklyPlanId, selectedWeeklyDay.date);
+      const result = await adoptWeeklyPlan(proposalWeeklyPlan.id, selectedWeeklyDay?.date ?? proposalWeeklyPlan.days[0]?.date);
       const [weeklyPlan, mealPlan] = await Promise.all([
         getWeeklyPlan(result.weeklyPlanId),
         getMealPlan(result.syncedMealPlanId),
@@ -846,6 +870,8 @@ export function App() {
       setCurrentShoppingList(shoppingList);
       setCurrentShoppingListId(shoppingList?.id);
       setPlanningMode("weekly");
+      setProposalWeeklyPlan(null);
+      setProposalMessageId(null);
       setActionSummary({
         title: "已采用本周计划",
         affectedMeals: [selectedWeekday],
@@ -860,6 +886,72 @@ export function App() {
       });
     } catch (error) {
       showRuntimeError(error, () => void handleConfirmWeeklyPlan());
+    } finally {
+      setPendingAction(null);
+    }
+  }
+
+  async function handleConfirmMealPlan() {
+    if (!proposalMealPlan?.id) return;
+    if (pendingAction === "chat") return;
+    setPendingAction("chat");
+    clearRuntimeFeedback();
+    try {
+      const result = await adoptMealPlan(proposalMealPlan.id);
+      const [mealPlan, shoppingList] = await Promise.all([
+        getMealPlan(result.mealPlanId),
+        result.shoppingListId ? getCurrentShoppingList("meal_plan", result.mealPlanId) : Promise.resolve(null),
+      ]);
+      setWorkspaceState(result.workspaceState);
+      setCurrentMealPlan(mealPlan);
+      setCurrentMealPlanId(mealPlan.id);
+      setCurrentShoppingList(shoppingList);
+      setCurrentShoppingListId(shoppingList?.id);
+      setPlanningMode("daily");
+      setProposalMealPlan(null);
+      setProposalShoppingList(null);
+      setProposalMessageId(null);
+      setManualConsumptionDraft(toConsumptionDraft(mealPlan));
+      setActionSummary(buildActionSummary("已采用今日方案", mealPlan, shoppingList));
+      appendLocalAssistantMessage("今日方案已确认采用，三餐、营养、总览和购物清单都已切到这份执行方案。", {
+        mealPlanId: mealPlan.id,
+        shoppingListId: shoppingList?.id,
+      });
+    } catch (error) {
+      showRuntimeError(error, () => void handleConfirmMealPlan());
+    } finally {
+      setPendingAction(null);
+    }
+  }
+
+  async function handleApplyConsumption(mode: "manual" | "auto") {
+    const sourceType = planningMode === "weekly" && currentWeeklyPlanId ? "weekly_plan" : currentMealPlanId ? "meal_plan" : null;
+    const sourceId = sourceType === "weekly_plan" ? currentWeeklyPlanId : currentMealPlanId;
+    const items = mode === "manual" ? manualConsumptionDraft : toConsumptionDraft(currentMealPlan);
+    if (!sourceType || !sourceId || items.length === 0) {
+      setRuntimeNotice("当前没有可扣减的库存消耗。");
+      return;
+    }
+
+    setPendingAction("inventory");
+    clearRuntimeFeedback();
+    try {
+      const result = await applyInventoryConsumption({ sourceType, sourceId, mode, items });
+      setInventory(result.updatedInventoryItems);
+      setCurrentShoppingList(result.shoppingList);
+      setCurrentShoppingListId(result.shoppingList?.id);
+      if (result.mealPlan) {
+        setCurrentMealPlan(result.mealPlan);
+        setManualConsumptionDraft(toConsumptionDraft(result.mealPlan));
+      }
+      setIsConsumptionManualMode(false);
+      setRuntimeNotice(
+        result.skippedItems.length > 0
+          ? `已扣减 ${result.appliedItems.length} 项，另有 ${result.skippedItems.length} 项因单位或数量问题跳过。`
+          : `已完成 ${result.appliedItems.length} 项库存扣减。`,
+      );
+    } catch (error) {
+      showRuntimeError(error, () => void handleApplyConsumption(mode));
     } finally {
       setPendingAction(null);
     }
@@ -1026,19 +1118,24 @@ export function App() {
               isBootstrapping={isBootstrapping}
               onSend={(message) => void handleSend(message)}
               onQuickAction={(action) => void handleQuickAction(action)}
+              proposalMessageId={proposalMessageId}
+              proposalMode={proposalWeeklyPlan ? "weekly" : proposalMealPlan ? "daily" : null}
+              onAdoptDaily={() => void handleConfirmMealPlan()}
+              onAdoptWeekly={() => void handleConfirmWeeklyPlan()}
+              proposalPending={pendingAction === "chat" || pendingAction === "weekly_adopt"}
             />
           </div>
 
           <div className={styles.chatWorkspace}>
             <SurfaceCard title="当前方案" emphasis={currentMealPlan ? `${currentMealPlan.nutritionSummary.actual.calories} kcal` : "等待生成"} className={styles.chatRailCard}>
               <p className={styles.cardDetail}>
-                {currentMealPlan ? currentMealPlan.reply : "先发一条需求，让系统生成真实日计划和购物清单。"}
+                {proposalMealPlan?.reply ?? proposalWeeklyPlan?.description ?? currentMealPlan?.reply ?? "先发一条需求，让系统生成候选方案，再确认采用。"}
               </p>
               <div className={styles.summaryPills}>
-                <span>{currentShoppingList?.items.filter((item) => !item.checked).length ?? 0} 项待买</span>
-                <span>{currentMealPlan?.inventoryUsage.length ?? 0} 项库存已使用</span>
-                {currentMealPlan?.generationMeta?.source === "fallback" ? <span>规则兜底生成</span> : null}
-                {currentMealPlan?.generationMeta?.promptVersion ? <span>Prompt {currentMealPlan.generationMeta.promptVersion}</span> : null}
+                <span>{(proposalShoppingList ?? currentShoppingList)?.items.filter((item) => !item.checked).length ?? 0} 项待买</span>
+                <span>{(proposalMealPlan ?? currentMealPlan)?.inventoryUsage.length ?? 0} 项库存将使用</span>
+                {(proposalMealPlan ?? currentMealPlan)?.generationMeta?.source === "fallback" ? <span>规则兜底生成</span> : null}
+                {(proposalMealPlan ?? currentMealPlan)?.generationMeta?.promptVersion ? <span>Prompt {(proposalMealPlan ?? currentMealPlan)?.generationMeta?.promptVersion}</span> : null}
               </div>
             </SurfaceCard>
 
@@ -1092,7 +1189,25 @@ export function App() {
   function renderInventoryPage() {
     return (
       <section className={styles.pageFrame}>
-        <InventoryPanel inventory={inventory} isSubmitting={pendingAction === "inventory"} onAddInventory={handleAddInventory} />
+        <InventoryPanel
+          inventory={inventory}
+          consumptionPreview={currentMealPlan?.inventoryConsumptionPreview ?? []}
+          manualConsumptionDraft={manualConsumptionDraft}
+          isManualConsumptionMode={isConsumptionManualMode}
+          isSubmitting={pendingAction === "inventory"}
+          onAddInventory={handleAddInventory}
+          onToggleManualConsumptionMode={() => {
+            setIsConsumptionManualMode((current) => !current);
+            setManualConsumptionDraft(toConsumptionDraft(currentMealPlan));
+          }}
+          onUpdateManualConsumption={(inventoryItemId, consumeValue) => {
+            setManualConsumptionDraft((current) => current.map((item) => (
+              item.inventoryItemId === inventoryItemId ? { ...item, consumeValue } : item
+            )));
+          }}
+          onApplyManualConsumption={() => void handleApplyConsumption("manual")}
+          onApplyAutoConsumption={() => void handleApplyConsumption("auto")}
+        />
       </section>
     );
   }
@@ -1116,11 +1231,11 @@ export function App() {
                 ))}
               </div>
               <button className={styles.preferenceMoreButton} type="button" onClick={() => void handleGenerateWeeklyPlan()} disabled={pendingAction === "weekly_generate"}>
-                {pendingAction === "weekly_generate" ? "生成中..." : "更多偏好设置"}
+                {pendingAction === "weekly_generate" ? "生成中..." : "去聊天生成"}
               </button>
               <div className={styles.preferenceHint}>
                 <span>当前草稿</span>
-                <strong>{weeklyPlanApplied ? "已接管今日执行" : "待确认采用"}</strong>
+                <strong>{weeklyPlanApplied ? "已接管今日执行" : proposalWeeklyPlan ? "候选方案待采用" : "待生成候选"}</strong>
                 <p>优先使用 {weeklySelectedDayFocus}，并把需要注意的天数控制在 {weeklyAttentionCount} 天内。</p>
               </div>
             </SurfaceCard>
@@ -1130,21 +1245,21 @@ export function App() {
             <div className={styles.weeklyTopbar}>
               <div className={styles.weekRange}>
                 <small>Weekly Planner</small>
-                <strong>{currentWeeklyPlan?.title ?? "本周计划"}</strong>
+                <strong>{visibleWeeklyPlan?.title ?? "本周计划"}</strong>
                 <span>{weekDates[0] ?? "--/--"} - {weekDates[weekDates.length - 1] ?? "--/--"}</span>
               </div>
               <div className={styles.weeklyActions}>
                 <button type="button" className={styles.secondaryAction} onClick={() => void handleGenerateWeeklyPlan()} disabled={pendingAction === "weekly_generate"}>
                   <ClipboardCheck size={16} />
-                  {pendingAction === "weekly_generate" ? "生成中" : "生成本周计划"}
+                  {pendingAction === "weekly_generate" ? "生成中" : "去聊天生成本周计划"}
                 </button>
                 <button
                   type="button"
-                  className={weeklyPlanApplied ? styles.inlineAction : styles.primaryMiniAction}
+                  className={weeklyPlanApplied ? styles.inlineAction : proposalWeeklyPlan ? styles.primaryMiniAction : styles.inlineAction}
                   onClick={() => void handleConfirmWeeklyPlan()}
-                  disabled={!currentWeeklyPlan || (weeklyPlanApplied && isWeeklyMode) || pendingAction === "weekly_adopt"}
+                  disabled={!proposalWeeklyPlan || (weeklyPlanApplied && isWeeklyMode) || pendingAction === "weekly_adopt"}
                 >
-                  {pendingAction === "weekly_adopt" ? "确认中..." : weeklyPlanApplied && isWeeklyMode ? "已确认采用" : "确认采用"}
+                  {pendingAction === "weekly_adopt" ? "确认中..." : weeklyPlanApplied && isWeeklyMode ? "已确认采用" : "采用本周方案"}
                 </button>
               </div>
             </div>
@@ -1158,7 +1273,7 @@ export function App() {
             <div className={styles.weekPlanner}>
               <div className={styles.weekPlannerHeader}>
                 <span>计划阶段</span>
-                {weeklyPlanDraft.map((day, index) => (
+                {visibleWeeklyDays.map((day, index) => (
                   <button
                     key={day.date ?? day.day}
                     type="button"
@@ -1174,7 +1289,7 @@ export function App() {
               {["breakfast", "lunch", "dinner"].map((mealType) => (
                 <div key={mealType} className={styles.weekPlannerRow}>
                   <span className={styles.mealAxisLabel}>{mealTypeLabels[mealType as MealType]}</span>
-                  {weeklyPlanDraft.map((day) => {
+                  {visibleWeeklyDays.map((day) => {
                     const meal = day.meals.find((item) => item.mealType === mealType) ?? day.meals[0];
                     return (
                       <button

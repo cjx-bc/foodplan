@@ -4,17 +4,17 @@
   border-radius: 20px;
   box-shadow: var(--shadow-soft);
   display: grid;
-  gap: 12px;
+  gap: 10px;
   grid-template-rows: auto auto auto auto;
   min-height: 0;
-  padding: 16px;
+  padding: 14px;
   position: relative;
 }
 
 .sectionHeader {
   align-items: start;
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .step {
@@ -23,21 +23,21 @@
   box-shadow: 0 12px 24px rgba(31, 122, 70, 0.18);
   color: white;
   display: inline-grid;
-  flex: 0 0 34px;
-  height: 34px;
+  flex: 0 0 30px;
+  height: 30px;
   place-items: center;
-  width: 34px;
+  width: 30px;
 }
 
 .sectionHeader h2 {
-  font-size: 22px;
+  font-size: 18px;
   line-height: 1.1;
   margin: 0 0 0;
 }
 
 .sectionHeader p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.5;
   margin: 0;
 }
@@ -51,12 +51,12 @@
   border: 1px solid rgba(164, 150, 124, 0.14);
   border-radius: 18px;
   display: grid;
-  gap: 10px;
-  max-height: min(52vh, 420px);
-  min-height: 160px;
+  gap: 8px;
+  max-height: min(48vh, 380px);
+  min-height: 140px;
   overflow-y: auto;
   overflow-anchor: none;
-  padding: 12px 10px 12px 12px;
+  padding: 10px 10px 10px 12px;
   scrollbar-gutter: stable;
 }
 
@@ -101,11 +101,11 @@
   align-items: start;
   display: grid;
   gap: 8px;
-  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-columns: 28px minmax(0, 1fr);
 }
 
 .message.user {
-  grid-template-columns: minmax(0, 1fr) 32px;
+  grid-template-columns: minmax(0, 1fr) 28px;
 }
 
 .message.user .avatar {
@@ -124,11 +124,11 @@
   border-radius: 999px;
   color: var(--primary);
   display: flex;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
-  height: 32px;
+  height: 28px;
   justify-content: center;
-  width: 32px;
+  width: 28px;
 }
 
 .bubble {
@@ -139,7 +139,7 @@
   line-height: 1.5;
   max-width: 100%;
   overflow-wrap: anywhere;
-  padding: 11px 12px;
+  padding: 10px 11px;
 }
 
 .user .bubble {
@@ -148,6 +148,27 @@
 
 .bubble p {
   margin: 0;
+}
+
+.proposalActions {
+  margin-top: 10px;
+}
+
+.proposalActions button {
+  background: #1f8c4e;
+  border: 0;
+  border-radius: 999px;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 12px;
+}
+
+.proposalActions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.64;
 }
 
 .bubble time {
@@ -187,7 +208,7 @@
 
 .actions h3 {
   color: var(--primary);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   line-height: 1;
   margin: 0;
@@ -220,11 +241,11 @@
   background: rgba(255, 253, 248, 0.98);
   border: 1px solid rgba(31, 122, 70, 0.18);
   border-radius: 16px;
-  box-shadow: 0 14px 28px rgba(31, 122, 70, 0.08);
+  box-shadow: 0 14px 24px rgba(31, 122, 70, 0.08);
   display: grid;
   gap: 8px;
   grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 56px;
+  min-height: 52px;
   padding: 6px;
 }
 
@@ -237,8 +258,8 @@
   border: 0;
   color: var(--ink);
   font: inherit;
-  font-size: 14px;
-  height: 34px;
+  font-size: 13px;
+  height: 32px;
   min-width: 0;
   outline: 0;
   padding: 0 10px;
@@ -250,9 +271,9 @@
 
 .inputRow :global(button) {
   border-radius: 14px;
-  min-height: 42px;
-  min-width: 42px;
-  padding: 0 12px;
+  min-height: 38px;
+  min-width: 38px;
+  padding: 0 10px;
 }
 
 @keyframes spin {
@@ -267,14 +288,14 @@
   }
 
   .messages {
-    max-height: 42vh;
-    min-height: 140px;
+    max-height: 40vh;
+    min-height: 130px;
   }
 }
 
 @media (max-width: 860px) {
   .inputRow {
-    min-height: 50px;
+    min-height: 48px;
   }
 }
 

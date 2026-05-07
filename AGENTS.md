@@ -112,6 +112,36 @@ npm run test:ui-regression
 
 分别校验接口契约、workspace 隔离和 UI 回归脚本入口。
 
+```powershell
+$env:PLAYWRIGHT_CDP_URL="http://127.0.0.1:9222"
+$env:PLAYWRIGHT_CHANNEL="msedge"
+npm run test:ui-regression
+```
+
+将 UI 回归脚本连接到已开启远程调试端口的本机 Chrome / Edge，直接复用当前浏览器登录态。适合需要复用站点 session 的自动化登录场景。
+
+```powershell
+& "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --remote-debugging-port=9222
+```
+
+或：
+
+```powershell
+& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222
+```
+
+先用以上命令启动带远程调试端口的浏览器，再执行 `PLAYWRIGHT_CDP_URL` 模式的 UI 回归命令。
+
+```powershell
+$env:PLAYWRIGHT_EXTENSION_MODE="1"
+$env:PLAYWRIGHT_USER_DATA_DIR="$PWD\\.playwright-user-data"
+$env:PLAYWRIGHT_CHANNEL="chrome"
+$env:PLAYWRIGHT_HEADLESS="false"
+npm run test:ui-regression
+```
+
+以持久化浏览器上下文运行 UI 回归，复用同一个 Playwright 用户目录；适合把登录态长期保存在项目本地测试目录，不适合直接读取正在运行中的系统浏览器 Profile。
+
 ## 验证流程
 
 当前没有 `lint` 或格式化脚本。修改源码后至少运行：
@@ -142,6 +172,8 @@ Get-Content -Encoding UTF8 AGENTS.md
 ```
 
 UI 改动应启动开发服务器并人工检查关键页面和视口。当前已有截图产物覆盖 `chat`、`today`、`inventory`、`shopping` 等路由，可作为视觉参考，但不作为自动化测试。
+
+涉及需要登录态的网站联调时，优先使用 Playwright MCP extension 模式或 `PLAYWRIGHT_CDP_URL` 连接已有 Chrome / Edge 会话，避免在自动化脚本中重复输入账号密码。
 
 ## 目录说明
 
@@ -293,9 +325,11 @@ server
 | FE-04 首页框架 | 已完成 | 顶部品牌、导航和 7 页桌面工作台页面容器已实现，默认入口为 `overview` 总览页。 |
 | FE-05 AI 对话区 | 已完成 | 支持输入、快捷操作、mock 回复和右侧三餐/营养/库存/购物摘要工作区。 |
 | FE-05A 前端真实 API 接线 | 已完成 | `chat / today / shopping / weekly / inventory` 已改为消费后端真实接口，`src/app/api.ts` 负责最小请求封装。 |
+| FE-05B 聊天候选方案确认流 | 已完成 | `chat` 已改为先生成候选今日/本周方案，再通过 `采用今日方案 / 采用本周方案` 明确确认后切换 `overview / today / weekly / nutrition / shopping` 的当前执行资源。 |
 | FE-06 今日三餐卡片 | 已完成 | 支持展示、展开详情和单餐替换，并已接入 `POST /api/v1/meal-plans/:id/meals/:mealType/regenerate`。 |
 | FE-07 营养概览 | 已完成 | 三餐变化后通过 `buildNutritionSummary` 同步计算。 |
 | FE-08 库存模块 | 已完成 | 支持新增库存、临期状态计算和列表展示，新增库存后会触发当前采购缺口重算。 |
+| FE-08A 库存消耗扣减 | 已完成 | 库存页已新增“手动扣减 / 自动扣减”双入口、hover 说明和红色 `-数量` 预扣减标记；确认采用方案后可按当前执行方案回写库存数量。 |
 | FE-09 购物清单模块 | 已完成 | 支持分类展示和勾选已购买，并已接入真实 `shopping-lists` API。 |
 | FE-10 页面视觉改版 | 已完成 | 已按参考图把 `chat`、`today`、`inventory`、`weekly`、`nutrition`、`shopping` 六页改成统一的 A 方向健康工具台样式。 |
 | 每周计划页 | 已完成 | 已支持偏好选择、生成本周计划、单日微调、洞察摘要和确认采用的本地状态工作区。 |
@@ -317,25 +351,31 @@ server
 | BE-02 用户配置 API | 已完成 | 已实现 `GET/PATCH /api/v1/profile`，含统一错误响应和字段校验。 |
 | BE-03 库存 API | 已完成 | 已实现 `GET/POST/PATCH/DELETE /api/v1/inventory-items`，含查询过滤、状态推导和本地写回。 |
 | BE-04 今日餐单 API | 已完成 | 已实现 `POST /api/v1/meal-plans`、`GET /api/v1/meal-plans/:id`，支持基于库存和目标生成结构化日计划。 |
+| BE-04A 今日候选方案采用 API | 已完成 | 已新增 `POST /api/v1/meal-plans/:id/adopt`，仅在明确采用时切换 `workspace-state.currentMealPlanId/currentShoppingListId`。 |
 | BE-05 购物清单 API | 已完成 | 已实现 `POST /api/v1/shopping-lists/generate`、`GET /api/v1/shopping-lists/current`、`PATCH /api/v1/shopping-lists/:id/items/:itemId`。 |
 | BE-06 对话 API | 已完成 | 已实现 `POST/GET /api/v1/conversations`、`GET/POST /api/v1/conversations/:id/messages`，支持消息记录与餐单联动。 |
+| BE-06A 对话 proposal 语义 | 已完成 | `POST /api/v1/conversations/:id/messages` 已支持 `daily / weekly` 两种候选方案返回；生成 proposal 时不再隐式覆盖当前执行资源。 |
 | BE-07 每周计划 API | 已完成 | 已实现 `POST /api/v1/weekly-plans`、`GET /api/v1/weekly-plans/:id`、`PATCH /api/v1/weekly-plans/:id/days/:date`、`POST /api/v1/weekly-plans/:id/adopt`。 |
+| BE-10 库存消耗应用 API | 已完成 | 已新增 `POST /api/v1/inventory-consumptions/apply`，支持 `manual / auto` 两种扣减模式，并在扣减后重算当前来源购物清单。 |
 | BE-08 数据库存储替换 | 已完成 | 已切到 MySQL 8：`server/db.ts` 使用 `mysql2`，`server/store.ts` 使用 MySQL SQL，migration/seed 已在真实 MySQL 环境跑通。 |
 | BE-09 Guest Session / Workspace 边界 | 已完成 | `POST /api/v1/auth/guest` 现在会创建独立 guest user + workspace + session，资源读写按 `workspaceId` 收口。 |
 | 后端实现 | 已完成（MVP 主链路） | 日计划、购物、会话、weekly-plan、adopt、DeepSeek 结构化生成和 MySQL 数据库化主链路已跑通；后续主要补营养可信度和部署配置。 |
 | AI 结构化生成 | 已完成（真实调用已验证） | `server/ai/deepseek.ts` 与 `server/ai/schemas.ts` 已接入 DeepSeek `deepseek-v4-flash`；优先读 `DEEPSEEK_API_KEY`，环境变量缺失时从 MySQL `app_settings` 的 `deepseek.api_key` 读取；失败时回退本地规则生成。 |
-| 自动化测试脚本 | 已完成（后端脚本）/ 待收口（UI 脚本） | `api-smoke`、`api-contract`、`workspace-smoke` 已在真实 MySQL 后端通过；`ui-regression` 已扩展运行态交互与慢响应检查，但本轮执行超时，需下轮继续定位。 |
+| 自动化测试脚本 | 已完成（后端脚本）/ 待收口（UI 脚本） | `api-smoke`、`api-contract`、`workspace-smoke` 已在真实 MySQL 后端通过；`ui-regression` 已扩展运行态交互、慢响应检查，以及 `PLAYWRIGHT_CDP_URL` / 持久化 context 两种浏览器会话复用模式，但本轮执行超时问题仍需继续定位。 |
+| Playwright 浏览器会话复用 | 已完成 | `scripts/ui-regression.ts` 已支持连接已开启远程调试端口的 Chrome / Edge，或使用持久化 `userDataDir` 运行回归；需要登录态的网站优先走 extension / CDP 模式，避免重复登录。 |
 | 持久化存储 | 已完成 | 前端仅在 `localStorage` 保存轻量资源指针与模式；后端运行时真相源已切到 MySQL，`server/data/store.json` 仅保留为 seed 输入。 |
 | 前端错误态与加载态 | 进行中 | 已补请求失败 banner/toast、空状态、loading skeleton、按钮 pending/disabled、retry 行为和失效 workspace 指针自动恢复；仍需完成真实浏览器运行态回归。 |
+| Chat 生成中提示文案 | 已完成 | 已把聊天页 AI 生成中的提示从“AI 正在结合营养目标和家庭库存生成方案...”改成“正在思考ing”，降低文案长度并保持等待态轻量化。 |
+| Chat 页 UI 尺寸调整 | 进行中 | 已开始把 `#/chat` 的主栅格、hero、消息区、输入条和快捷按钮整体缩小一档，目标是贴近用户提供的图一观感，而不是当前默认更大的尺寸。 |
 | 生成质量地基 | 进行中 | 已扩展 meal ingredient 单位归一化、DeepSeek 结果合理性规则、异常样本记录、`promptVersion` v2 和用户可见规则降级文案；后续还需做真实模型样本对比。 |
 
 ## 当前进度
 
 | 范围 | 百分比 | 状态 | 依据 |
 | --- | ---: | --- | --- |
-| 前端 MVP 演示闭环 | 100% | 进行中 | 总览、AI 对话、今日三餐、库存、周计划、营养和购物清单已统一到真实后端数据源，刷新恢复改为“轻量 ID + 后端回拉”，且 `overview / chat` 已升级为更强主次结构。 |
-| 整体 MVP | 98% | 进行中 | 前端主要工作区、日计划/购物/会话/weekly-plan/adopt 主链路、guest workspace 隔离、DeepSeek AI 适配层、MySQL 持久化和后端回归脚本已落地；当前主要剩真实运行态回归与 `today / shopping / weekly` 细节收口。 |
-| 文档与交接 | 100% | 进行中 | PRD、任务清单、开发拆解、README、本文件、正式 API/数据模型文档、数据库命令和回归命令说明已同步；后续主要补 MySQL 落地记录与真实模型联调结果。 |
+| 前端 MVP 演示闭环 | 100% | 进行中 | `chat` 已改成 proposal -> adopt 两阶段，`overview / today / weekly / nutrition / shopping / inventory` 只跟随已确认执行资源，库存页也已支持手动/自动扣减。 |
+| 整体 MVP | 99% | 进行中 | proposal/adopt、weekly adopt、inventory consumption、guest workspace 隔离、DeepSeek AI 适配层、MySQL 持久化和 API 回归脚本已落地；当前主要剩真实浏览器 UI 回归与局部文案/间距收口。 |
+| 文档与交接 | 100% | 进行中 | PRD、任务清单、开发拆解、README、本文件、正式 API/数据模型文档、数据库命令、Playwright 浏览器会话复用方式和 proposal/adopt 新规则已同步；后续主要补 UI 运行态回归记录。 |
 
 ## 下一步计划
 
@@ -368,6 +408,10 @@ server
 | P1 | 已完成 | 在真实 MySQL 环境跑通 migration / seed / smoke | 已使用本机 MySQL 8.4、`root / 1234` 跑通 `db:migrate`、`db:seed`、`test:api-smoke`、`test:api-contract`、`test:workspace-smoke`。 |
 | P0 | 已完成 | 补数据库化后的数据边界验证 | `scripts/workspace-smoke.ts` 已扩展验证 guest B 无法读取/修改 guest A 的 conversation、meal plan、shopping list、weekly plan、weekly day patch 和 weekly adopt。 |
 | P1 | 进行中 | 做一轮真实后端模式下的桌面端运行态回归 | 已启动真实 MySQL 后端和 Vite，并扩展 `scripts/ui-regression.ts` 覆盖发送对话、换餐、生成/采用周计划、勾选购物、刷新恢复和慢响应；本轮 `npm run test:ui-regression` 超时，需下轮继续定位脚本等待点或页面阻塞。 |
+| P1 | 已完成 | 给 UI 回归补浏览器 session 复用模式 | 已支持 `PLAYWRIGHT_CDP_URL` 连接现有 Chrome / Edge，会话登录可直接复用；同时保留 `PLAYWRIGHT_EXTENSION_MODE + PLAYWRIGHT_USER_DATA_DIR` 持久化 profile 模式。 |
+| P0 | 已完成 | 把 AI 聊天改成 proposal -> adopt 两阶段 | 已实现今日/本周候选方案生成、显式采用按钮、`meal-plans/:id/adopt`、`weekly-plans/:id/adopt` 和页面只读已确认资源。 |
+| P0 | 已完成 | 给库存页补手动/自动扣减 | 已实现 `inventory-consumptions/apply`、红色预扣减标记、手动数量确认和自动扣减可匹配项。 |
+| P1 | 待执行 | 跑一轮真实浏览器 UI 回归 | 重点检查 `chat proposal -> adopt`、`weekly proposal -> adopt`、库存手动/自动扣减、刷新恢复和窄视口下按钮文案。 |
 | P1 | 待执行 | 继续提高营养可信度 | 把单位归一扩到 meal ingredient、补推荐合理性规则，并把异常样本做成可追踪分析入口。 |
 
 ## 编码规范
@@ -427,6 +471,11 @@ server
 
 | 日期 | 状态 | 变更 | 原因与目标 | 验证 |
 | --- | --- | --- | --- | --- |
+| 2026-05-07 | 已完成 | 复核当前项目开发进度与工作区状态：对照 `AGENTS.md`、`git status`、前后端启动日志和目录结构，确认现阶段主要工作集中在真实浏览器 UI 回归、错误态/加载态收口和生成质量地基增强 | 用户要求检查项目开发进度，需要先把当前已完成、进行中和待执行项重新对齐，避免后续会话继续基于过期认知推进。 | 已确认前端 `http://localhost:5173` 与后端 `http://localhost:8787` 已启动；`git status` 仍有未提交的前后端改动，当前工作重点未偏离既定计划。 |
+| 2026-05-07 | 已完成 | 将聊天页生成中提示文案从“AI 正在结合营养目标和家庭库存生成方案...”改为“正在思考ing”，并同步更新 `AGENTS.md` | 用户希望把等待态提示改得更短、更口语化，减少 AI 生成时的占屏感。 | 已完成源码修改；待运行 `npm run build` 做类型与打包验证。 |
+| 2026-05-07 | 进行中 | 调整 chat 页 UI 尺寸：更新 `src/app/App.module.css` 与 `src/features/chat/ChatPanel.module.css`，把 chat 页主栏、hero、消息卡片和输入区从放大版收回到更紧凑的体量 | 用户澄清需要缩小而不是放大，目标是让 `#/chat` 的体量接近图一那种更紧凑的视觉，而不是当前默认更大的版本。 | 已完成样式收缩；待运行 `npm run build` 和浏览器回归确认实际观感。 |
+| 2026-05-05 | 已完成 | 落地真实 AI 方案确认流与库存扣减闭环：更新 `src/app/App.tsx`、`src/app/api.ts`、`src/app/constants.ts`、`src/features/chat/ChatPanel.tsx`、`src/features/chat/ChatPanel.module.css`、`src/features/inventory/InventoryPanel.tsx`、`src/features/inventory/InventoryPanel.module.css`、`src/types/smartmeal.ts`、`server/index.ts`、`server/planner.ts`、`server/types.ts`、`server/validators.ts`、`scripts/api-smoke.ts` 和 `AGENTS.md` | 用户要求去掉“聊天即落地”的伪执行流，改成 AI 先给候选今日/本周方案，用户明确采用后再更新三餐、周计划、营养、购物、总览；同时库存页要能显示预扣减并支持手动/自动回写真实库存数量。 | 已通过 `npm run build`、`npm run build:server`、`MYSQL_PASSWORD=1234` 下的 `npm run test:api-contract`、`npm run test:api-smoke`、`npm run test:workspace-smoke`；UI 自动回归本轮尚未执行。 |
+| 2026-05-05 | 已完成 | 调整 Playwright 浏览器复用模式：更新 `scripts/ui-regression.ts` 和 `AGENTS.md`，新增 `PLAYWRIGHT_CDP_URL`、`PLAYWRIGHT_EXTENSION_MODE`、`PLAYWRIGHT_USER_DATA_DIR`、`PLAYWRIGHT_HEADLESS` 说明与脚本支持 | 用户要求把 Playwright MCP 使用方式切到 extension 风格，复用当前 Chrome / Edge 登录 session，避免自动化登录时反复输入账号密码。目标是让仓库内 UI 自动化也支持连接现有浏览器会话，并把跨会话操作约定写清楚。 | 已通过 `npm run build`、`npm run build:server` 与 UTF-8 读取确认。 |
 | 2026-05-05 | 已完成 | 根据页面评论把 `chat` 页 Conversation Studio Hero 从纯绿色渐变改为本地厨房蔬菜背景图：新增 `src/assets/chat-hero-kitchen.jpg`，更新 `src/app/App.module.css` 和 `AGENTS.md` | 用户希望把对话页顶部绿色背景替换成更符合“绿色健康蔬菜 / 厨房”语义的真实图片，同时保留标题和状态胶囊的可读性。 | 已通过 `npm run build`；已用 Playwright MCP 回归 `#/chat`，截图保存到 `smartmeal-chat-hero-photo-full.png`。 |
 | 2026-05-05 | 已完成 | 重做 `overview` 骨架、`chat` 主次结构并统一视觉变量：更新 `src/styles/global.css`、`src/components/IconButton.module.css`、`src/app/App.tsx`、`src/app/App.module.css`、`src/features/chat/ChatPanel.module.css`、`src/features/meals/TodayMealsPanel.module.css`、`src/features/shopping/ShoppingListPanel.module.css`、`src/features/nutrition/NutritionPanel.module.css` 和 `AGENTS.md` | 用户要求先重做 `overview` 页面骨架与视觉变量，再重做 `chat` 页左主区和右摘要区，最后统一 `today / shopping / weekly` 的容器、按钮和状态色体系。目标是在不改业务链路的前提下，把页面从平均卡片布局推进到更强主次的健康编辑台视觉。 | 已通过 `npm run build`、`npm run build:server`；已用 Playwright MCP 回归 `#/overview` 与 `#/chat`，生成 `smartmeal-overview-redesign.png` 与 `smartmeal-chat-redesign.png`。 |
 | 2026-05-05 | 已完成 | 继续压缩 chat 顶部标题、输入区和快捷按钮：更新 `src/features/chat/ChatPanel.tsx`、`src/features/chat/ChatPanel.module.css`，下调标题图标、说明文案、输入按钮和快捷按钮尺寸，并单独压低发送按钮高度 | 用户反馈前几轮“还是厚”，希望把对话页变得更扁更简洁。目标是继续压低视觉密度，同时保留原有信息结构。 | 待 `npm run build` 验证。 |

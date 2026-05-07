@@ -47,6 +47,16 @@ export type MealIngredient = {
   optional: boolean;
 };
 
+export type InventoryConsumptionPreview = {
+  inventoryItemId?: string;
+  name: string;
+  plannedAmountText: string;
+  plannedValue?: number;
+  plannedUnit?: string;
+  matched: boolean;
+  autoApplicable: boolean;
+};
+
 export type MealRecommendation = {
   id: string;
   mealType: MealType;
@@ -106,6 +116,7 @@ export type MealPlan = MealPlanResult & {
   reply: string;
   conversationId?: string;
   sourceMessage: string;
+  inventoryConsumptionPreview: InventoryConsumptionPreview[];
   generationMeta?: GenerationMeta;
   createdAt: string;
   updatedAt: string;
@@ -175,6 +186,15 @@ export type ChatMessage = {
   content: string;
   createdAt: string;
   structuredResult?: ConversationMessageRef | null;
+};
+
+export type InventoryConsumptionApplyMode = "manual" | "auto";
+
+export type InventoryConsumptionApplyItem = {
+  inventoryItemId: string;
+  consumeValue: number;
+  consumeUnit: string;
+  consumeText: string;
 };
 
 export type AiActionSummary = {

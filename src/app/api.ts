@@ -1,6 +1,8 @@
 import type {
   Conversation,
   ChatMessage,
+  InventoryConsumptionApplyItem,
+  InventoryConsumptionApplyMode,
   InventoryCategory,
   InventoryItem,
   MealPlan,
@@ -174,6 +176,7 @@ export async function sendConversationMessage(
     assistantMessage: ChatMessage;
     mealPlan: MealPlan | null;
     shoppingList: ShoppingList | null;
+    weeklyPlan: WeeklyPlan | null;
   }>>(`/conversations/${conversationId}/messages`, {
     method: "POST",
     body: JSON.stringify({
@@ -200,6 +203,18 @@ export async function regenerateMeal(mealPlanId: string, mealType: MealType, rea
       reason,
       message: `${mealType} 换一个`,
     }),
+  });
+  return response.data;
+}
+
+export async function adoptMealPlan(mealPlanId: string) {
+  const response = await request<ApiEnvelope<{
+    mealPlanId: string;
+    shoppingListId: string | null;
+    workspaceState: WorkspaceState;
+  }>>(`/meal-plans/${mealPlanId}/adopt`, {
+    method: "POST",
+    body: JSON.stringify({}),
   });
   return response.data;
 }
@@ -269,6 +284,37 @@ export async function adoptWeeklyPlan(weeklyPlanId: string, selectedDate?: strin
   }>>(`/weekly-plans/${weeklyPlanId}/adopt`, {
     method: "POST",
     body: JSON.stringify(selectedDate ? { selectedDate } : {}),
+  });
+  return response.data;
+}
+
+export async function applyInventoryConsumption(payload: {
+  sourceType: "meal_plan" | "weekly_plan";
+  sourceId: string;
+  mode: InventoryConsumptionApplyMode;
+  items: InventoryConsumptionApplyItem[];
+}) {
+  const response = await request<ApiEnvelope<{
+    updatedInventoryItems: InventoryItem[];
+    appliedItems: Array<{
+      inventoryItemId: string;
+      name: string;
+      consumeValue: number;
+      consumeUnit: string;
+      consumeText: string;
+      remainingQuantity: string;
+    }>;
+    skippedItems: Array<{
+      inventoryItemId: string;
+      name?: string;
+      consumeText: string;
+      reason: string;
+    }>;
+    shoppingList: ShoppingList | null;
+    mealPlan: MealPlan | null;
+  }>>("/inventory-consumptions/apply", {
+    method: "POST",
+    body: JSON.stringify(payload),
   });
   return response.data;
 }

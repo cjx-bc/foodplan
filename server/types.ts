@@ -97,6 +97,16 @@ export type MealIngredientRecord = {
   optional: boolean;
 };
 
+export type InventoryConsumptionPreviewRecord = {
+  inventoryItemId?: string;
+  name: string;
+  plannedAmountText: string;
+  plannedValue?: number;
+  plannedUnit?: string;
+  matched: boolean;
+  autoApplicable: boolean;
+};
+
 export type MealRecommendationRecord = {
   id: string;
   mealType: MealType;
@@ -139,6 +149,7 @@ export type MealPlanRecord = {
   nutritionSummary: NutritionSummaryRecord;
   shoppingList: ShoppingListItemRecord[];
   inventoryUsage: string[];
+  inventoryConsumptionPreview: InventoryConsumptionPreviewRecord[];
   suggestions: string[];
   generationMeta?: GenerationMetaRecord;
   createdAt: string;
@@ -219,6 +230,15 @@ export type WorkspaceStateRecord = {
   planningMode: PlanningMode;
   selectedWeekday?: string;
   updatedAt: string;
+};
+
+export type InventoryConsumptionApplyMode = "manual" | "auto";
+
+export type InventoryConsumptionApplyItem = {
+  inventoryItemId: string;
+  consumeValue: number;
+  consumeUnit: string;
+  consumeText: string;
 };
 
 export type AppStore = {
